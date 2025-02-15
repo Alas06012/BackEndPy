@@ -22,8 +22,5 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: E2_HIGHCPU_8
-  diskSizeGb: 100
-  workerPool: projects/$PROJECT_ID/locations/us-east4/workerPools/NAME
 images:
   - 'gcr.io/$PROJECT_ID/backend-service:$COMMIT_SHA' 
