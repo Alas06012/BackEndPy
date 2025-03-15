@@ -1,0 +1,34 @@
+# Node modules (si trabajas con Node.js)
+node_modules/
+
+# Archivos de entorno
+.env
+
+# Directorios de compilación (si trabajas con algún compilador o preprocesador)
+build/
+dist/
+out/
+
+# Archivos temporales del editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos de dependencias de Composer (si usas PHP)
+vendor/
+
+# Archivos de log
+*.log
+
+# Archivos de bases de datos
+*.sqlite
+*.db
+
+# Otros archivos específicos de tu proyecto
+*.env.local
+*.env.*.local
