@@ -11,10 +11,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copia el resto de la aplicación
-COPY app.py .
+COPY run.py .
 
 # Expone el puerto que usa Flask
 EXPOSE 5000
 
 # Comando para ejecutar la aplicación
-CMD ["python", "app.py", "--host=0.0.0.0"]
+CMD ["python", "run.py", "--host=0.0.0.0"]
