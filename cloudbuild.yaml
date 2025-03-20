@@ -19,6 +19,8 @@ steps:
       - '--ingress=internal-and-cloud-load-balancing'
       - '--vpc-connector=serverless-connector'
       - '--vpc-egress=all-traffic'
+      - '--cpu=1'
+      - '--memory=1Gi'
 
 options:
   logging: CLOUD_LOGGING_ONLY
