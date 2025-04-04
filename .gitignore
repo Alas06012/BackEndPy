@@ -9,6 +9,9 @@ build/
 dist/
 out/
 
+__pycache__/
+*.pyc
+
 # Archivos temporales del editor
 .vscode/
 .idea/
