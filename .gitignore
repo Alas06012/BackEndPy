@@ -35,3 +35,4 @@ vendor/
 # Otros archivos específicos de tu proyecto
 *.env.local
 *.env.*.local
+*.pyc
