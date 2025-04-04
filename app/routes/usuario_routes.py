@@ -12,5 +12,9 @@ usuario_routes.route('/register', methods=['POST'])(UsuarioController.register_u
 usuario_routes.route('/login', methods=['POST'])((UsuarioController.login_user))
 
 # Ruta protegida para obtener información del usuario actual
-usuario_routes.route('/me', methods=['GET'])(UsuarioController.get_user_info)
+usuario_routes.route('/auth/verify', methods=['GET'])(UsuarioController.get_user_info)
+
+# Endpoint para refrescar el access token
+usuario_routes.route('/auth/refresh', methods=['POST'])(UsuarioController.refresh_token)
+
 
