@@ -13,6 +13,7 @@ class UsuarioController:
         lastname = data.get('lastname')
         carnet = data.get('carnet')
         email = data.get('email')
+        role = 'student'
         password = data.get('password')
 
         if not email or not password or not name or not lastname or not carnet:
@@ -22,7 +23,7 @@ class UsuarioController:
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
         # Crear el usuario en la base de datos
-        response = Usuario.create_user(name, lastname, carnet, email, hashed_password.decode('utf-8'))
+        response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'))
         
         if response == 'True':
             return jsonify({"message": "Usuario Creado Correctamente"}), 201
@@ -50,9 +51,11 @@ class UsuarioController:
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "user": {
-                    "id": user["id"],
-                    "name": user["name"],
-                    "email": user["email"]
+                    "id": user['id'],  
+                    "name": user['name'],  
+                    "lastname": user['lastname'], 
+                    "email": user['email'],
+                    "role": user['role']
                 }
             }), 200
 
@@ -67,7 +70,14 @@ class UsuarioController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user:
-            return jsonify({"id": user['id'], "email": user['email']}), 200
+            return jsonify(
+                {
+                    "id": user['id'],  
+                    "name": user['name'],  
+                    "lastname": user['lastname'], 
+                    "email": user['email'],
+                    "role": user['role']
+                }), 200
         return jsonify({"message": "User not found"}), 404
     
     

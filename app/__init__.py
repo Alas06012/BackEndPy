@@ -31,5 +31,5 @@ def create_app():
     # Importar rutas
     from app.routes.usuario_routes import usuario_routes
     app.register_blueprint(usuario_routes)
-
+    
     return app

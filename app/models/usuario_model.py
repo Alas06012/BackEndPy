@@ -12,7 +12,7 @@ class Usuario:
     def get_user_by_id(user_id):
         cur = mysql.connection.cursor()
         status = "ACTIVE"
-        cur.execute("""SELECT id, name, email FROM users WHERE id = %s AND STATUS = %s""", (user_id, status))
+        cur.execute("""SELECT id, name, lastname, email, role FROM users WHERE id = %s AND STATUS = %s""", (user_id, status))
         user = cur.fetchone()
         return user
     
@@ -20,19 +20,19 @@ class Usuario:
     def get_user_by_email(email):
         cur = mysql.connection.cursor()
         status = "ACTIVE"
-        cur.execute("""SELECT id, name, email, password FROM users WHERE email = %s AND STATUS = %s""", (email,status))
+        cur.execute("""SELECT id, name, lastname, email, role, password FROM users WHERE email = %s AND STATUS = %s""", (email,status))
         user = cur.fetchone()
         return user
 
     @staticmethod
-    def create_user(name, lastname, carnet, email, password):
+    def create_user(name, lastname, carnet, email, role, password):
         try:
             # Conexión a la base de datos
             cur = mysql.connection.cursor()
             status = "ACTIVE"
             # Ejecutar la consulta SQL
-            cur.execute("INSERT INTO users (name, lastname, carnet, email, password, Status) VALUES (%s, %s, %s, %s, %s, %s)", 
-                        (name, lastname, carnet, email, password, status))
+            cur.execute("INSERT INTO users (name, lastname, carnet, email, role, password, Status) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
+                        (name, lastname, carnet, email, role, password, status))
             
             # Confirmar cambios en la base de datos
             mysql.connection.commit()
