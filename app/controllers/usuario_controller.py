@@ -45,8 +45,8 @@ class UsuarioController:
         user = Usuario.get_user_by_email(email)
 
         if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            access_token = create_access_token(identity=user['id'])
-            refresh_token = create_access_token(identity=user['id'], fresh=False)
+            access_token = create_access_token(identity=str(user['id']))
+            refresh_token = create_access_token(identity=str(user['id']), fresh=False)
             return jsonify({
                 "access_token": access_token,
                 "refresh_token": refresh_token,
