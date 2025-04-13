@@ -25,7 +25,8 @@ def create_app():
     # )
     
     #CORS(app, resources={r"/register": {"origins": "http://localhost:5173"}})
-    CORS(app)
+    #CORS(app)
+    CORS(app, resources={r"/*": {"origins": ["http://localhost:5173", "http://host.docker.internal:5173", "http://host.docker.internal:5173/auth"]}})
     
     
     # Importar rutas
