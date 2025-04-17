@@ -44,18 +44,18 @@ class UsuarioController:
 
         user = Usuario.get_user_by_email(email)
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
-            access_token = create_access_token(identity=str(user['id']))
-            refresh_token = create_access_token(identity=str(user['id']), fresh=False)
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['user_password'].encode('utf-8')):
+            access_token = create_access_token(identity=str(user['pk_user']))
+            refresh_token = create_access_token(identity=str(user['pk_user']), fresh=False)
             return jsonify({
                 "access_token": access_token,
                 "refresh_token": refresh_token,
                 "user": {
-                    "id": user['id'],  
-                    "name": user['name'],  
-                    "lastname": user['lastname'], 
-                    "email": user['email'],
-                    "role": user['role']
+                    "id": user['pk_user'],  
+                    "name": user['user_name'],  
+                    "lastname": user['user_lastname'], 
+                    "email": user['user_email'],
+                    "role": user['user_role']
                 }
             }), 200
 
@@ -72,11 +72,11 @@ class UsuarioController:
         if user:
             return jsonify(
                 {
-                    "id": user['id'],  
-                    "name": user['name'],  
-                    "lastname": user['lastname'], 
-                    "email": user['email'],
-                    "role": user['role']
+                    "id": user['pk_user'],  
+                    "name": user['user_name'],  
+                    "lastname": user['user_lastname'], 
+                    "email": user['user_email'],
+                    "role": user['user_role']
                 }), 200
         return jsonify({"message": "User not found"}), 404
     
@@ -101,7 +101,7 @@ class UsuarioController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['role'] != 'admin':
+        if user['user_role'] != 'admin':
             return jsonify({"message": "El usuario no tiene permisos para crear otros usuarios"}), 404
         
         data = request.get_json()
@@ -140,7 +140,7 @@ class UsuarioController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['role'] != 'admin':
+        if user['user_role'] != 'admin':
             return jsonify({"message": "El usuario no tiene permisos para eliminar otros usuarios"}), 404
         
         data = request.get_json()
@@ -170,7 +170,7 @@ class UsuarioController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['role'] != 'admin':
+        if user['user_role'] != 'admin':
             return jsonify({"message": "El usuario no tiene permisos para modificar otros usuarios"}), 404
         
         data = request.get_json()
@@ -186,7 +186,6 @@ class UsuarioController:
         elif not new_email :
             # Editar el usuario en la base de datos
             response = Usuario.edit_user(name, lastname, carnet, role, current_email)
-            print(response)
         else:
              # Editar el usuario en la base de datos
             response = Usuario.edit_user(name, lastname, carnet, role, current_email, new_email)
@@ -209,7 +208,7 @@ class UsuarioController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['role'] != 'admin':
+        if user['user_role'] != 'admin':
             return jsonify({"message": "El usuario no tiene permisos para modificar otros usuarios"}), 404
         
         users = Usuario.get_active_users()
@@ -232,7 +231,7 @@ class UsuarioController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['role'] != 'admin':
+        if user['user_role'] != 'admin':
             return jsonify({"message": "El usuario no tiene permisos para modificar otros usuarios"}), 404
         
         users = Usuario.get_inactive_users()
