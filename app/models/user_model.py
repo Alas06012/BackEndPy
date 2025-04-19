@@ -82,7 +82,25 @@ class Usuario:
             cur = mysql.connection.cursor()
             status = "INACTIVE"
             # Ejecutar la consulta SQL
-            cur.execute("""UPDATE users set status = %s where user_email = %s""", 
+            cur.execute("""UPDATE users set status = %s where user_email = %s AND status = 'ACTIVE' """, 
+                        (status,email))
+            
+            # Confirmar cambios en la base de datos
+            mysql.connection.commit()
+            
+            return 'True'
+        except Exception as e:
+           return str(e).lower()
+       
+       
+    @staticmethod
+    def activate_user(email):
+        try:
+       # Conexión a la base de datos
+            cur = mysql.connection.cursor()
+            status = "ACTIVE"
+            # Ejecutar la consulta SQL
+            cur.execute("""UPDATE users set status = %s where user_email = %s AND status = 'INACTIVE' """, 
                         (status,email))
             
             # Confirmar cambios en la base de datos

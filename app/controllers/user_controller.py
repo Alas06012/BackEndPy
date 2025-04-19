@@ -1,10 +1,10 @@
-from app.models.usuario_model import Usuario
+from app.models.user_model import Usuario
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import bcrypt
 
-class UsuarioController:
+class UserController:
 
     @staticmethod
     def register_user():
@@ -153,11 +153,42 @@ class UsuarioController:
         response = Usuario.delete_user(email)
         
         if response == 'True':
-            return jsonify({"message": "Usuario Eliminado Correctamente"}), 201
+            return jsonify({"message": "Usuario Desactivado Correctamente"}), 201
         elif 'duplicate entry' in str(response).lower(): 
             return jsonify({"error": "El correo electrónico ya está registrado"}), 400
         else:
             return jsonify({"error": "El usuario no pudo ser eliminado, hubo un error"}), 400
+        
+        
+     #METODO ACTIVAR USUARIO
+    #--------------------
+    # UNICAMENTE VALIDO PARA USUARIOS ADMIN
+    #
+    @staticmethod
+    @jwt_required()
+    def activate_user():
+        current_user_id = get_jwt_identity()
+        user = Usuario.get_user_by_id(current_user_id)
+        
+        if user['user_role'] != 'admin':
+            return jsonify({"message": "El usuario no tiene permisos para activar otros usuarios"}), 404
+        
+        data = request.get_json()
+        email = data.get('email')
+        
+        if not email:
+            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+
+        # Crear el usuario en la base de datos
+        response = Usuario.activate_user(email)
+        print(response)
+        
+        if response == 'True':
+            return jsonify({"message": "Usuario Activado Correctamente"}), 201
+        elif 'duplicate entry' in str(response).lower(): 
+            return jsonify({"error": "El correo electrónico ya está registrado"}), 400
+        else:
+            return jsonify({"error": "El usuario no pudo ser activado, hubo un error"}), 400
         
         
     #METODO EDITAR USUARIO

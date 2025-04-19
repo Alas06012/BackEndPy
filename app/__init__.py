@@ -30,7 +30,9 @@ def create_app():
     
     
     # Importar rutas
-    from app.routes.usuario_routes import usuario_routes
-    app.register_blueprint(usuario_routes)
+    from app.routes.user_routes import user_routes
+    from app.routes.title_routes import title_routes
+    app.register_blueprint(user_routes)
+    app.register_blueprint(title_routes)
     
     return app
