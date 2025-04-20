@@ -1,4 +1,6 @@
 from app import mysql
+import MySQLdb
+from flask_mysqldb import MySQL
 
 class QuestionTitle:
     @staticmethod
@@ -72,7 +74,7 @@ class QuestionTitle:
        
     
     @staticmethod
-    def inactivate_questions_per_title(title_id):
+    def deactivate_questions_per_title(title_id):
         try:
        # Conexión a la base de datos
             cur = mysql.connection.cursor()
@@ -139,6 +141,64 @@ class QuestionTitle:
         """, ("INACTIVE",))
         users = cur.fetchall()
         return users
+    
+    
+    @staticmethod
+    def get_paginated_titles(status, page=1, per_page=20, title_type=None):
+        try:
+            conn = mysql.connection
+            cur = conn.cursor(MySQLdb.cursors.DictCursor)
+
+            # Filtros WHERE
+            where_clauses = ["status = %s"]
+            params = [status]
+
+            if title_type:
+                where_clauses.append("title_type = %s")
+                params.append(title_type)
+
+            where_sql = " WHERE " + " AND ".join(where_clauses)
+
+            # Consulta total
+            count_query = f"SELECT COUNT(*) as total FROM questions_titles {where_sql}"
+            cur.execute(count_query, tuple(params))
+            total_result = cur.fetchone()
+            total = total_result['total'] if total_result else 0
+
+            # Paginación
+            offset = (page - 1) * per_page
+            query = f"""
+                SELECT 
+                    pk_title,
+                    title_name,
+                    title_test,
+                    title_type,
+                    title_url,
+                    status,
+                    created_at,
+                    updated_at
+                FROM questions_titles
+                {where_sql}
+                ORDER BY pk_title DESC
+                LIMIT %s OFFSET %s
+            """
+            final_params = params + [per_page, offset]
+            cur.execute(query, tuple(final_params))
+            data = cur.fetchall()
+
+            return {
+                'data': data,
+                'total': total,
+                'pages': max(1, (total + per_page - 1) // per_page)
+            }
+
+        except Exception as e:
+            print("Error en get_paginated_titles:", str(e))
+            return str(e)
+
+        finally:
+            if cur:
+                cur.close()
        
        
     

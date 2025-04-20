@@ -40,56 +40,7 @@ class TitleController:
         else:
             return jsonify({"error": "El encabezado no pudo ser registrado, hubo un error"}), 400
         
-       
-    #METODO MOSTRAR TODOS LOS TITLES ACTIVOS
-    #--------------------
-    # UNICAMENTE VALIDO PARA USUARIOS ADMIN
-    #
-    @staticmethod
-    @jwt_required()
-    def get_active_titles():
-        current_user_id = get_jwt_identity()
-        user = Usuario.get_user_by_id(current_user_id)
         
-        if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
-        
-        titles = QuestionTitle.get_active_titles()
-        
-        # Si es un error en texto, retornamos como error
-        if isinstance(titles, str):
-            return jsonify({"error": "No se pudieron obtener los titles", "detalle": titles}), 500
-        
-        # Devolver usuarios en formato JSON
-        return jsonify({"titles_activos": titles}), 200
-    
-    
-    
-    #METODO MOSTRAR TODOS LOS TITLES INACTIVOS
-    #--------------------
-    # UNICAMENTE VALIDO PARA USUARIOS ADMIN
-    #
-    @staticmethod
-    @jwt_required()
-    def get_inactive_titles():
-        current_user_id = get_jwt_identity()
-        user = Usuario.get_user_by_id(current_user_id)
-        
-        if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
-        
-        titles = QuestionTitle.get_inactive_titles()
-        
-        # Si es un error en texto, retornamos como error
-        if isinstance(titles, str):
-            return jsonify({"error": "No se pudieron obtener los titles", "detalle": titles}), 500
-        
-        # Devolver usuarios en formato JSON
-        return jsonify({"titles_inactivos": titles}), 200
-    
-    
-    
-    
     #METODO EDITAR TITLES 
     #--------------------
     # UNICAMENTE VALIDO PARA USUARIOS ADMIN
@@ -117,6 +68,10 @@ class TitleController:
         else:
             if not url and type_ == 'LISTENING':
                 return jsonify({"error": "Por favor, agrega la url del audio dentro del json"}), 400
+                
+        if status and status not in['INACTIVE','ACTIVE']:
+            return jsonify({"error": "El estado solo puede ser ACTIVE o INACTIVE"}), 400
+            
 
         # Mapeo del JSON recibido a los nombres de columnas reales
         field_mapping = {
@@ -138,7 +93,7 @@ class TitleController:
         
         #Si el estado del titulo es INACTIVE se desactivaran tambien las preguntas asociadas al title
         if status == 'INACTIVE':
-            QuestionTitle.inactivate_questions_per_title(title_id=id_)
+            QuestionTitle.deactivate_questions_per_title(title_id=id_)
         elif status == 'ACTIVE':
             QuestionTitle.activate_questions_per_title(title_id=id_)
 
@@ -156,7 +111,7 @@ class TitleController:
     #
     @staticmethod
     @jwt_required()
-    def inactivate_title(): 
+    def deactivate_title(): 
         try:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
@@ -174,7 +129,7 @@ class TitleController:
 
             # Inactivar título y preguntas relacionadas
             success_title = QuestionTitle.delete_title(id_)
-            success_questions = QuestionTitle.inactivate_questions_per_title(title_id=id_)
+            success_questions = QuestionTitle.deactivate_questions_per_title(title_id=id_)
 
             if success_title == 'True' and success_questions == 'True':
                 return jsonify({"message": "Encabezado y preguntas desactivados correctamente."}), 200
@@ -189,6 +144,62 @@ class TitleController:
 
         except Exception as e:
             return jsonify({"error": "Error interno del servidor", "detalle": str(e)}), 500
+        
+        
+        
+    @staticmethod
+    @jwt_required()
+    def get_filtered_titles():
+        try:
+            # Validación de permisos
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+            if user['user_role'] != 'admin':
+                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+
+            # Parámetros del body con valores por defecto
+            data = request.get_json() or {}
+            page = data.get('page', 1)
+            per_page = data.get('per_page', 20)
+            status = data.get('status', 'ACTIVE')
+            title_type = data.get('title_type')  # Opcional
+
+            # Validación de paginación
+            if page < 1 or per_page < 1:
+                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+            if per_page > 100:
+                per_page = 100
+
+            # Llamar al modelo
+            paginated_results = QuestionTitle.get_paginated_titles(
+                status=status,
+                title_type=title_type,
+                page=page,
+                per_page=per_page
+            )
+
+            if isinstance(paginated_results, str):
+                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+
+            # Construcción de la respuesta
+            response = {
+                "titles": paginated_results['data'],
+                "pagination": {
+                    "total_items": paginated_results['total'],
+                    "total_pages": paginated_results['pages'],
+                    "current_page": page,
+                    "items_per_page": per_page
+                }
+            }
+
+            # Filtros aplicados
+            if title_type:
+                response["applied_filters"] = {"title_type": title_type}
+
+            return jsonify(response), 200
+
+        except Exception as e:
+            return jsonify({"error": "Error interno", "details": str(e)}), 500
         
         
 

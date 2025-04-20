@@ -30,10 +30,13 @@ user_routes.route('/users/deactivate', methods=['DELETE'])(UserController.delete
 user_routes.route('/users/activate', methods=['PUT'])(UserController.activate_user)
 # Edit
 user_routes.route('/users/edit', methods=['PUT'])(UserController.edit_user)
+# Edit
+user_routes.route('/users', methods=['GET'])(UserController.get_filtered_users)
+
 # Show active
-user_routes.route('/users/show/active', methods=['GET'])(UserController.get_active_users)
+#user_routes.route('/users/show/active', methods=['GET'])(UserController.get_active_users)
 # Show inactive
-user_routes.route('/users/show/inactive', methods=['GET'])(UserController.get_inactive_users)
+#user_routes.route('/users/show/inactive', methods=['GET'])(UserController.get_inactive_users)
 # # Search
 # usuario_routes.route('/users/search', methods=['POST'])(UsuarioController.refresh_token)
 
