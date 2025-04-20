@@ -6,7 +6,7 @@ use nec_diagnostics_db
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 20, 2025 at 12:12 AM
+-- Generation Time: Apr 20, 2025 at 11:36 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -60,7 +60,32 @@ INSERT INTO `answers` (`pk_answer`, `question_fk`, `answer_text`, `is_correct`, 
 (13, 4, 'Anne has lost it.', 1, 'ACTIVE', '2025-04-19 15:42:28', '2025-04-19 15:42:28'),
 (14, 4, 'Anne has found it.', 0, 'ACTIVE', '2025-04-19 15:42:28', '2025-04-19 15:42:28'),
 (15, 4, 'Anne has sent it to Helen.', 0, 'ACTIVE', '2025-04-19 15:42:28', '2025-04-19 15:42:28'),
-(16, 4, 'Anne has completed it.', 0, 'ACTIVE', '2025-04-19 15:42:28', '2025-04-19 15:42:28');
+(16, 4, 'Anne has completed it.', 0, 'ACTIVE', '2025-04-19 15:42:28', '2025-04-19 15:42:28'),
+(17, 5, 'delivering', 0, 'ACTIVE', '2025-04-19 16:38:27', '2025-04-19 16:38:27'),
+(18, 5, 'to deliver', 0, 'ACTIVE', '2025-04-19 16:38:27', '2025-04-19 16:38:27'),
+(19, 5, 'to be deliver', 0, 'ACTIVE', '2025-04-19 16:38:27', '2025-04-19 16:38:27'),
+(20, 5, 'delivered', 1, 'ACTIVE', '2025-04-19 16:38:27', '2025-04-19 16:38:27'),
+(21, 6, 'delivering', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(22, 6, 'to deliver', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(23, 6, 'to be deliver', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(24, 6, 'delivered', 1, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(25, 7, 'since', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(26, 7, 'for', 1, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(27, 7, 'during', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(28, 7, 'while', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(29, 8, 'was eating', 1, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(30, 8, 'eating', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(31, 8, 'ate', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(32, 8, 'was eat', 0, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(33, 1, 'deliveringgggg', 0, 'INACTIVE', '2025-04-20 12:01:11', '2025-04-20 12:30:37'),
+(34, 1, 'Nueva respuesta modificada', 1, 'INACTIVE', '2025-04-20 12:01:22', '2025-04-20 12:30:55'),
+(35, 1, 'Nueva respuesta modificada a question 2', 1, 'INACTIVE', '2025-04-20 12:01:59', '2025-04-20 12:29:26'),
+(36, 1, 'hh', 0, 'INACTIVE', '2025-04-20 12:04:36', '2025-04-20 12:31:14'),
+(37, 1, 'test', 0, 'INACTIVE', '2025-04-20 12:05:09', '2025-04-20 12:31:20'),
+(38, 1, 'Opción A test', 1, 'INACTIVE', '2025-04-20 12:13:34', '2025-04-20 12:31:23'),
+(39, 1, 'Opción B test', 0, 'INACTIVE', '2025-04-20 12:13:34', '2025-04-20 12:31:26'),
+(40, 1, 'Opción A test', 1, 'INACTIVE', '2025-04-20 12:14:06', '2025-04-20 12:31:29'),
+(41, 1, 'Opción B test', 0, 'INACTIVE', '2025-04-20 12:14:06', '2025-04-20 12:51:39');
 
 -- --------------------------------------------------------
 
@@ -111,8 +136,20 @@ CREATE TABLE `prompts` (
   `pk_prompt` int(11) NOT NULL,
   `prompt_name` varchar(50) NOT NULL,
   `prompt_value` varchar(750) NOT NULL,
-  `created_at` datetime DEFAULT current_timestamp()
+  `status` varchar(10) NOT NULL DEFAULT 'ACTIVE',
+  `created_at` datetime DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `prompts`
+--
+
+INSERT INTO `prompts` (`pk_prompt`, `prompt_name`, `prompt_value`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Prompt 1', 'Hola soy un prompt', 'INACTIVE', '2025-04-20 14:47:45', '2025-04-20 15:27:52'),
+(2, 'Prompt 1', 'Hola soy un prompt 2', 'ACTIVE', '2025-04-20 14:58:34', '2025-04-20 15:27:52'),
+(3, 'Prompt 1', 'Hola soy un prompt 3', 'INACTIVE', '2025-04-20 14:58:58', '2025-04-20 15:10:52'),
+(4, 'traducción', '-------test', 'INACTIVE', '2025-04-20 15:10:52', '2025-04-20 15:26:50');
 
 -- --------------------------------------------------------
 
@@ -136,10 +173,14 @@ CREATE TABLE `questions` (
 --
 
 INSERT INTO `questions` (`pk_question`, `toeic_section_fk`, `question_text`, `title_fk`, `level_fk`, `status`, `created_at`, `updated_at`) VALUES
-(1, 3, 'What is the main objective of the message?', 1, 4, 'ACTIVE', '2025-04-19 15:22:28', '2025-04-19 15:47:26'),
-(2, 3, 'What can be implied about the workshop', 1, 4, 'ACTIVE', '2025-04-19 15:34:27', '2025-04-19 15:47:26'),
-(3, 3, 'What can be implied about Dr Friedman?', 1, 4, 'ACTIVE', '2025-04-19 15:37:34', '2025-04-19 15:47:26'),
-(4, 3, 'What has happened to the address list?', 1, 4, 'ACTIVE', '2025-04-19 15:42:28', '2025-04-19 15:47:26');
+(1, 3, 'What is the main objective of the message?', 1, 4, 'ACTIVE', '2025-04-19 15:22:28', '2025-04-19 16:33:59'),
+(2, 3, 'What can be implied about the workshop?', 1, 4, 'ACTIVE', '2025-04-19 15:34:27', '2025-04-20 11:33:44'),
+(3, 3, 'What can be implied about Dr Friedman?', 1, 4, 'ACTIVE', '2025-04-19 15:37:34', '2025-04-19 16:33:59'),
+(4, 3, 'What has happened to the address list?', 1, 4, 'ACTIVE', '2025-04-19 15:42:28', '2025-04-19 16:33:59'),
+(5, 1, 'Hi, my ____ is Diego', 2, 3, 'ACTIVE', '2025-04-19 16:38:27', '2025-04-19 18:09:54'),
+(6, 1, 'All the orders got _________ on schedule.', 2, 4, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(7, 1, 'She has been working here _______ five years.', 2, 3, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24'),
+(8, 1, 'She _______ lunch when the phone rang.', 2, 4, 'ACTIVE', '2025-04-19 16:55:24', '2025-04-19 16:55:24');
 
 -- --------------------------------------------------------
 
@@ -163,8 +204,8 @@ CREATE TABLE `questions_titles` (
 --
 
 INSERT INTO `questions_titles` (`pk_title`, `title_name`, `title_test`, `title_type`, `title_url`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Dear Helen - Workshop Feedback', 'Dear Helen,\n\nI would like to congratulate you on organising such an excellent and informative workshop. I know a lot of people learnt a great deal from it. Can you pass on my thanks to Doctor Friedman for his fascinating talk on Staff Motivation? I realise how lucky we were that he was able to find the time for us. The feedback from the staff was very positive. Let’s hope we actually see an improvement in staff motivation as a result!\n\nBy the way, I’m missing my list of addresses of the delegates who attended. Did I happen to leave it in your office? It’s just that I haven’t seen it since our meeting on Friday.\n\nThanks again for a great day,\nAnne', 'READING', NULL, 'ACTIVE', '2025-04-19 12:47:13', '2025-04-19 15:47:26'),
-(2, 'Incomplete Sentences', 'For each question you will see an incomplete sentence. You are to choose the one word or phrase that best completes the sentence', 'READING', NULL, 'ACTIVE', '2025-04-19 14:46:19', '2025-04-19 14:46:19');
+(1, 'Dear Helen - Workshop Feedback', 'Dear Helen,\n\nI would like to congratulate you on organising such an excellent and informative workshop. I know a lot of people learnt a great deal from it. Can you pass on my thanks to Doctor Friedman for his fascinating talk on Staff Motivation? I realise how lucky we were that he was able to find the time for us. The feedback from the staff was very positive. Let’s hope we actually see an improvement in staff motivation as a result!\n\nBy the way, I’m missing my list of addresses of the delegates who attended. Did I happen to leave it in your office? It’s just that I haven’t seen it since our meeting on Friday.\n\nThanks again for a great day,\nAnne', 'READING', NULL, 'ACTIVE', '2025-04-19 12:47:13', '2025-04-19 16:33:59'),
+(2, 'Incomplete Sentences', 'For each question you will see an incomplete sentence. You are to choose the one word or phrase that best completes the sentence', 'READING', NULL, 'ACTIVE', '2025-04-19 14:46:19', '2025-04-19 16:39:35');
 
 -- --------------------------------------------------------
 
@@ -366,7 +407,8 @@ ALTER TABLE `prompts`
 ALTER TABLE `questions`
   ADD PRIMARY KEY (`pk_question`),
   ADD KEY `idx_level_fk` (`level_fk`),
-  ADD KEY `idx_title_fk` (`title_fk`);
+  ADD KEY `idx_title_fk` (`title_fk`),
+  ADD KEY `toeic_section_fk` (`toeic_section_fk`);
 
 --
 -- Indexes for table `questions_titles`
@@ -453,7 +495,7 @@ ALTER TABLE `weaknesses`
 -- AUTO_INCREMENT for table `answers`
 --
 ALTER TABLE `answers`
-  MODIFY `pk_answer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `pk_answer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `level_history`
@@ -471,13 +513,13 @@ ALTER TABLE `mcer_level`
 -- AUTO_INCREMENT for table `prompts`
 --
 ALTER TABLE `prompts`
-  MODIFY `pk_prompt` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pk_prompt` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `questions`
 --
 ALTER TABLE `questions`
-  MODIFY `pk_question` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `pk_question` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `questions_titles`
@@ -531,7 +573,7 @@ ALTER TABLE `toeic_sections`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `weaknesses`
@@ -614,4 +656,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
