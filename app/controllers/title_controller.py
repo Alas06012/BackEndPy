@@ -33,7 +33,7 @@ class TitleController:
         if type_ != 'LISTENING' and type_ != 'READING':
             return jsonify({"message": "Por favor, define si el tipo es LISTENING o READING"}), 400
 
-        response = QuestionTitle.create_story(title, content, type_, url)
+        response = QuestionTitle.create_title(title, content, type_, url)
         
         if response == 'True':
             return jsonify({"message": "Encabezado Creado Correctamente"}), 201
@@ -139,6 +139,8 @@ class TitleController:
         #Si el estado del titulo es INACTIVE se desactivaran tambien las preguntas asociadas al title
         if status == 'INACTIVE':
             QuestionTitle.inactivate_questions_per_title(title_id=id_)
+        elif status == 'ACTIVE':
+            QuestionTitle.activate_questions_per_title(title_id=id_)
 
         if response == 'True':
             return jsonify({"message": "Encabezado actualizado correctamente"}), 200
