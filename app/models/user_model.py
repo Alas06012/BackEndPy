@@ -109,3 +109,75 @@ class Usuario:
             return 'True'
         except Exception as e:
            return str(e).lower()
+       
+       
+    @staticmethod
+    def get_paginated_users(filters=None, page=1, per_page=20):
+        try:
+            conn = mysql.connection
+            cur = conn.cursor()
+
+            where_clauses = ["1=1"]
+            params = []
+
+            if filters:
+                if filters.get("user_email"):
+                    where_clauses.append("user_email LIKE %s")
+                    params.append(f"%{filters['user_email']}%")
+
+                if filters.get("user_name"):
+                    where_clauses.append("user_name LIKE %s")
+                    params.append(f"%{filters['user_name']}%")
+
+                if filters.get("user_lastname"):
+                    where_clauses.append("user_lastname LIKE %s")
+                    params.append(f"%{filters['user_lastname']}%")
+
+                if filters.get("user_carnet"):
+                    where_clauses.append("user_carnet LIKE %s")
+                    params.append(f"%{filters['user_carnet']}%")
+
+                if filters.get("user_role"):
+                    where_clauses.append("user_role = %s")
+                    params.append(filters["user_role"])
+
+                if filters.get("status"):
+                    where_clauses.append("status = %s")
+                    params.append(filters["status"])
+
+            where_clause = " AND ".join(where_clauses)
+
+            # Count
+            count_query = f"SELECT COUNT(*) FROM users WHERE {where_clause}"
+            cur.execute(count_query, params)
+            total = list(cur.fetchone().values())[0]
+
+            # Data
+            offset = (page - 1) * per_page
+            data_query = f"""
+                SELECT
+                    pk_user,
+                    user_email,
+                    user_name,
+                    user_lastname,
+                    user_carnet,
+                    user_role,
+                    status,
+                    created_at,
+                    updated_at
+                FROM users
+                WHERE {where_clause}
+                LIMIT %s OFFSET %s
+            """
+            cur.execute(data_query, params + [per_page, offset])
+            data = cur.fetchall()
+
+            return {
+                'data': data,
+                'total': total,
+                'pages': max(1, (total + per_page - 1) // per_page)
+            }
+
+        except Exception as e:
+            print(f"Error en get_paginated_users: {str(e)}")
+            return str(e)

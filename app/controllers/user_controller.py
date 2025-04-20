@@ -229,50 +229,53 @@ class UserController:
             return jsonify({"error": "El usuario no pudo ser modificado, hubo un error"}), 400
         
 
-    #METODO MOSTRAR TODOS LOS USUARIOS ACTIVOS
-    #--------------------
-    # UNICAMENTE VALIDO PARA USUARIOS ADMIN
-    #
     @staticmethod
     @jwt_required()
-    def get_active_users():
-        current_user_id = get_jwt_identity()
-        user = Usuario.get_user_by_id(current_user_id)
-        
-        if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos para modificar otros usuarios"}), 404
-        
-        users = Usuario.get_active_users()
-        
-        # Si es un error en texto, retornamos como error
-        if isinstance(users, str):
-            return jsonify({"error": "No se pudieron obtener los usuarios", "detalle": users}), 500
-        
-        # Devolver usuarios en formato JSON
-        return jsonify({"usuarios_activos": users}), 200
-    
-    
-     #METODO MOSTRAR TODOS LOS USUARIOS INACTIVOS
-    #--------------------
-    # UNICAMENTE VALIDO PARA USUARIOS ADMIN
-    #
-    @staticmethod
-    @jwt_required()
-    def get_inactive_users():
-        current_user_id = get_jwt_identity()
-        user = Usuario.get_user_by_id(current_user_id)
-        
-        if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos para modificar otros usuarios"}), 404
-        
-        users = Usuario.get_inactive_users()
-        
-        # Si es un error en texto, retornamos como error
-        if isinstance(users, str):
-            return jsonify({"error": "No se pudieron obtener los usuarios", "detalle": users}), 500
-        
-        # Devolver usuarios en formato JSON
-        return jsonify({"usuarios_inactivos": users}), 200
+    def get_filtered_users():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if user['user_role'] != 'admin':
+                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+
+            data = request.get_json() or {}
+            page = data.get('page', 1)
+            per_page = data.get('per_page', 20)
+
+            filters = {
+                "user_email": data.get("user_email"),
+                "user_name": data.get("user_name"),
+                "user_lastname": data.get("user_lastname"),
+                "user_carnet": data.get("user_carnet"),
+                "user_role": data.get("user_role"),
+                "status": data.get("status")
+            }
+
+            paginated_results = Usuario.get_paginated_users(
+                filters=filters,
+                page=page,
+                per_page=per_page
+            )
+
+            if isinstance(paginated_results, str):
+                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+
+            response = {
+                "users": paginated_results['data'],
+                "pagination": {
+                    "total_items": paginated_results['total'],
+                    "total_pages": paginated_results['pages'],
+                    "current_page": page,
+                    "items_per_page": per_page
+                },
+                "applied_filters": {k: v for k, v in filters.items() if v}
+            }
+
+            return jsonify(response), 200
+
+        except Exception as e:
+            return jsonify({"error": "Error interno", "details": str(e)}), 500
        
        
 

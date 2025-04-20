@@ -1,4 +1,6 @@
 from app import mysql
+import MySQLdb
+from flask_mysqldb import MySQL
 
 class Questions:
     @staticmethod
@@ -150,5 +152,65 @@ class Questions:
         """, (title_id,))
         questions = cur.fetchall()
         return questions 
+    
+    
+    @staticmethod
+    def get_paginated_questions(status, page=1, per_page=20, title_id=None, level_id=None, toeic_section_id=None):
+        try:
+            conn = mysql.connection
+            cur = conn.cursor(MySQLdb.cursors.DictCursor)
+
+            # WHERE dinámico
+            where_clauses = ["status = %s"]
+            params = [status]
+
+            if title_id is not None:
+                where_clauses.append("title_fk = %s")
+                params.append(title_id)
+            if level_id is not None:
+                where_clauses.append("level_fk = %s")
+                params.append(level_id)
+            if toeic_section_id is not None:
+                where_clauses.append("toeic_section_fk = %s")
+                params.append(toeic_section_id)
+
+            where_sql = " WHERE " + " AND ".join(where_clauses)
+
+            # Total de elementos
+            count_query = f"SELECT COUNT(*) as total FROM questions {where_sql}"
+            cur.execute(count_query, params)
+            total = cur.fetchone()['total']
+
+            # Paginación
+            offset = (page - 1) * per_page
+            paginated_query = f"""
+                SELECT 
+                    pk_question,
+                    question_text,
+                    title_fk as title_id,
+                    level_fk as level_id,
+                    toeic_section_fk as toeic_section_id,
+                    created_at,
+                    updated_at,
+                    status
+                FROM questions
+                {where_sql}
+                LIMIT %s OFFSET %s
+            """
+            cur.execute(paginated_query, params + [per_page, offset])
+            data = cur.fetchall()
+
+            return {
+                'data': data,
+                'total': total,
+                'pages': max(1, (total + per_page - 1) // per_page)
+            }
+
+        except Exception as e:
+            print(f"Error en get_paginated_questions: {str(e)}")
+            return str(e)
+        finally:
+            cur.close()
+
         
         

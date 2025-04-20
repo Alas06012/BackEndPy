@@ -11,19 +11,20 @@ question_routes.route('/question', methods=['POST'])(QuestionsController.create_
 question_routes.route('/bulk-questions', methods=['POST'])(QuestionsController.create_questions_bulk)
 
 # Ruta para eliminar questions
-question_routes.route('/question', methods=['DELETE'])(QuestionsController.inactivate_question)
+question_routes.route('/question', methods=['DELETE'])(QuestionsController.deactivate_question)
 
 # Ruta para editar questions
 question_routes.route('/question', methods=['PUT'])(QuestionsController.edit_question)
 
+# Ruta para listar questions por title
+question_routes.route('/questions-per-title', methods=['GET'])(QuestionsController.get_filtered_questions)
+
 # Ruta para listar questions activos
-question_routes.route('/active-questions', methods=['GET'])(QuestionsController.get_active_questions)
+#question_routes.route('/active-questions', methods=['GET'])(QuestionsController.get_active_questions)
 
 # Ruta para listar questions inactivos
-question_routes.route('/inactive-questions', methods=['GET'])(QuestionsController.get_inactive_questions)
+#question_routes.route('/inactive-questions', methods=['GET'])(QuestionsController.get_inactive_questions)
 
-# Ruta para listar questions por title
-question_routes.route('/questions-per-title', methods=['GET'])(QuestionsController.get_questions_per_title)
 
 
 
