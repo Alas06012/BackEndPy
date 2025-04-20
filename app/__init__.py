@@ -32,7 +32,18 @@ def create_app():
     # Importar rutas
     from app.routes.user_routes import user_routes
     from app.routes.title_routes import title_routes
-    app.register_blueprint(user_routes)
-    app.register_blueprint(title_routes)
+    from app.routes.question_routes import question_routes
+    
+    # Lista de Blueprints
+    blueprints = [
+        user_routes,
+        title_routes,
+        question_routes
+    ]
+    
+    # Registrar los Blueprints
+    for bp in blueprints:
+        app.register_blueprint(bp)
+        
     
     return app

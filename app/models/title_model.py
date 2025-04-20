@@ -92,6 +92,27 @@ class QuestionTitle:
         except Exception as e:
            return str(e).lower()
        
+    @staticmethod
+    def activate_questions_per_title(title_id):
+        try:
+       # Conexión a la base de datos
+            cur = mysql.connection.cursor()
+            status = "ACTIVE"
+            # Ejecutar la consulta SQL
+            cur.execute("""
+                        UPDATE questions 
+                        SET status = %s 
+                        WHERE title_fk = %s AND status = 'INACTIVE' 
+                        """, 
+                        (status,title_id))
+            
+            # Confirmar cambios en la base de datos
+            mysql.connection.commit()
+            
+            return 'True'
+        except Exception as e:
+           return str(e).lower()
+       
        
        
     @staticmethod
