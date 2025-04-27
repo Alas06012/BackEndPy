@@ -17,7 +17,7 @@ question_routes.route('/question', methods=['DELETE'])(QuestionsController.deact
 question_routes.route('/question', methods=['PUT'])(QuestionsController.edit_question)
 
 # Ruta para listar questions por title
-question_routes.route('/questions-per-title', methods=['GET'])(QuestionsController.get_filtered_questions)
+question_routes.route('/questions-per-title', methods=['POST'])(QuestionsController.get_filtered_questions)
 
 # Ruta para listar questions activos
 #question_routes.route('/active-questions', methods=['GET'])(QuestionsController.get_active_questions)

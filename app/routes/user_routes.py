@@ -31,7 +31,7 @@ user_routes.route('/users/activate', methods=['PUT'])(UserController.activate_us
 # Edit
 user_routes.route('/users/edit', methods=['PUT'])(UserController.edit_user)
 # Edit
-user_routes.route('/users', methods=['GET'])(UserController.get_filtered_users)
+user_routes.route('/users', methods=['POST'])(UserController.get_filtered_users)
 
 # Show active
 #user_routes.route('/users/show/active', methods=['GET'])(UserController.get_active_users)
