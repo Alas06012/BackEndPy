@@ -26,16 +26,34 @@ class Test:
     def get_random_titles():
         cur = mysql.connection.cursor()
         cur.execute("""
-            (
-            SELECT pk_title FROM questions_titles
-            WHERE title_type = 'READING' AND status = 'ACTIVE'
-            ORDER BY RAND() LIMIT 25
-            )
-            UNION ALL
-            (
-            SELECT pk_title FROM questions_titles
-            WHERE title_type = 'LISTENING' AND status = 'ACTIVE'
-            ORDER BY RAND() LIMIT 25
-            )
+           (
+                SELECT * 
+                FROM questions_titles qt
+                WHERE qt.title_type = 'READING'
+                    AND qt.status = 'ACTIVE'
+                    AND EXISTS (
+                    SELECT 1 
+                    FROM questions q 
+                    WHERE q.title_fk = qt.pk_title 
+                        AND q.status = 'ACTIVE'
+                    )
+                ORDER BY RAND()
+                LIMIT 1
+                )
+                UNION ALL
+                (
+                SELECT * 
+                FROM questions_titles qt
+                WHERE qt.title_type = 'LISTENING'
+                    AND qt.status = 'ACTIVE'
+                    AND EXISTS (
+                    SELECT 1 
+                    FROM questions q 
+                    WHERE q.title_fk = qt.pk_title 
+                        AND q.status = 'ACTIVE'
+                    )
+                ORDER BY RAND()
+                LIMIT 1
+                )
         """)
         return cur.fetchall()
