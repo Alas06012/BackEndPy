@@ -1,8 +1,8 @@
 from app.models.test_model import Test
-from app.models.title_model import Title
+from app.models.title_model import QuestionTitle
 from app.models.questions_model import Questions
 from app.models.testdetail_model import TestDetail
-from app.models.answers_model import Answer
+from app.models.answers_model import Answers
 from app.models.user_model import Usuario
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -29,10 +29,10 @@ class TestController:
         try:
             # Iniciar transacción
             cur = mysql.connection.cursor()
-            
+        
             # Crear test
             test_id = Test.create_test(user_fk)
-            
+
             # Obtener títulos aleatorios
             random_titles = Test.get_random_titles()
             
@@ -42,6 +42,7 @@ class TestController:
                 title_id = title[0]  # pk_title es la primera columna
                 questions = Questions.get_random_questions_by_title(title_id)
                 
+                print(questions)
                 if len(questions) < 4:
                     raise Exception(f"Título {title_id} no tiene suficientes preguntas")
                 
@@ -66,4 +67,5 @@ class TestController:
             
         except Exception as e:
             mysql.connection.rollback()
+            print(e)
             return jsonify({"error": str(e)}), 500

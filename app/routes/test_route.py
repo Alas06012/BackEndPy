@@ -1,11 +1,11 @@
 from flask import Blueprint
-from app.controllers.user_controller import UserController
+from app.controllers.test_controller import TestController
 
 
-user_routes = Blueprint('user_routes', __name__)
+test_route = Blueprint('test_route', __name__)
 
 #   AUTENTICACIÓN
 #   ---------------------------
 # 
 # Ruta para registrar un usuario
-user_routes.route('/create_test', methods=['POST'])(UserController.create_test)
+test_route.route('/newtest', methods=['POST'])(TestController.create_test)

@@ -36,6 +36,7 @@ def create_app():
     from app.routes.answer_routes import answer_routes
     from app.routes.prompt_route import prompt_routes
     from app.routes.studymaterial_routes import studymaterial_routes
+    from app.routes.test_route import test_route
     
     # Lista de Blueprints
     blueprints = [
@@ -44,7 +45,8 @@ def create_app():
         question_routes,
         answer_routes,
         prompt_routes,
-        studymaterial_routes
+        studymaterial_routes,
+        test_route
     ]
     
     # Registrar los Blueprints
