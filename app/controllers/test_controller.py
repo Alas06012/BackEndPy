@@ -35,22 +35,23 @@ class TestController:
 
             # Obtener títulos aleatorios
             random_titles = Test.get_random_titles()
+            print(random_titles)
             
             # Asignar 4 preguntas por título
             test_details = []
             for title in random_titles:
-                title_id = title[0]  # pk_title es la primera columna
+                title_id = title["pk_title"]  # pk_title es la primera columna
+            
                 questions = Questions.get_random_questions_by_title(title_id)
                 
-                print(questions)
                 if len(questions) < 4:
                     raise Exception(f"Título {title_id} no tiene suficientes preguntas")
                 
                 for question in questions:
-                    TestDetail.create_detail(test_id, title_id, question[0])
+                    TestDetail.create_detail(test_id, title_id, question["pk_question"])
                     test_details.append({
                         "title_id": title_id,
-                        "question_id": question[0]
+                        "question_id": question["pk_question"]
                     })
             
             # Confirmar todos los cambios
@@ -67,5 +68,4 @@ class TestController:
             
         except Exception as e:
             mysql.connection.rollback()
-            print(e)
             return jsonify({"error": str(e)}), 500
