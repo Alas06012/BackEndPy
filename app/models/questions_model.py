@@ -211,6 +211,16 @@ class Questions:
             return str(e)
         finally:
             cur.close()
+            
+    @staticmethod
+    def get_random_questions_by_title(title_id):
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT pk_question FROM questions
+            WHERE title_fk = %s AND status = 'ACTIVE'
+            ORDER BY RAND() LIMIT 4
+        """, (title_id,))
+        return cur.fetchall()        
 
         
         
