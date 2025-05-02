@@ -38,7 +38,7 @@ class Test:
                         AND q.status = 'ACTIVE'
                     )
                 ORDER BY RAND()
-                LIMIT 1
+                LIMIT 12
                 )
                 UNION ALL
                 (
@@ -53,7 +53,39 @@ class Test:
                         AND q.status = 'ACTIVE'
                     )
                 ORDER BY RAND()
-                LIMIT 1
+                LIMIT 12
                 )
         """)
         return cur.fetchall()
+    
+    
+    
+    @staticmethod
+    def mark_as_checking_answers(test_id):
+        """
+        Marca el test como finalizado cambiando el estado a 'CHECKING_ANSWERS'.
+        """
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE tests
+            SET status = 'CHECKING_ANSWERS'
+            WHERE pk_test = %s
+        """, (test_id,))
+        return cur.rowcount
+    
+    
+    @staticmethod
+    def mark_as_completed(test_id):
+        """
+        Marca el test como finalizado cambiando el estado a 'COMPLETED'.
+        """
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            UPDATE tests
+            SET status = 'COMPLETED'
+            WHERE pk_test = %s
+        """, (test_id,))
+        return cur.rowcount
+    
+    
+    
