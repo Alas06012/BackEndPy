@@ -24,7 +24,31 @@ class TestDetail:
         return cur.rowcount  # Opcional: puedes usar esto para verificar si se actualizó algo
     
     @staticmethod
-    def get_all_detail():
+    def get_all_detail(test_fk):
+        if not test_fk:
+            return None  # Mejor devolver None para manejar el error en el controller
+        
         cur = mysql.connection.cursor()
-        cur.execute("""SELECT t.pk_testdetail, t.test_fk, qt.title_test, t.title_fk, qt.title_type, qt.title_url, q.question_text, t.question_fk, ts.section_desc, ml.level_name, a.answer_text, t.answer_fk, CASE WHEN a.is_correct = 1 THEN 'Correcta' ELSE 'Incorrecta' END AS is_correct FROM test_details t INNER JOIN questions_titles qt ON t.title_fk = qt.pk_title INNER JOIN questions q ON t.question_fk = q.pk_question LEFT JOIN answers a -- Permite respuestas NULL ON t.answer_fk = a.pk_answer LEFT JOIN toeic_sections ts -- Permite secciones no asignadas ON q.toeic_section_fk = ts.section_pk LEFT JOIN mcer_level ml -- Permite niveles no asignados ON q.level_fk = ml.pk_level WHERE t.test_fk = 29;""")
-        return cur.fetchall()
+        cur.execute("""
+            SELECT 
+                qt.title_test AS title,
+                qt.title_type,
+                qt.title_url,
+                q.question_text,
+                ts.section_desc AS section,
+                ml.level_name AS level,
+                a.answer_text AS student_answer,
+                a.is_correct
+            FROM test_details t 
+            INNER JOIN questions_titles qt ON t.title_fk = qt.pk_title 
+            INNER JOIN questions q ON t.question_fk = q.pk_question 
+            LEFT JOIN answers a ON t.answer_fk = a.pk_answer 
+            LEFT JOIN toeic_sections ts ON q.toeic_section_fk = ts.section_pk 
+            LEFT JOIN mcer_level ml ON q.level_fk = ml.pk_level 
+            WHERE t.test_fk = %s
+        """, (test_fk,))
+        
+        # Obtener datos y descripción de columnas
+        data = cur.fetchall()
+        columns = [desc[0] for desc in cur.description] if cur.description else []
+        return {'data': data, 'columns': columns}
