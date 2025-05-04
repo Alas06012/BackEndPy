@@ -9,6 +9,23 @@ class PromptController:
 
     @staticmethod
     @jwt_required()
+    def get_active_prompt():
+        current_user_id = get_jwt_identity()
+        user = Usuario.get_user_by_id(current_user_id)
+        
+        if user['user_role'] != 'admin':
+            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+    
+        response = Prompt.get_active_prompt()
+
+        if response:
+            return response
+        else:
+            return None
+        
+
+    @staticmethod
+    @jwt_required()
     def create_prompt():
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)

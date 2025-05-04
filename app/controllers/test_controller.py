@@ -4,12 +4,21 @@ from app.models.questions_model import Questions
 from app.models.testdetail_model import TestDetail
 from app.models.answers_model import Answers
 from app.models.testdetail_model import TestDetail
+from app.models.prompt_model import Prompt
 from app.models.user_model import Usuario
-from flask import jsonify, request
+from app.models.apideepseek_model import ApiDeepSeekModel
+
+
+from flask import json, jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+import pandas as pd
 import bcrypt
 from app import mysql
+from dotenv import load_dotenv 
+
+# Cargar variables del archivo .env
+load_dotenv()
 
 class TestController:
     @staticmethod
@@ -83,29 +92,77 @@ class TestController:
 
         data = request.get_json()
         test_id = data.get('test_id')
-        detalles = data.get('detalles', [])
+        # detalles = data.get('detalles', [])
 
         try:
-            for detalle in detalles:
-                question_id = detalle.get('question_id')
-                title_id = detalle.get('title_id')
-                user_answer_id = detalle.get('user_answer_id')
+            # for detalle in detalles:
+                # question_id = detalle.get('question_id')
+                # title_id = detalle.get('title_id')
+                # user_answer_id = detalle.get('user_answer_id')
 
-                if not all([question_id, title_id, user_answer_id]):
-                    continue  # omitir si falta algún campo
+                # if not all([question_id, title_id, user_answer_id]):
+                #     continue  # omitir si falta algún campo
 
-                TestDetail.update_answer_in_testdetails(test_id, question_id, title_id, user_answer_id)
+                # TestDetail.update_answer_in_testdetails(test_id, question_id, title_id, user_answer_id)
 
             Test.mark_as_checking_answers(test_id)
             mysql.connection.commit()
-            
-            
-            
+        
             ##AQUI LOGICA PARA ARMAR JSON QUE SE ENVIARA A DEEPSEEK
             
+           # Obtener datos estructurados
+            test_data = TestDetail.get_all_detail(test_id)
+            
+            if not test_data or not test_data['data']:
+                return jsonify({"error": "No se encontraron resultados"}), 404
+            
+            # Convertir a DataFrame
+            df = pd.DataFrame(test_data['data'], columns=test_data['columns'])
+            
+            # Procesar como JSON
+            result = []
+            for title, group in df.groupby('title'):
+                title_data = {
+                    "title": title,
+                    "title_type": group['title_type'].iloc[0],
+                    "title_url": group['title_url'].iloc[0] if pd.notna(group['title_url'].iloc[0]) else None,
+                    "questions": []
+                }
+                
+                for _, row in group.iterrows():
+                    question = {
+                        "question_text": row['question_text'],
+                        "section": row['section'] if pd.notna(row['section']) else None,
+                        "level": row['level'] if pd.notna(row['level']) else None,
+                        "student_answer": row['student_answer'] if pd.notna(row['student_answer']) else "No respondida",
+                        "is_correct": bool(row['is_correct']) if pd.notna(row['is_correct']) else False
+                    }
+                    title_data["questions"].append(question)
+                
+                result.append(title_data)
+                
+                
+            ##AQUI LOGICA PARA AGREGAR PROMPT A JSON QUE SE ENVIARA A DEEPSEEK
+            
+            system_prompt = Prompt.get_active_prompt()
+            
+            apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=result)
+            
+            print(apiresponse)
+
+            if not apiresponse: 
+                return jsonify({
+                    "error": "No hay un prompt creado para el analisis con IA"
+                }), 500
             
             
-            return jsonify({"message": "Examen finalizado correctamente."}), 200
+
+            # Aquí puedes enviar 'result' a DeepSeek API
+            #print(json.dumps(result, indent=2))  # Para debug
+            
+            return jsonify({
+                "api": apiresponse
+            }), 200
 
         except Exception as e:
             mysql.connection.rollback()
