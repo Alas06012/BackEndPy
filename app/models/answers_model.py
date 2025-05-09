@@ -70,23 +70,17 @@ class Answers:
         
         
     @staticmethod
-    def delete_answer(id_):
+    def delete_all_answers(question_id):
         try:
             cur = mysql.connection.cursor()
-            status = "INACTIVE"
-            
-            # Consulta adaptada a tu estructura de answers
             cur.execute("""
-                        UPDATE answers 
-                        SET status = %s 
-                        WHERE pk_answer = %s AND status = 'ACTIVE' 
-                        """, 
-                        (status, id_))
-            
+                DELETE FROM answers
+                WHERE question_fk = %s
+            """, (question_id,))
             mysql.connection.commit()
-            
             return 'True'
         except Exception as e:
+            mysql.connection.rollback()
             return str(e).lower()
         
         
@@ -147,10 +141,7 @@ class Answers:
             # Log del error para diagnóstico
             print(f"Error en get_paginated_answers: {str(e)}")
             return str(e)
-        
-        
-        
-        
+         
     @staticmethod
     def get_inactive_answers():
         cur = mysql.connection.cursor()
