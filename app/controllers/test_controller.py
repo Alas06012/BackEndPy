@@ -101,7 +101,7 @@ class TestController:
 
             data = request.get_json()
             test_id = data.get('test_id')
-            #detalles = data.get('detalles', [])
+            # detalles = data.get('detalles', [])
             
             # if not test_id:
             #     return jsonify({
@@ -114,7 +114,7 @@ class TestController:
             cursor = mysql.connection.cursor()
 
             try:
-                # 1. Actualizar respuestas del test
+                ##1. Actualizar respuestas del test
                 # for detalle in detalles:
                 #     if not all(k in detalle for k in ['question_id', 'title_id', 'user_answer_id']):
                 #         continue
@@ -140,7 +140,7 @@ class TestController:
                 # 5. Consultar en BD prompt de sistema para IA
                 system_prompt = Prompt.get_active_prompt()
                 
-                # 5. Llamar a la IA
+                # 6. Llamar a la IA
                 #apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
 
                 #JSON PARA PRUEBAS
@@ -149,7 +149,7 @@ class TestController:
                 if not apiresponse:
                     raise ValueError("La IA no generó una respuesta válida")
 
-                # 6. Guardar resultados
+                # 7. Guardar resultados
                 Test.save_evaluation_results(test_id=test_id, user_id=current_user_id, ai_response=apiresponse)
                 mysql.connection.commit()
 

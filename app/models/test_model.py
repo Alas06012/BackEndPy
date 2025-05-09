@@ -141,10 +141,10 @@ class Test:
             # 3. Marcar test como completado
             cur.execute(
                 """UPDATE tests 
-                    SET status = %s, test_passed = %s, test_points = %s 
+                    SET status = %s, test_passed = %s, test_points = %s, level_fk = %s
                     WHERE pk_test = %s
                 """,
-                (status ,passed, toeic_score, test_id)
+                (status ,passed, toeic_score, level_result["pk_level"], test_id)
             )
 
             mysql.connection.commit()
