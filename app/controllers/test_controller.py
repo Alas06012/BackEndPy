@@ -175,8 +175,48 @@ class TestController:
                 "message": f"Error inesperado: {str(e)}"
             }), 500
 
+    
+    
 
+    @staticmethod
+    @jwt_required()
+    def get_test_by_id():
+        try:
+            # Validaciones iniciales
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+            
+            if user['user_role'] not in ['admin', 'teacher', 'student']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+                
+            req = request.get_json()
+            test_id = req.get('test_id')
+            
+            if not test_id or not str(test_id).isdigit():
+                return jsonify({"success": False, "message": "ID del test inválido"}), 400
 
+            data = TestDetail.get_by_test_id(test_id)            
+            exam_structure = TestController.build_exam_structure(test_id, data)
+
+            return jsonify(exam_structure), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+        
+        
+        
+        
+    #------------------------------------------------------------------
+    #
+    #      METODOS AUXILIARES MANEJO DE JSONs
+    #
+    #------------------------------------------------------------------
+    
+    
     @staticmethod
     def _build_ia_prompt(df):
         #Método auxiliar para construir el prompt de usuario para IA
@@ -202,3 +242,58 @@ class TestController:
             user_prompt.append(title_data)
         
         return user_prompt
+    
+    
+    
+    @staticmethod
+    def build_exam_structure(test_id, data):
+        exam_structure = {
+            "test_id": test_id,
+            "sections": []
+        }
+        section_map = {}
+
+        for row in data:
+            section_key = row['section_type']
+            if section_key not in section_map:
+                section_data = {
+                    "section_type": row['section_type'],
+                    "section_desc": row['section_desc'],
+                    "titles": []
+                }
+                section_map[section_key] = section_data
+                exam_structure["sections"].append(section_data)
+            else:
+                section_data = section_map[section_key]
+
+            titles = section_data["titles"]
+            title = next((t for t in titles if t["title_id"] == row['title_id']), None)
+            if not title:
+                title = {
+                    "title_id": row['title_id'],
+                    "title_name": row['title_name'],
+                    "title_test": row['title_test'],
+                    "title_type": row['title_type'],
+                    "title_url": row['title_url'],
+                    "questions": []
+                }
+                titles.append(title)
+
+            questions = title["questions"]
+            question = next((q for q in questions if q["question_id"] == row['question_id']), None)
+            if not question:
+                question = {
+                    "question_id": row['question_id'],
+                    "question_text": row['question_text'],
+                    "answers": []
+                }
+                questions.append(question)
+
+            question["answers"].append({
+                "answer_id": row['answer_id'],
+                "answer_text": row['answer_text'],
+                "is_correct": row['is_correct']
+            })
+
+        return exam_structure
+        

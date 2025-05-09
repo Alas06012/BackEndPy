@@ -87,7 +87,7 @@ class Test:
         """, (test_points, test_passed, test_id))
         return cur.rowcount
     
-    
+    @staticmethod
     def save_evaluation_results(test_id, user_id, ai_response):
         #Guarda todos los resultados de la evaluación en la base de datos.
         cur = None
