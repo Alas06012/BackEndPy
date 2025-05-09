@@ -10,8 +10,10 @@ class Config:
     MYSQL_HOST = os.getenv('MYSQL_HOST', 'host.docker.internal')
     MYSQL_USER = os.getenv('MYSQL_USER', 'root')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
+    #MYSQL_PORT = os.getenv('MYSQL_PORT', '3306')
     MYSQL_DB = os.getenv('MYSQL_DB', 'english_test_app')
     MYSQL_CURSORCLASS = os.getenv('MYSQL_CURSORCLASS', 'DictCursor')
+    DEEPSEEK_APIKEY = os.getenv('DEEPSEEK_APIKEY', '123456')
     
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'O8C6SqE5BpXmGVT1ePg0GML7GDK0HkQb')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
