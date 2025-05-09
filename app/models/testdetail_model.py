@@ -52,3 +52,33 @@ class TestDetail:
         data = cur.fetchall()
         columns = [desc[0] for desc in cur.description] if cur.description else []
         return {'data': data, 'columns': columns}
+    
+
+    
+    @staticmethod
+    def get_by_test_id(test_id):
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT 
+                ts.type_ as section_type,
+                ts.section_desc,
+                qt.pk_title as title_id,
+                qt.title_name,
+                qt.title_test,
+                qt.title_type,
+                qt.title_url,
+                q.pk_question as question_id,
+                q.question_text,
+                a.pk_answer as answer_id,
+                a.answer_text,
+                a.is_correct
+            FROM tests as t
+            INNER JOIN test_details as td ON t.pk_test = td.test_fk
+            INNER JOIN questions_titles as qt ON td.title_fk = qt.pk_title
+            INNER JOIN questions as q ON td.question_fk = q.pk_question
+            INNER JOIN answers as a ON a.question_fk = q.pk_question
+            INNER JOIN toeic_sections as ts ON ts.section_pk = q.toeic_section_fk
+            WHERE t.pk_test = %s
+            ORDER BY ts.type_, qt.pk_title, q.pk_question, a.pk_answer
+        """, (test_id,))
+        return cur.fetchall()
