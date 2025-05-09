@@ -121,3 +121,22 @@ class Prompt:
         except Exception as e:
             print(f"Error en get_paginated_prompts: {str(e)}")
             return str(e)
+        
+        
+    @staticmethod
+    def get_active_prompt():
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                SELECT prompt_value 
+                FROM prompts 
+                WHERE status = 'ACTIVE'
+                LIMIT 1
+            """)
+            result = cur.fetchall()
+            return result if result else None
+        except Exception as e:
+            print(f"Error al obtener prompt: {str(e)}")
+            return None
+        
+    
