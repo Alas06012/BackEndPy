@@ -87,43 +87,60 @@ class QuestionsController:
     def edit_question():
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
-        
+
         if user['user_role'] != 'admin':
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
-        id_ = data.get('question_id')
-        status = data.get('status')
-        
-        if not id_ :
-            return jsonify({"error": "El ID de la pregunta es requerido"}), 400
-        
-        if status and status not in['INACTIVE','ACTIVE']:
-            return jsonify({"error": "El estado solo puede ser ACTIVE o INACTIVE"}), 400
 
-        
-        # Mapeo del JSON recibido a los nombres de columnas reales
+        question_id = data.get('question_id')
+        print(f"Datos recibidos: {question_id}")
+        if not question_id:
+            return jsonify({"error": "El ID de la pregunta es requerido"}), 400
+
+        # Mapeo correcto según tu base de datos
         field_mapping = {
-            "content": "question_text",
-            "status": "status",
-            "level_fk": "level_fk",
-            "toeic_section_fk": "toeic_section_fk"
+            "question_text": "question_text",
+            "level_id": "level_fk",
+            "toeic_section_id": "toeic_section_fk",
+            "title_id": "title_fk",
+            "status": "status"
         }
 
-        # Construir diccionario solo con campos presentes en el JSON
         update_fields = {
             db_field: data[key]
             for key, db_field in field_mapping.items()
             if key in data
         }
 
-        response = Questions.edit_question(id_, **update_fields)
-    
-        if response == 'True':
-            return jsonify({"message": "Encabezado actualizado correctamente"}), 200
-        else:
-            return jsonify({"error": "No se pudo actualizar el encabezado", "details": response}), 400
-    
+        print(f"Campos a actualizar: {update_fields}")
+
+        # Actualizar pregunta
+        response = Questions.edit_question(question_id, **update_fields)
+        print(f"Respuesta de la actualización: {response}")
+
+        if response != 'True':
+            return jsonify({"error": "No se pudo actualizar la pregunta", "details": response}), 400
+
+        # ✅ Actualizar respuestas
+        if 'answers' in data:
+            try:
+                # 1. Eliminar las respuestas existentes de esta pregunta (eliminación total)
+                Answers.delete_all_answers(question_id)  # Elimina todas las respuestas asociadas a la pregunta
+
+                # 2. Insertar las nuevas respuestas
+                for ans in data['answers']:
+                    answer_text = ans.get('text')  # Viene del frontend
+                    is_correct = ans.get('is_correct', False)
+                    if answer_text:
+                        Answers.create_answer(question_id, answer_text, is_correct)
+
+            except Exception as e:
+                return jsonify({"error": f"Error actualizando respuestas: {str(e)}"}), 500
+
+        return jsonify({"message": "Pregunta actualizada correctamente"}), 200
+
+
     
     
     #METODO BORRAR QUESTION
