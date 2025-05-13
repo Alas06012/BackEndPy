@@ -13,3 +13,9 @@ test_routes.route('/finish-test', methods=['POST'])(TestController.finish_test)
 
 # Ruta para obtener la data de un test por id
 test_routes.route('/test-data', methods=['POST'])(TestController.get_test_by_id)
+
+# Ruta para agregar comentarios a un test por id
+test_routes.route('/test-comments', methods=['POST'])(TestController.add_comment_to_test)
+
+# Ruta para ver/filtrar todos los examenes
+test_routes.route('/all-tests', methods=['POST'])(TestController.get_filtered_tests)
