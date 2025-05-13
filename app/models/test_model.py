@@ -248,6 +248,49 @@ class Test:
         except Exception as e:
             print(f"Error en get_paginated_tests: {str(e)}")
             return str(e)
+        
+        
+    @staticmethod
+    def get_test_analysis_by_id(test_id):
+        try:
+            conn = mysql.connection
+            cur = conn.cursor()
+
+            # Obtener fortalezas
+            cur.execute("""
+                SELECT pk_strength, strength_text
+                FROM strengths
+                WHERE test_fk = %s
+            """, (test_id,))
+            strengths = cur.fetchall()
+
+            # Obtener debilidades
+            cur.execute("""
+                SELECT pk_weakness, weakness_text
+                FROM weaknesses
+                WHERE test_fk = %s
+            """, (test_id,))
+            weaknesses = cur.fetchall()
+
+            # Obtener recomendaciones
+            cur.execute("""
+                SELECT pk_recommend, recommendation_text
+                FROM recommendations
+                WHERE test_fk = %s
+            """, (test_id,))
+            recommendations = cur.fetchall()
+
+            return {
+                "test_id": test_id,
+                "strengths": strengths,
+                "weaknesses": weaknesses,
+                "recommendations": recommendations
+            }
+
+        except Exception as e:
+            print(f"Error en get_test_analysis_by_id: {str(e)}")
+            return str(e)
+
 
     
     

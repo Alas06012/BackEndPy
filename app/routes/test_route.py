@@ -19,3 +19,6 @@ test_routes.route('/test-comments', methods=['POST'])(TestController.add_comment
 
 # Ruta para ver/filtrar todos los examenes
 test_routes.route('/all-tests', methods=['POST'])(TestController.get_filtered_tests)
+
+# Ruta para ver recomendaciones, habilidades y debilidades de un examen
+test_routes.route('/test-analysis', methods=['POST'])(TestController.get_test_analysis)
