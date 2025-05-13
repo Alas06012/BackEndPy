@@ -291,6 +291,43 @@ class TestController:
 
         except Exception as e:
             return jsonify({"error": "Error interno", "details": str(e)}), 500
+        
+        
+        
+    @staticmethod
+    @jwt_required()
+    def get_test_analysis():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if not user:
+                return jsonify({"message": "Usuario no encontrado"}), 404
+            
+            
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+                
+            data = request.get_json()
+            test_id = data.get("test_id")
+        
+            
+            if not test_id or not str(test_id).isdigit():
+                return jsonify({"success": False, "message": "ID del test inválido"}), 400
+            
+            result = Test.get_test_analysis_by_id(test_id)
+
+            if isinstance(result, str):
+                return jsonify({"error": "Error en la base de datos", "details": result}), 500
+
+            return jsonify(result), 200
+
+        except Exception as e:
+            return jsonify({"error": "Error interno", "details": str(e)}), 500
+
 
 
         
