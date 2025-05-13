@@ -209,6 +209,90 @@ class TestController:
         
         
         
+    @staticmethod
+    @jwt_required()
+    def add_comment_to_test():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+
+            req = request.get_json()
+            test_id = req.get('test_id')
+            comment_title = req.get('comment_title')
+            comment_value = req.get('comment_value')
+
+            if not test_id or not str(test_id).isdigit():
+                return jsonify({"success": False, "message": "ID del test inválido"}), 400
+
+            if not comment_value:
+                return jsonify({"success": False, "message": "El comentario no puede estar vacío"}), 400
+
+            inserted = Test.add_comment(test_id=int(test_id), user_id=current_user_id, comment_title=comment_title, comment_value=comment_value)
+
+            if inserted:
+                return jsonify({"success": True, "message": "Comentario agregado correctamente"}), 201
+            else:
+                return jsonify({"success": False, "message": "No se pudo agregar el comentario"}), 500
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+        
+        
+    @staticmethod
+    @jwt_required()
+    def get_filtered_tests():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+
+            data = request.get_json() or {}
+            page = data.get("page", 1)
+            per_page = data.get("per_page", 20)
+
+            filters = {
+            "user_email": data.get("user_email"),
+            "user_name": data.get("user_name"),
+            "user_lastname": data.get("user_lastname"),
+            "test_passed": data.get("test_passed"),
+            "level_name": data.get("level"),
+            "status": data.get("status")
+        }
+
+            results = Test.get_paginated_tests(filters=filters, page=page, per_page=per_page)
+
+            if isinstance(results, str):
+                return jsonify({"error": "Error en la base de datos", "details": results}), 500
+
+            response = {
+                "tests": results["data"],
+                "pagination": {
+                    "total_items": results["total"],
+                    "total_pages": results["pages"],
+                    "current_page": page,
+                    "items_per_page": per_page
+                },
+                "applied_filters": {k: v for k, v in filters.items() if v is not None}
+            }
+
+            return jsonify(response), 200
+
+        except Exception as e:
+            return jsonify({"error": "Error interno", "details": str(e)}), 500
+
+
         
     #------------------------------------------------------------------
     #
@@ -285,15 +369,26 @@ class TestController:
                 question = {
                     "question_id": row['question_id'],
                     "question_text": row['question_text'],
+                    "selected_answer_id": row['selected_answer_id'],
+                    "is_selected_correct": None,  # se establecerá más adelante
                     "answers": []
                 }
                 questions.append(question)
 
+            is_selected = row['answer_id'] == row['selected_answer_id']
             question["answers"].append({
                 "answer_id": row['answer_id'],
                 "answer_text": row['answer_text'],
-                "is_correct": row['is_correct']
+                "is_correct": row['is_correct'],
+                "is_selected": is_selected
             })
 
+            # Evaluar si la respuesta seleccionada es la correcta
+            if is_selected and row['is_correct']:
+                question["is_selected_correct"] = True
+            elif is_selected and not row['is_correct']:
+                question["is_selected_correct"] = False
+
         return exam_structure
+
         

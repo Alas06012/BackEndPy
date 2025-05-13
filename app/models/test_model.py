@@ -62,9 +62,7 @@ class Test:
     
     @staticmethod
     def mark_as_checking_answers(test_id):
-        """
-        Marca el test como finalizado cambiando el estado a 'CHECKING_ANSWERS'.
-        """
+        #Marca el test como finalizado cambiando el estado a 'CHECKING_ANSWERS'.
         cur = mysql.connection.cursor()
         cur.execute("""
             UPDATE tests
@@ -76,9 +74,7 @@ class Test:
     
     @staticmethod
     def mark_as_completed(test_id, test_points, test_passed):
-        """
-        Marca el test como finalizado cambiando el estado a 'COMPLETED'.
-        """
+        #Marca el test como finalizado cambiando el estado a 'COMPLETED'.
         cur = mysql.connection.cursor()
         cur.execute("""
             UPDATE tests
@@ -153,6 +149,106 @@ class Test:
         except Exception as e:
             mysql.connection.rollback()
             raise Exception(f"Error al guardar resultados: {str(e)}")
+        
+        
+        
+    @staticmethod
+    def add_comment(test_id, user_id, comment_title, comment_value):
+        #Agrega un comentario a un test específico.
+        cur = mysql.connection.cursor()
+        query = """
+            INSERT INTO test_comments (comment_title, comment_value, user_fk, test_fk)
+            VALUES (%s, %s, %s, %s)
+        """
+        values = (comment_title, comment_value, user_id, test_id)
+
+        try:
+            cur.execute(query, values)
+            mysql.connection.commit()
+            return cur.rowcount > 0
+        except Exception as e:
+            print("Error al insertar comentario:", e)
+            return False
+        
+        
+        
+    @staticmethod
+    def get_paginated_tests(filters=None, page=1, per_page=20):
+        try:
+            conn = mysql.connection
+            cur = conn.cursor()
+
+            where_clauses = ["1=1"]
+            params = []
+
+            if filters:
+                if filters.get("user_email"):
+                    where_clauses.append("u.user_email LIKE %s")
+                    params.append(f"%{filters['user_email']}%")
+                if filters.get("user_name"):
+                    where_clauses.append("u.user_name LIKE %s")
+                    params.append(f"%{filters['user_name']}%")
+                if filters.get("user_lastname"):
+                    where_clauses.append("u.user_lastname LIKE %s")
+                    params.append(f"%{filters['user_lastname']}%")
+                if filters.get("test_passed") is not None:
+                    where_clauses.append("t.test_passed = %s")
+                    params.append(filters['test_passed'])
+                if filters.get("level_fk"):
+                    where_clauses.append("t.level_fk = %s")
+                    params.append(filters["level_fk"])
+                if filters.get("level_name"):
+                    where_clauses.append("ml.level_name = %s")
+                    params.append(filters["level_name"])
+                if filters.get("status"):
+                    where_clauses.append("t.status = %s")
+                    params.append(filters["status"])
+
+            where_clause = " AND ".join(where_clauses)
+            offset = (page - 1) * per_page
+
+            count_query = f"""
+                SELECT COUNT(*) as total
+                FROM tests t
+                JOIN users u ON t.user_fk = u.pk_user
+                LEFT JOIN mcer_level ml ON t.level_fk = ml.pk_level
+                WHERE {where_clause}
+            """
+            cur.execute(count_query, params)
+            total = cur.fetchone()["total"]
+
+            data_query = f"""
+                SELECT
+                    t.pk_test,
+                    u.user_email,
+                    u.user_name,
+                    u.user_lastname,
+                    t.test_points,
+                    t.test_passed,
+                    t.status,
+                    t.created_at,
+                    ml.level_name,
+                    ml.level_desc
+                FROM tests t
+                JOIN users u ON t.user_fk = u.pk_user
+                LEFT JOIN mcer_level ml ON t.level_fk = ml.pk_level
+                WHERE {where_clause}
+                ORDER BY t.created_at DESC
+                LIMIT %s OFFSET %s
+            """
+            cur.execute(data_query, params + [per_page, offset])
+            data = cur.fetchall()
+
+            return {
+                "data": data,
+                "total": total,
+                "pages": max(1, (total + per_page - 1) // per_page)
+            }
+
+        except Exception as e:
+            print(f"Error en get_paginated_tests: {str(e)}")
+            return str(e)
+
     
     
     
