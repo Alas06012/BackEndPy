@@ -50,13 +50,9 @@ def create_app():
         answer_routes,
         prompt_routes,
         studymaterial_routes,
-<<<<<<< HEAD
         level_routes,
-        section_routes
-=======
-        test_route,
-       # testapi_route
->>>>>>> a3751d736617fb051e48a18d451ffad2337896ef
+        section_routes,
+         test_route,
     ]
     
     # Registrar los Blueprints
