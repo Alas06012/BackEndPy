@@ -2,6 +2,8 @@ from app.models.studymaterial_model import StudyMaterial
 from flask import jsonify, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models.user_model import Usuario
+from gcs_utils import upload_file_to_gcs
+from werkzeug.utils import secure_filename
 
 class StudyMaterialController:
 
@@ -15,28 +17,53 @@ class StudyMaterialController:
             if user['user_role'] != 'admin':
                 return jsonify({"error": "Acceso denegado: Se requieren privilegios de administrador"}), 403
 
-            data = request.get_json()
-            title = data.get('studymaterial_title')
-            description = data.get('studymaterial_desc')
-            material_type = data.get('studymaterial_type')
-            url = data.get('studymaterial_url')
-            level_fk = data.get('level_fk')
-            tags = data.get('studymaterial_tags')
-
+            # Obtener datos del formulario
+            title = request.form.get('studymaterial_title')
+            description = request.form.get('studymaterial_desc')
+            material_type = request.form.get('studymaterial_type')
+            level_fk = request.form.get('level_fk')
+            tags = request.form.get('studymaterial_tags')
+            
+            # Validar campos obligatorios
             if not all([title, level_fk]):
                 return jsonify({"error": "Título y nivel son campos requeridos"}), 400
 
+            # Manejar la subida del archivo
+            if 'file' not in request.files:
+                return jsonify({"error": "No se ha proporcionado ningún archivo"}), 400
+                
+            file = request.files['file']
+            if file.filename == '':
+                return jsonify({"error": "Nombre de archivo vacío"}), 400
+
+            # Validar tipo de archivo (ejemplo básico)
+            allowed_extensions = {'pdf', 'doc', 'docx', 'ppt', 'pptx', 'mp4', 'mov'}
+            if '.' in file.filename:
+                file_ext = file.filename.rsplit('.', 1)[1].lower()
+                if file_ext not in allowed_extensions:
+                    return jsonify({"error": "Tipo de archivo no permitido"}), 400
+
+            # Subir a GCS
+            try:
+                file_url = upload_file_to_gcs(file)
+            except Exception as e:
+                return jsonify({"error": "Error subiendo archivo", "details": str(e)}), 500
+
+            # Crear material de estudio
             response = StudyMaterial.create_study_material(
-                title, 
-                description, 
-                material_type, 
-                url, 
-                level_fk, 
-                tags
+                title=title,
+                description=description,
+                material_type=material_type,
+                url=file_url,  # Usar la URL de GCS
+                level_fk=level_fk,
+                tags=tags
             )
 
             if response == 'True':
-                return jsonify({"message": "Material creado exitosamente"}), 201
+                return jsonify({
+                    "message": "Material creado exitosamente",
+                    "file_url": file_url
+                }), 201
             else:
                 return jsonify({"error": "Error al crear material", "details": response}), 500
 

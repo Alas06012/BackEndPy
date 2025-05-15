@@ -3,7 +3,7 @@ from app.controllers.studymaterial_controller import StudyMaterialController
 
 studymaterial_routes = Blueprint('studymaterial_routes', __name__)
 
-#   ADMINISTRACIÓN DE MATERIALES
+#   ADMINISTRACIÓN DE MATERIALES 
 #   ---------------------------
 #   Se necesita rol de admin
 

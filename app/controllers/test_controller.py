@@ -101,7 +101,7 @@ class TestController:
 
             data = request.get_json()
             test_id = data.get('test_id')
-            #detalles = data.get('detalles', [])
+            # detalles = data.get('detalles', [])
             
             # if not test_id:
             #     return jsonify({
@@ -114,7 +114,7 @@ class TestController:
             cursor = mysql.connection.cursor()
 
             try:
-                # 1. Actualizar respuestas del test
+                ##1. Actualizar respuestas del test
                 # for detalle in detalles:
                 #     if not all(k in detalle for k in ['question_id', 'title_id', 'user_answer_id']):
                 #         continue
@@ -140,7 +140,7 @@ class TestController:
                 # 5. Consultar en BD prompt de sistema para IA
                 system_prompt = Prompt.get_active_prompt()
                 
-                # 5. Llamar a la IA
+                # 6. Llamar a la IA
                 #apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
 
                 #JSON PARA PRUEBAS
@@ -149,7 +149,7 @@ class TestController:
                 if not apiresponse:
                     raise ValueError("La IA no generó una respuesta válida")
 
-                # 6. Guardar resultados
+                # 7. Guardar resultados
                 Test.save_evaluation_results(test_id=test_id, user_id=current_user_id, ai_response=apiresponse)
                 mysql.connection.commit()
 
@@ -175,8 +175,169 @@ class TestController:
                 "message": f"Error inesperado: {str(e)}"
             }), 500
 
+    
+    
+
+    @staticmethod
+    @jwt_required()
+    def get_test_by_id():
+        try:
+            # Validaciones iniciales
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+            
+            if user['user_role'] not in ['admin', 'teacher', 'student']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+                
+            req = request.get_json()
+            test_id = req.get('test_id')
+            
+            if not test_id or not str(test_id).isdigit():
+                return jsonify({"success": False, "message": "ID del test inválido"}), 400
+
+            data = TestDetail.get_by_test_id(test_id)            
+            exam_structure = TestController.build_exam_structure(test_id, data)
+
+            return jsonify(exam_structure), 200
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+        
+        
+        
+    @staticmethod
+    @jwt_required()
+    def add_comment_to_test():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+
+            req = request.get_json()
+            test_id = req.get('test_id')
+            comment_title = req.get('comment_title')
+            comment_value = req.get('comment_value')
+
+            if not test_id or not str(test_id).isdigit():
+                return jsonify({"success": False, "message": "ID del test inválido"}), 400
+
+            if not comment_value:
+                return jsonify({"success": False, "message": "El comentario no puede estar vacío"}), 400
+
+            inserted = Test.add_comment(test_id=int(test_id), user_id=current_user_id, comment_title=comment_title, comment_value=comment_value)
+
+            if inserted:
+                return jsonify({"success": True, "message": "Comentario agregado correctamente"}), 201
+            else:
+                return jsonify({"success": False, "message": "No se pudo agregar el comentario"}), 500
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+        
+        
+        
+    @staticmethod
+    @jwt_required()
+    def get_filtered_tests():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+
+            data = request.get_json() or {}
+            page = data.get("page", 1)
+            per_page = data.get("per_page", 20)
+
+            filters = {
+            "user_email": data.get("user_email"),
+            "user_name": data.get("user_name"),
+            "user_lastname": data.get("user_lastname"),
+            "test_passed": data.get("test_passed"),
+            "level_name": data.get("level"),
+            "status": data.get("status")
+        }
+
+            results = Test.get_paginated_tests(filters=filters, page=page, per_page=per_page)
+
+            if isinstance(results, str):
+                return jsonify({"error": "Error en la base de datos", "details": results}), 500
+
+            response = {
+                "tests": results["data"],
+                "pagination": {
+                    "total_items": results["total"],
+                    "total_pages": results["pages"],
+                    "current_page": page,
+                    "items_per_page": per_page
+                },
+                "applied_filters": {k: v for k, v in filters.items() if v is not None}
+            }
+
+            return jsonify(response), 200
+
+        except Exception as e:
+            return jsonify({"error": "Error interno", "details": str(e)}), 500
+        
+        
+        
+    @staticmethod
+    @jwt_required()
+    def get_test_analysis():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if not user:
+                return jsonify({"message": "Usuario no encontrado"}), 404
+            
+            
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({
+                    "success": False,
+                    "message": "Permisos insuficientes"
+                }), 403
+                
+            data = request.get_json()
+            test_id = data.get("test_id")
+        
+            
+            if not test_id or not str(test_id).isdigit():
+                return jsonify({"success": False, "message": "ID del test inválido"}), 400
+            
+            result = Test.get_test_analysis_by_id(test_id)
+
+            if isinstance(result, str):
+                return jsonify({"error": "Error en la base de datos", "details": result}), 500
+
+            return jsonify(result), 200
+
+        except Exception as e:
+            return jsonify({"error": "Error interno", "details": str(e)}), 500
 
 
+
+        
+    #------------------------------------------------------------------
+    #
+    #      METODOS AUXILIARES MANEJO DE JSONs
+    #
+    #------------------------------------------------------------------
+    
+    
     @staticmethod
     def _build_ia_prompt(df):
         #Método auxiliar para construir el prompt de usuario para IA
@@ -202,3 +363,69 @@ class TestController:
             user_prompt.append(title_data)
         
         return user_prompt
+    
+    
+    
+    @staticmethod
+    def build_exam_structure(test_id, data):
+        exam_structure = {
+            "test_id": test_id,
+            "sections": []
+        }
+        section_map = {}
+
+        for row in data:
+            section_key = row['section_type']
+            if section_key not in section_map:
+                section_data = {
+                    "section_type": row['section_type'],
+                    "section_desc": row['section_desc'],
+                    "titles": []
+                }
+                section_map[section_key] = section_data
+                exam_structure["sections"].append(section_data)
+            else:
+                section_data = section_map[section_key]
+
+            titles = section_data["titles"]
+            title = next((t for t in titles if t["title_id"] == row['title_id']), None)
+            if not title:
+                title = {
+                    "title_id": row['title_id'],
+                    "title_name": row['title_name'],
+                    "title_test": row['title_test'],
+                    "title_type": row['title_type'],
+                    "title_url": row['title_url'],
+                    "questions": []
+                }
+                titles.append(title)
+
+            questions = title["questions"]
+            question = next((q for q in questions if q["question_id"] == row['question_id']), None)
+            if not question:
+                question = {
+                    "question_id": row['question_id'],
+                    "question_text": row['question_text'],
+                    "selected_answer_id": row['selected_answer_id'],
+                    "is_selected_correct": None,  # se establecerá más adelante
+                    "answers": []
+                }
+                questions.append(question)
+
+            is_selected = row['answer_id'] == row['selected_answer_id']
+            question["answers"].append({
+                "answer_id": row['answer_id'],
+                "answer_text": row['answer_text'],
+                "is_correct": row['is_correct'],
+                "is_selected": is_selected
+            })
+
+            # Evaluar si la respuesta seleccionada es la correcta
+            if is_selected and row['is_correct']:
+                question["is_selected_correct"] = True
+            elif is_selected and not row['is_correct']:
+                question["is_selected_correct"] = False
+
+        return exam_structure
+
+        
