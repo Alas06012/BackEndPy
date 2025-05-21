@@ -11,7 +11,7 @@ class Test:
     @staticmethod
     def get_test_by_id(test_id):
         cur = mysql.connection.cursor()
-        cur.execute("""SELECT * FROM test WHERE pk_test = %s""", (test_id,))
+        cur.execute("""SELECT * FROM tests WHERE pk_test = %s""", (test_id,))
         test = cur.fetchone()
         return test
     
@@ -83,6 +83,24 @@ class Test:
         """, (test_points, test_passed, test_id))
         return cur.rowcount
     
+    
+    @staticmethod
+    def mark_as_failed(test_id):
+        try:
+            cursor = mysql.connection.cursor()
+            mysql.connection.begin()
+            cursor.execute(
+                """UPDATE tests 
+                SET status = %s 
+                WHERE pk_test = %s
+                """,
+                ('FAILED', test_id)
+            )
+            mysql.connection.commit()
+        except Exception as e:
+            mysql.connection.rollback()
+
+    
     @staticmethod
     def save_evaluation_results(test_id, user_id, ai_response):
         #Guarda todos los resultados de la evaluación en la base de datos.
@@ -149,26 +167,6 @@ class Test:
         except Exception as e:
             mysql.connection.rollback()
             raise Exception(f"Error al guardar resultados: {str(e)}")
-        
-        
-        
-    @staticmethod
-    def add_comment(test_id, user_id, comment_title, comment_value):
-        #Agrega un comentario a un test específico.
-        cur = mysql.connection.cursor()
-        query = """
-            INSERT INTO test_comments (comment_title, comment_value, user_fk, test_fk)
-            VALUES (%s, %s, %s, %s)
-        """
-        values = (comment_title, comment_value, user_id, test_id)
-
-        try:
-            cur.execute(query, values)
-            mysql.connection.commit()
-            return cur.rowcount > 0
-        except Exception as e:
-            print("Error al insertar comentario:", e)
-            return False
         
         
         

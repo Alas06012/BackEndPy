@@ -18,7 +18,7 @@ class TitleController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
@@ -58,7 +58,7 @@ class TitleController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
@@ -110,7 +110,7 @@ class TitleController:
             user = Usuario.get_user_by_id(current_user_id)
 
             # Verificación de permisos
-            if not user or user.get('user_role') != 'admin':
+            if not user or user.get('user_role') not in ['admin', 'teacher']:
                 return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
             # Obtener ID desde el body
@@ -147,8 +147,8 @@ class TitleController:
             # Validación de permisos
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
-            if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
