@@ -144,7 +144,7 @@ class QuestionTitle:
     
     
     @staticmethod
-    def get_paginated_titles(status, page=1, per_page=20, title_type=None):
+    def get_paginated_titles(title_name, status, page=1, per_page=20, title_type=None):
         try:
             conn = mysql.connection
             cur = conn.cursor(MySQLdb.cursors.DictCursor)
@@ -170,6 +170,9 @@ class QuestionTitle:
             else:
                 where_clauses.append("title_type = %s")
                 params.append(title_type)
+            if title_name:
+                where_clauses.append("title_name LIKE %s")
+                params.append(f"%{title_name}%")
 
             # Construir la parte WHERE del SQL
             where_sql = " WHERE " + " AND ".join(where_clauses) if where_clauses else ""

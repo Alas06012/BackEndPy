@@ -22,8 +22,7 @@ class TitleController:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
-        print("JSON recibido en create_story:", data)
-
+        
         title = data.get('title_name')         # 👈 correcto
         content = data.get('title_test')       # 👈 correcto
         title_type = data.get('title_type')    # 👈 correcto
@@ -63,7 +62,6 @@ class TitleController:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
-        print("JSON recibido en edit_title:", data)
 
         id_ = data.get('id')
         title_type = data.get('title_type')
@@ -157,8 +155,10 @@ class TitleController:
             page = data.get('page', 1)
             per_page = data.get('per_page', 20)
             status = data.get('status', 'Todos')
-            title_type = data.get('title_type')  # Opcional
-
+            title_type = data.get('title_type')  
+            title_name = data.get('title_name')
+            print("title_name:", data.get('title_name'))
+ 
             # Validación de paginación
             if page < 1 or per_page < 1:
                 return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
@@ -167,10 +167,11 @@ class TitleController:
 
             # Llamar al modelo
             paginated_results = QuestionTitle.get_paginated_titles(
-                status=status,
-                title_type=title_type,
-                page=page,
-                per_page=per_page
+                title_name = title_name,
+                status = status,
+                title_type = title_type,
+                page = page,
+                per_page = per_page
             )
 
             if isinstance(paginated_results, str):
