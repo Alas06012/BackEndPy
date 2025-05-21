@@ -3,7 +3,6 @@ from app.models.answers_model import Answers
 from app.models.title_model import QuestionTitle
 from app.models.user_model import Usuario
 from flask import jsonify, request
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import bcrypt
 
@@ -23,31 +22,46 @@ class QuestionsController:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
-        fk_title = data.get("fk_title")
-        question_text = data.get("question_text")
-        question_type_fk = data.get("question_type_fk")
-        question_level_fk = data.get("question_level_fk")
-        answers = data.get("answers", [])
 
-        if not all([fk_title, question_text, question_type_fk, question_level_fk]) or not answers:
-            return jsonify({"error": "Datos incompletos para la creación"}), 400
+        required_fields = {
+            "question_text": data.get("question_text"),
+            "level_id": data.get("level_id"),
+            "toeic_section_id": data.get("toeic_section_id"),
+            "title_id": data.get("title_id"),
+            "answers": data.get("answers")
+        }
 
-        # Crear pregunta y respuestas
+        # Detectar campos faltantes
+        missing_fields = [field for field, value in required_fields.items() if not value]
+
+        if missing_fields:
+            return jsonify({"error": f"Faltan los siguientes campos obligatorios: {', '.join(missing_fields)}"}), 400
+
+        answers = data["answers"]
+        if not any(ans.get("is_correct") for ans in answers):
+            return jsonify({"error": "Debe proporcionar al menos una respuesta correcta."}), 400
+
         try:
-            question_id = Questions.create_question(fk_title, question_level_fk, question_text, question_type_fk)
+            # Crear pregunta
+            question_id = Questions.create_question(
+                data["title_id"],
+                data["level_id"],
+                data["toeic_section_id"],
+                data["question_text"]
+            )
 
+            # Crear respuestas
             for answer in answers:
-                text = answer.get("text")
-                is_correct = answer.get("is_correct", False)
+                text = answer.get("text", "").strip()
+                is_correct = bool(answer.get("is_correct", False))
                 if text:
                     Answers.create_answer(question_id, text, is_correct)
 
             return jsonify({"message": "Pregunta y respuestas creadas exitosamente"}), 201
 
         except Exception as e:
-            return jsonify({"error": f"Ocurrió un error: {str(e)}"}), 500
-        
-        
+            return jsonify({"error": f"Ocurrió un error al crear la pregunta: {str(e)}"}), 500
+
     #METODO CREAR QUESTIONS EN BULK
     #-----------------------------------------
     # UNICAMENTE VALIDO PARA USUARIOS ADMIN
@@ -75,9 +89,6 @@ class QuestionsController:
         except Exception as e:
             return jsonify({"error": f"Ocurrió un error: {str(e)}"}), 500
         
-    
-    
-    
     #METODO EDITAR QUESTION 
     #--------------------
     # UNICAMENTE VALIDO PARA USUARIOS ADMIN
@@ -94,7 +105,6 @@ class QuestionsController:
         data = request.get_json()
 
         question_id = data.get('question_id')
-        print(f"Datos recibidos: {question_id}")
         if not question_id:
             return jsonify({"error": "El ID de la pregunta es requerido"}), 400
 
@@ -113,11 +123,8 @@ class QuestionsController:
             if key in data
         }
 
-        print(f"Campos a actualizar: {update_fields}")
-
         # Actualizar pregunta
         response = Questions.edit_question(question_id, **update_fields)
-        print(f"Respuesta de la actualización: {response}")
 
         if response != 'True':
             return jsonify({"error": "No se pudo actualizar la pregunta", "details": response}), 400
@@ -140,9 +147,6 @@ class QuestionsController:
 
         return jsonify({"message": "Pregunta actualizada correctamente"}), 200
 
-
-    
-    
     #METODO BORRAR QUESTION
     #----------------------------------------------
     # Desactiva una pregunta
@@ -159,31 +163,29 @@ class QuestionsController:
             if not user or user.get('user_role') != 'admin':
                 return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
-            # Obtener ID desde el body
+            # Obtener ID y nuevo estado desde el body
             data = request.get_json()
-            id_ = data.get('question_id')
+            question_id = data.get('question_id')
+            new_status = data.get('status')  # Puede ser 'ACTIVE' o 'INACTIVE'
 
-            if not id_:
-                return jsonify({"error": "El ID de la pregunta es requerido."}), 400
+            if not question_id or new_status not in ['ACTIVE', 'INACTIVE']:
+                return jsonify({"error": "Parámetros inválidos."}), 400
 
-            # Inactivar pregunta
-            response = Questions.delete_question(id_)
+            # Actualizar estado
+            response = Questions.delete_question(question_id, new_status)
 
             if response == 'True':
-                return jsonify({"message": "Pregunta desactivada correctamente."}), 200
+                return jsonify({"message": f"Pregunta { 'activada' if new_status == 'ACTIVE' else 'desactivada' } correctamente."}), 200
 
             return jsonify({
-                "error": "No se pudo desactivar la pregunta.",
-                "detalle": {
-                    "pregunta": response
-                }
+                "error": "No se pudo actualizar el estado de la pregunta.",
+                "detalle": response
             }), 400
 
         except Exception as e:
             return jsonify({"error": "Error interno del servidor", "detalle": str(e)}), 500
-        
-    
-    
+
+            
     #METODO MOSTRAR TODOS LOS QUESTIONS DE UN TITLE
     #------------------------------------------------
     # UNICAMENTE VALIDO PARA USUARIOS ADMIN
@@ -212,9 +214,7 @@ class QuestionsController:
         
         # Devolver usuarios en formato JSON
         return jsonify({"preguntas_activas": questions}), 200
-    
-    
-    
+     
     # METODO GET_FILTERED_QUESTIONS
     # Filtrado por body: { "page": 1, "per_page": 20, "status": "ACTIVE", "title_id": 2 }
     @staticmethod
@@ -223,12 +223,13 @@ class QuestionsController:
         try:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
+
             if user['user_role'] != 'admin':
                 return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
 
             # Cuerpo del request
             data = request.get_json() or {}
-
+           
             # Parámetros de paginación
             try:
                 page = int(data.get('page', 1))
@@ -239,20 +240,23 @@ class QuestionsController:
             if page < 1 or per_page < 1:
                 return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
             if per_page > 100:
-                per_page = 100
+                per_page = 100  # Limitamos el máximo de preguntas por página a 100
 
             # Filtros opcionales
-            status = data.get('status', 'ACTIVE')
-            title_id = data.get('title_id')
-            level_id = data.get('level_id')
-            toeic_section_id = data.get('toeic_section_id')
+            filters = {
+                'status': data.get('status', 'Todos'),  # 'ACTIVE' por defecto
+                'title_id': data.get('title_id'),
+                'level_id': data.get('level_id'),
+                'toeic_section_id': data.get('toeic_section_id'),
+                'question_text': data.get('search_text')
+            }
 
-            # Obtener preguntas paginadas
+            # Eliminar filtros con valores nulos o vacíos
+            filters = {k: v for k, v in filters.items() if v is not None and v != ''}
+
+            # Obtener preguntas paginadas con los filtros aplicados
             paginated_results = Questions.get_paginated_questions(
-                status=status,
-                title_id=title_id,
-                level_id=level_id,
-                toeic_section_id=toeic_section_id,
+                **filters,  # Expande el diccionario para pasar los filtros como parámetros
                 page=page,
                 per_page=per_page
             )
@@ -270,11 +274,7 @@ class QuestionsController:
                 }
             }
 
-            # Agregar filtros usados
-            filters = {}
-            if title_id: filters['title_id'] = title_id
-            if level_id: filters['level_id'] = level_id
-            if toeic_section_id: filters['toeic_section_id'] = toeic_section_id
+            # Agregar filtros aplicados a la respuesta
             if filters:
                 response["applied_filters"] = filters
 
@@ -282,10 +282,10 @@ class QuestionsController:
 
         except Exception as e:
             import traceback
-            print(traceback.format_exc())
+            print(traceback.format_exc())  # Para depurar el error en el servidor
             return jsonify({"error": "Error interno", "details": str(e)}), 500
-        
-        
+
+            
 
     
     
