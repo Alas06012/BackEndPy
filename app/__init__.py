@@ -52,7 +52,7 @@ def create_app():
         studymaterial_routes,
         level_routes,
         section_routes,
-         test_route,
+        test_routes
     ]
     
     # Registrar los Blueprints
