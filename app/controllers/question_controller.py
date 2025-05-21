@@ -18,7 +18,7 @@ class QuestionsController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
@@ -72,7 +72,7 @@ class QuestionsController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
@@ -99,7 +99,7 @@ class QuestionsController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
@@ -129,7 +129,7 @@ class QuestionsController:
         if response != 'True':
             return jsonify({"error": "No se pudo actualizar la pregunta", "details": response}), 400
 
-        # ✅ Actualizar respuestas
+        #Actualizar respuestas
         if 'answers' in data:
             try:
                 # 1. Eliminar las respuestas existentes de esta pregunta (eliminación total)
@@ -160,7 +160,7 @@ class QuestionsController:
             user = Usuario.get_user_by_id(current_user_id)
 
             # Verificación de permisos
-            if not user or user.get('user_role') != 'admin':
+            if not user or user.get('user_role') not in ['admin', 'teacher']:
                 return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
             # Obtener ID y nuevo estado desde el body
@@ -196,7 +196,7 @@ class QuestionsController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
         
         # Obtener ID desde el body
@@ -224,8 +224,8 @@ class QuestionsController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             # Cuerpo del request
             data = request.get_json() or {}
