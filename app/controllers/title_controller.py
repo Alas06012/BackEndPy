@@ -5,10 +5,14 @@ from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import bcrypt
+from google.cloud import texttospeech, storage
+from flask import current_app
+import uuid
+from datetime import datetime
 
 class TitleController:
     
-    #METODO CREAR STORY (question_title)
+    #METODO CREAR STORY (question_title)  ASEGURAR LA GENERACION DEL UML DEL PROCESO DE GENERACION DE VOZ
     #-----------------------------------------
     # UNICAMENTE VALIDO PARA USUARIOS ADMIN
     #
@@ -19,26 +23,117 @@ class TitleController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+            return jsonify({"message": "Permisos insuficientes"}), 403
         
         data = request.get_json()
         title = data.get('title')
         content = data.get('content')
         type_ = data.get('type')
-        url = data.get('url')
         
         if not content or not title or not type_:
-            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+            return jsonify({"message": "Datos incompletos"}), 400
 
         if type_ != 'LISTENING' and type_ != 'READING':
-            return jsonify({"message": "Por favor, define si el tipo es LISTENING o READING"}), 400
+            return jsonify({"message": "Tipo debe ser LISTENING o READING"}), 400
 
-        response = QuestionTitle.create_title(title, content, type_, url)
+        audio_url = None  # Valor por defecto
+
+        try:
+            if type_ == 'LISTENING':
+                # Generar SSML solo para LISTENING
+                VOICE_MAPPING = {
+                    'person 1': 'en-US-Standard-I',
+                    'person 2': 'en-US-Standard-H',
+                    'person 3': 'en-US-Standard-C',
+                    'person 4': 'en-US-Standard-D',
+                    'default': 'en-US-Standard-B'
+                }
+
+                ssml = ['<speak>']
+                previous_speaker = None
+                
+                for line in content.split('\n'):
+                    line = line.strip()
+                    if not line:
+                        continue
+                        
+                    current_speaker = None
+                    text_to_speak = ""
+                    
+                    if ': ' in line:
+                        speaker, text = line.split(': ', 1)
+                        speaker_key = speaker.strip().lower()
+                        current_speaker = speaker_key
+                        voice_name = VOICE_MAPPING.get(speaker_key, VOICE_MAPPING['default'])
+                        text_to_speak = text.strip()
+                    else:
+                        current_speaker = 'narration'
+                        voice_name = VOICE_MAPPING['default']
+                        text_to_speak = line.strip()
+                    
+                    # Agregar fade-out de 100ms al final de cada intervención
+                    ssml.append(
+                        f'<voice name="{voice_name}">'
+                        f'{text_to_speak}'
+                        '<break time="200ms"/></voice>'  # Fade-out suave
+                    )
+                    
+                    # Pausa más larga solo entre cambios de speaker
+                    if previous_speaker and previous_speaker != current_speaker:
+                        ssml.append('<break time="500ms"/>')  # Pausa contextual
+                        
+                    previous_speaker = current_speaker
+                
+                ssml.append('</speak>')
+                ssml = ''.join(ssml)
+
+                # Generar audio
+                tts_client = texttospeech.TextToSpeechClient()
+                synthesis_input = texttospeech.SynthesisInput(ssml=ssml)
+                voice = texttospeech.VoiceSelectionParams(
+                    language_code="en-US",
+                    name="en-US-Standard-B"
+                )
+                audio_config = texttospeech.AudioConfig(
+                    audio_encoding=texttospeech.AudioEncoding.MP3
+                )
+                response = tts_client.synthesize_speech(
+                    input=synthesis_input,
+                    voice=voice,
+                    audio_config=audio_config
+                )
+
+                # Subir a Google Cloud Storage
+                storage_client = storage.Client()
+                bucket = storage_client.bucket(current_app.config['GCS_BUCKET_NAME'])
+                filename = f"audios/{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex}.mp3"
+                blob = bucket.blob(filename)
+
+                blob.upload_from_string(
+                    response.audio_content,
+                    content_type='audio/mpeg'
+                )
+                audio_url = f"https://storage.googleapis.com/{current_app.config['GCS_BUCKET_NAME']}/{blob.name}"
+
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+
+        # Guardar en base de datos (audio_url será None para READING)
+        response = QuestionTitle.create_title(title, content, type_, audio_url)
         
         if response == 'True':
-            return jsonify({"message": "Encabezado Creado Correctamente"}), 201
+            return jsonify({
+                "message": "Historia creada",
+                "audio_url": audio_url if audio_url else "No aplica para READING"
+            }), 201
         else:
-            return jsonify({"error": "El encabezado no pudo ser registrado, hubo un error"}), 400
+            # Eliminar audio si falló la inserción y era LISTENING
+            if type_ == 'LISTENING' and audio_url:
+                try:
+                    blob.delete()
+                except:
+                    pass
+            return jsonify({"error": response}), 400
         
         
     #METODO EDITAR TITLES 
@@ -52,28 +147,28 @@ class TitleController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Permisos insuficientes"}), 403
 
         data = request.get_json()
         id_ = data.get('id')
-        type_ = data.get('type')
-        url = data.get('url')
-        status = data.get('status')
+        new_content = data.get('content')
+        new_type = data.get('type')
+        new_status = data.get('status')
+        new_title = data.get('title')
         
         if not id_:
-            return jsonify({"error": "El ID del título es requerido"}), 400
+            return jsonify({"error": "ID requerido"}), 400
 
-        if type_ and type_ not in ['LISTENING', 'READING']:
-            return jsonify({"message": "Por favor, define si el tipo es LISTENING o READING"}), 400
-        else:
-            if not url and type_ == 'LISTENING':
-                return jsonify({"error": "Por favor, agrega la url del audio dentro del json"}), 400
-                
-        if status and status not in['INACTIVE','ACTIVE']:
-            return jsonify({"error": "El estado solo puede ser ACTIVE o INACTIVE"}), 400
-            
+        # Obtener el título actual
+        current_title = QuestionTitle.get_title_by_id(id_)
+        if not current_title:
+            return jsonify({"error": "Título no encontrado"}), 404
 
-        # Mapeo del JSON recibido a los nombres de columnas reales
+        # Validar tipo
+        if new_type and new_type not in ['LISTENING', 'READING']:
+            return jsonify({"error": "Tipo inválido"}), 400
+
+        # Mapeo de campos
         field_mapping = {
             "title": "title_name",
             "content": "title_test",
@@ -82,25 +177,120 @@ class TitleController:
             "status": "status"
         }
 
-        # Construir diccionario solo con campos presentes en el JSON
-        update_fields = {
-            db_field: data[key]
-            for key, db_field in field_mapping.items()
-            if key in data
-        }
+        update_fields = {}
+        audio_url = None
+        old_audio_url = current_title['title_url']
+        delete_old_audio = False
 
-        response = QuestionTitle.edit_title(id_, **update_fields)
-        
-        #Si el estado del titulo es INACTIVE se desactivaran tambien las preguntas asociadas al title
-        if status == 'INACTIVE':
-            QuestionTitle.deactivate_questions_per_title(title_id=id_)
-        elif status == 'ACTIVE':
-            QuestionTitle.activate_questions_per_title(title_id=id_)
+        try:
+            # Lógica de generación de audio solo si es necesario
+            if new_type == 'LISTENING' or current_title['title_type'] == 'LISTENING':
+                if new_content or (new_type and new_type != current_title['title_type']):
+                    # Regenerar audio si:
+                    # 1. Cambia el contenido
+                    # 2. Cambia el tipo de READING a LISTENING
+                    
+                    VOICE_MAPPING = {
+                        'person 1': 'en-US-Standard-I',
+                        'person 2': 'en-US-Standard-H',
+                        'person 3': 'en-US-Standard-C',
+                        'person 4': 'en-US-Standard-D',
+                        'default': 'en-US-Standard-B'
+                    }
 
-        if response == 'True':
-            return jsonify({"message": "Encabezado actualizado correctamente"}), 200
-        else:
-            return jsonify({"error": "No se pudo actualizar el encabezado", "details": response}), 400
+                    ssml = ['<speak>']
+                    content_to_process = new_content if new_content else current_title['title_test']
+                    
+                    for line in content_to_process.split('\n'):
+                        line = line.strip()
+                        if not line:
+                            continue
+                            
+                        if ': ' in line:
+                            speaker, text = line.split(': ', 1)
+                            speaker_key = speaker.strip().lower()
+                            voice_name = VOICE_MAPPING.get(speaker_key, VOICE_MAPPING['default'])
+                            ssml.append(f'<voice name="{voice_name}">{text.strip()}<break time="100ms"/></voice>')
+                        else:
+                            ssml.append(f'<voice name="{VOICE_MAPPING["default"]}">{line.strip()}<break time="100ms"/></voice>')
+                    
+                    ssml.append('</speak>')
+                    ssml = ''.join(ssml)
+
+                    # Generar nuevo audio
+                    tts_client = texttospeech.TextToSpeechClient()
+                    response = tts_client.synthesize_speech(
+                        input=texttospeech.SynthesisInput(ssml=ssml),
+                        voice=texttospeech.VoiceSelectionParams(
+                            language_code="en-US",
+                            name="en-US-Standard-B"
+                        ),
+                        audio_config=texttospeech.AudioConfig(
+                            audio_encoding=texttospeech.AudioEncoding.MP3
+                        )
+                    )
+
+                    # Subir a GCS
+                    storage_client = storage.Client()
+                    bucket = storage_client.bucket(current_app.config['GCS_BUCKET_NAME'])
+                    filename = f"audios/{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex}.mp3"
+                    blob = bucket.blob(filename)
+                    blob.upload_from_string(response.audio_content, content_type='audio/mpeg')
+                    audio_url = f"https://storage.googleapis.com/{current_app.config['GCS_BUCKET_NAME']}/{blob.name}"
+                    delete_old_audio = True
+
+            # Manejar cambio a READING
+            if new_type == 'READING' and current_title['title_type'] == 'LISTENING':
+                audio_url = None
+                delete_old_audio = True
+
+            # Construir campos de actualización
+            if new_title:
+                update_fields['title_name'] = new_title
+            if new_content:
+                update_fields['title_test'] = new_content
+            if new_type:
+                update_fields['title_type'] = new_type
+            if new_status:
+                update_fields['status'] = new_status
+            if audio_url is not None:
+                update_fields['title_url'] = audio_url
+
+            # Actualizar en base de datos
+            if update_fields:
+                response = QuestionTitle.edit_title(id_, **update_fields)
+            else:
+                return jsonify({"message": "Sin cambios para actualizar"}), 200
+
+            # Eliminar audio antiguo después de actualización exitosa
+            if delete_old_audio and old_audio_url:
+                try:
+                    blob_name = old_audio_url.split(current_app.config['GCS_BUCKET_NAME'] + '/')[-1]
+                    bucket = storage_client.bucket(current_app.config['GCS_BUCKET_NAME'])
+                    blob = bucket.blob(blob_name)
+                    blob.delete()
+                except Exception as e:
+                    current_app.logger.error(f"Error eliminando audio antiguo: {str(e)}")
+
+            # Manejar estado de preguntas
+            if new_status == 'INACTIVE':
+                QuestionTitle.deactivate_questions_per_title(id_)
+            elif new_status == 'ACTIVE':
+                QuestionTitle.activate_questions_per_title(id_)
+
+            if response == 'True':
+                return jsonify({"message": "Actualización exitosa"}), 200
+            else:
+                return jsonify({"error": response}), 400
+
+        except Exception as e:
+            # Eliminar audio nuevo si hubo error
+            if audio_url:
+                try:
+                    blob.delete()
+                except:
+                    pass
+            return jsonify({"error": str(e)}), 500
     
     
     
