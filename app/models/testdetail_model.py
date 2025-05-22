@@ -12,9 +12,7 @@ class TestDetail:
         
     @staticmethod
     def update_answer_in_testdetails(test_id, question_id, title_id, user_answer_id):
-        """
-        Actualiza la respuesta elegida por el usuario en test_details.
-        """
+        #Actualiza la respuesta elegida por el usuario en test_details.
         cur = mysql.connection.cursor()
         cur.execute("""
             UPDATE test_details

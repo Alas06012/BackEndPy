@@ -14,8 +14,8 @@ class StudyMaterialController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
-                return jsonify({"error": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             # Obtener datos del formulario
             title = request.form.get('studymaterial_title')
@@ -105,8 +105,8 @@ class StudyMaterialController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
-                return jsonify({"error": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             data = request.get_json()
             material_id = data.get('pk_studymaterial')
@@ -145,8 +145,8 @@ class StudyMaterialController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
-                return jsonify({"error": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             data = request.get_json()
             material_id = data.get('pk_studymaterial')
@@ -171,8 +171,8 @@ class StudyMaterialController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
-                return jsonify({"error": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)

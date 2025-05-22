@@ -145,11 +145,12 @@ class TitleController:
     def edit_title():
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
-        
-        if user['user_role'] != 'admin':
-            return jsonify({"message": "Permisos insuficientes"}), 403
+
+        if user['user_role'] not in ['admin', 'teacher']:
+            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
+
         id_ = data.get('id')
         new_content = data.get('content')
         new_type = data.get('type')
@@ -307,7 +308,7 @@ class TitleController:
             user = Usuario.get_user_by_id(current_user_id)
 
             # Verificación de permisos
-            if not user or user.get('user_role') != 'admin':
+            if not user or user.get('user_role') not in ['admin', 'teacher']:
                 return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
             # Obtener ID desde el body
@@ -344,16 +345,18 @@ class TitleController:
             # Validación de permisos
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
-            if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
             page = data.get('page', 1)
             per_page = data.get('per_page', 20)
-            status = data.get('status', 'ACTIVE')
-            title_type = data.get('title_type')  # Opcional
-
+            status = data.get('status', 'Todos')
+            title_type = data.get('title_type')  
+            title_name = data.get('title_name')
+            print("title_name:", data.get('title_name'))
+ 
             # Validación de paginación
             if page < 1 or per_page < 1:
                 return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
@@ -362,10 +365,11 @@ class TitleController:
 
             # Llamar al modelo
             paginated_results = QuestionTitle.get_paginated_titles(
-                status=status,
-                title_type=title_type,
-                page=page,
-                per_page=per_page
+                title_name = title_name,
+                status = status,
+                title_type = title_type,
+                page = page,
+                per_page = per_page
             )
 
             if isinstance(paginated_results, str):

@@ -237,7 +237,7 @@ class UserController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)
