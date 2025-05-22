@@ -3,7 +3,7 @@ from app.models.title_model import QuestionTitle
 from app.models.questions_model import Questions
 from app.models.testdetail_model import TestDetail
 from app.models.answers_model import Answers
-from app.models.testdetail_model import TestDetail
+from app.models.test_comments_model import TestCommentsModel
 from app.models.prompt_model import Prompt
 from app.models.user_model import Usuario
 from app.models.apideepseek_model import ApiDeepSeekModel
@@ -20,6 +20,7 @@ import pandas as pd
 import bcrypt
 from app import mysql
 from dotenv import load_dotenv 
+import time
 
 # Cargar variables del archivo .env
 load_dotenv()
@@ -31,7 +32,7 @@ class TestController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['user_role'] not in ['admin', 'teacher']:
+        if user['user_role'] not in ['admin' ,'student']:
             return jsonify({"message": "Permisos insuficientes"}), 403
             
         data = request.get_json()
@@ -85,15 +86,15 @@ class TestController:
         
         
         
+    
     @staticmethod
     @jwt_required()
     def finish_test():
         try:
-            # Validaciones iniciales
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
-            
-            if user['user_role'] not in ['admin', 'teacher']:
+
+            if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
                     "message": "Permisos insuficientes"
@@ -101,29 +102,28 @@ class TestController:
 
             data = request.get_json()
             test_id = data.get('test_id')
-            # detalles = data.get('detalles', [])
+            detalles = data.get('detalles', [])
             
-            # if not test_id:
-            #     return jsonify({
-            #         "success": False,
-            #         "message": "El campo 'test_id' es requerido"
-            #     }), 400
+            if not test_id:
+                return jsonify({
+                    "success": False,
+                    "message": "El campo 'test_id' es requerido"
+                }), 400
 
-            # Iniciar transacción
             mysql.connection.begin()
             cursor = mysql.connection.cursor()
 
             try:
-                ##1. Actualizar respuestas del test
-                # for detalle in detalles:
-                #     if not all(k in detalle for k in ['question_id', 'title_id', 'user_answer_id']):
-                #         continue
-                #     TestDetail.update_answer_in_testdetails(
-                #         test_id, 
-                #         detalle['question_id'],
-                #         detalle['title_id'],
-                #         detalle['user_answer_id']
-                #     )
+                # 1. Actualizar respuestas del test
+                for detalle in detalles:
+                    if not all(k in detalle for k in ['question_id', 'title_id', 'user_answer_id']):
+                        continue
+                    TestDetail.update_answer_in_testdetails(
+                        test_id, 
+                        detalle['question_id'],
+                        detalle['title_id'],
+                        detalle['user_answer_id']
+                    )
 
                 # 2. Marcar test como "en revisión"
                 Test.mark_as_checking_answers(test_id)
@@ -133,23 +133,32 @@ class TestController:
                 if not test_data or not test_data['data']:
                     raise ValueError("No se encontraron resultados para evaluar")
 
-                # 4. Construir prompt de usuario para IA
                 df = pd.DataFrame(test_data['data'], columns=test_data['columns'])
+                
+                # 3.1 Obtener prompts para peticion 
                 user_prompt = TestController._build_ia_prompt(df)
-
-                # 5. Consultar en BD prompt de sistema para IA
                 system_prompt = Prompt.get_active_prompt()
-                
-                # 6. Llamar a la IA
-                #apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
 
-                #JSON PARA PRUEBAS
-                apiresponse = {'mcer_level': 'B1', 'toeic_score': 720, 'passed': True, 'strengths': ["The student demonstrates a good understanding of basic and intermediate level questions, particularly in reading comprehension where they correctly identified the type of internships offered and the departments involved. Their ability to grasp details from the listening section, such as the time frame and the candidate's aspirations, also indicates a solid foundation in listening comprehension."], 'weaknesses': ['The student missed a straightforward question about the application deadline in the reading section, which was an A2 level question, suggesting a need for more attention to detail. Additionally, they incorrectly answered a B1 level question in the listening section about what the interviewer asked, indicating potential difficulties with understanding specific questions or nuances in spoken English.'], 'recommendations': ['To improve, the student should practice more with reading comprehension exercises focusing on detail-oriented questions to enhance their ability to catch specific information. For listening comprehension, engaging with a variety of audio materials, especially those involving interviews or conversations, can help in better understanding the context and nuances of spoken English. Additionally, taking timed practice tests can aid in improving both speed and accuracy in identifying correct answers.']}
-                
-                if not apiresponse:
-                    raise ValueError("La IA no generó una respuesta válida")
+                # 4. Reintento de llamada a la IA hasta 3 veces
+                max_retries = 3
+                retry_delay = 2  # segundos entre intentos
+                apiresponse = None
 
-                # 7. Guardar resultados
+                for attempt in range(max_retries):
+                    apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
+                    if TestController._is_valid_ia_response(apiresponse):
+                        break
+                    apiresponse = None  # asegurarse de que si no es válida, se descarte
+                    time.sleep(retry_delay)
+
+                if not apiresponse or not isinstance(apiresponse, dict):
+                    Test.mark_as_failed(test_id)
+                    return jsonify({
+                        "success": False,
+                        "message": "La IA no generó una respuesta válida tras varios intentos"
+                    }), 500
+
+                # 5. Guardar resultados
                 Test.save_evaluation_results(test_id=test_id, user_id=current_user_id, ai_response=apiresponse)
                 mysql.connection.commit()
 
@@ -173,6 +182,90 @@ class TestController:
             return jsonify({
                 "success": False,
                 "message": f"Error inesperado: {str(e)}"
+            }), 500
+
+
+
+    @staticmethod
+    @jwt_required()
+    def retry_failed_test():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({
+                    "success": False,
+                    "message": "Solo administradores o docentes pueden reintentar una evaluación"
+                }), 403
+
+            data = request.get_json()
+            test_id = data.get('test_id')
+
+            if not test_id:
+                return jsonify({
+                    "success": False,
+                    "message": "El campo 'test_id' es requerido"
+                }), 400
+
+            # 1. Verificar si el test está marcado como FAILED
+            test = Test.get_test_by_id(test_id)
+            if not test or test['status'] != 'FAILED':
+                return jsonify({
+                    "success": False,
+                    "message": "El examen no está en estado 'FAILED' o no existe"
+                }), 400
+
+            mysql.connection.begin()
+            cursor = mysql.connection.cursor()
+
+            # 2. Obtener datos del test para enviar a la IA
+            test_data = TestDetail.get_all_detail(test_id)
+            if not test_data or not test_data['data']:
+                raise ValueError("No se encontraron resultados para evaluar")
+
+            df = pd.DataFrame(test_data['data'], columns=test_data['columns'])
+
+            user_prompt = TestController._build_ia_prompt(df)
+            system_prompt = Prompt.get_active_prompt()
+
+            # 3. Reintento de llamada a la IA
+            max_retries = 3
+            retry_delay = 2
+            apiresponse = None
+
+            for attempt in range(max_retries):
+                apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
+                if TestController._is_valid_ia_response(apiresponse):
+                    break
+                apiresponse = None  # asegurarse de que si no es válida, se descarte
+                time.sleep(retry_delay)
+
+            if not apiresponse or not isinstance(apiresponse, dict):
+                Test.mark_as_failed(test_id)
+                return jsonify({
+                    "success": False,
+                    "message": "La IA no generó una respuesta válida tras reintento"
+                }), 500
+
+            # 4. Guardar resultados y cambiar estado del test
+            Test.save_evaluation_results(test_id=test_id, user_id=current_user_id, ai_response=apiresponse)
+            mysql.connection.commit()
+
+            return jsonify({
+                "success": True,
+                "message": "Examen reevaluado y actualizado correctamente",
+                "data": {
+                    "mcer_level": apiresponse.get('mcer_level'),
+                    "approved": apiresponse.get('passed')
+                }
+            }), 200
+
+        except Exception as e:
+            mysql.connection.rollback()
+            return jsonify({
+                "success": False,
+                "message": f"Error al reintentar evaluación: {str(e)}"
             }), 500
 
     
@@ -207,44 +300,7 @@ class TestController:
             return jsonify({"error": str(e)}), 500
         
         
-        
-        
-    @staticmethod
-    @jwt_required()
-    def add_comment_to_test():
-        try:
-            current_user_id = get_jwt_identity()
-            user = Usuario.get_user_by_id(current_user_id)
-
-            if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({
-                    "success": False,
-                    "message": "Permisos insuficientes"
-                }), 403
-
-            req = request.get_json()
-            test_id = req.get('test_id')
-            comment_title = req.get('comment_title')
-            comment_value = req.get('comment_value')
-
-            if not test_id or not str(test_id).isdigit():
-                return jsonify({"success": False, "message": "ID del test inválido"}), 400
-
-            if not comment_value:
-                return jsonify({"success": False, "message": "El comentario no puede estar vacío"}), 400
-
-            inserted = Test.add_comment(test_id=int(test_id), user_id=current_user_id, comment_title=comment_title, comment_value=comment_value)
-
-            if inserted:
-                return jsonify({"success": True, "message": "Comentario agregado correctamente"}), 201
-            else:
-                return jsonify({"success": False, "message": "No se pudo agregar el comentario"}), 500
-
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-        
-        
-        
+              
     @staticmethod
     @jwt_required()
     def get_filtered_tests():
@@ -336,6 +392,28 @@ class TestController:
     #      METODOS AUXILIARES MANEJO DE JSONs
     #
     #------------------------------------------------------------------
+    
+    
+    #Funcion auxiliar para validar que la respuesta de la api deepseek sea la esperada
+    @staticmethod
+    def _is_valid_ia_response(response):
+        if not isinstance(response, dict):
+            return False
+
+        required_keys = {
+            'mcer_level': str,
+            'toeic_score': int,
+            'passed': bool,
+            'strengths': list,
+            'weaknesses': list,
+            'recommendations': list
+        }
+
+        for key, expected_type in required_keys.items():
+            if key not in response or not isinstance(response[key], expected_type):
+                return False
+
+        return True
     
     
     @staticmethod

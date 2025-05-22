@@ -157,22 +157,40 @@ class QuestionTitle:
             return None
     
     @staticmethod
-    def get_paginated_titles(status, page=1, per_page=20, title_type=None):
+    def get_paginated_titles(title_name, status, page=1, per_page=20, title_type=None):
         try:
             conn = mysql.connection
             cur = conn.cursor(MySQLdb.cursors.DictCursor)
+            print("title_type:", title_type)
+            print("status:", status)
 
-            # Filtros WHERE
-            where_clauses = ["status = %s"]
-            params = [status]
+            # Inicializar los filtros
+            where_clauses = []
+            params = []
 
-            if title_type:
+            # Filtro por status
+            if status == "":
+                where_clauses.append("status IN (%s, %s)")
+                params.extend(["ACTIVE", "INACTIVE"])
+            else:
+                where_clauses.append("status = %s")
+                params.append(status)
+
+            # Filtro por title_type
+            if title_type == "":
+                where_clauses.append("title_type IN (%s, %s)")
+                params.extend(["LISTENING", "READING"])
+            else:
                 where_clauses.append("title_type = %s")
                 params.append(title_type)
+            if title_name:
+                where_clauses.append("title_name LIKE %s")
+                params.append(f"%{title_name}%")
 
-            where_sql = " WHERE " + " AND ".join(where_clauses)
+            # Construir la parte WHERE del SQL
+            where_sql = " WHERE " + " AND ".join(where_clauses) if where_clauses else ""
 
-            # Consulta total
+            # Consulta para obtener el total
             count_query = f"SELECT COUNT(*) as total FROM questions_titles {where_sql}"
             cur.execute(count_query, tuple(params))
             total_result = cur.fetchone()
@@ -212,6 +230,7 @@ class QuestionTitle:
         finally:
             if cur:
                 cur.close()
+
        
        
     
