@@ -25,6 +25,6 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
-  machineType: E2-STANDARD-2
+  machineType: E2_STANDARD_2
 images:
   - 'gcr.io/$PROJECT_ID/backend-service:$COMMIT_SHA' 
