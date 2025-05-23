@@ -21,11 +21,10 @@ steps:
       - '--vpc-egress=all-traffic'
       - '--cpu=1'
       - '--memory=1Gi'
-      # Variables de entorno mapeadas desde el activador
       - '--set-env-vars=SECRET_KEY=${_SECRET_KEY},JWT_SECRET_KEY=${_JWT_SECRET_KEY},MYSQL_HOST=${_MYSQL_HOST},MYSQL_USER=${_MYSQL_USER},MYSQL_PASSWORD=${_MYSQL_PASSWORD},MYSQL_DB=${_MYSQL_DB},MYSQL_CURSORCLASS=${_MYSQL_CURSORCLASS},ALLOWED_ORIGINS=${_ALLOWED_ORIGINS}'
 
 options:
   logging: CLOUD_LOGGING_ONLY
   machineType: E2-STANDARD-2
 images:
-  - 'gcr.io/$PROJECT_ID/backend-service:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/backend-service:$COMMIT_SHA' 
