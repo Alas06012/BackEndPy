@@ -31,7 +31,7 @@ def create_app():
     # Modificar CORS para usar variables de entorno
     CORS(app, resources={
         r"/*": {
-            "origins": os.environ.get('ALLOWED_ORIGINS').split(',')
+            "origins": os.environ.get('ALLOWED_ORIGINS') +","+ os.environ.get('ALLOWED_ORIGINS2')
         }
     })
     
