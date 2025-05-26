@@ -12,7 +12,7 @@ class ApiDeepSeekModel:
     @staticmethod
     def test_api(system_prompt, user_prompt):
         client = OpenAI(api_key=Config.DEEPSEEK_APIKEY, base_url="https://api.deepseek.com")
-        
+     
         # Extraer correctamente el contenido del system prompt
         system_content = system_prompt[0]['prompt_value'] if isinstance(system_prompt[0], dict) else system_prompt[0]
         
