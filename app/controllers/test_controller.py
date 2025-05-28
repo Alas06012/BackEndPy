@@ -36,8 +36,7 @@ class TestController:
             return jsonify({"message": "Permisos insuficientes"}), 403
             
         data = request.get_json()
-        user_fk = data.get('user_fk')
-        
+        user_fk = user['pk_user']
         if not user_fk:
             return jsonify({"message": "ID de usuario requerido"}), 400
             
@@ -84,8 +83,7 @@ class TestController:
             mysql.connection.rollback()
             return jsonify({"error": str(e)}), 500
         
-        
-        
+               
     
     @staticmethod
     @jwt_required()
@@ -103,7 +101,7 @@ class TestController:
             data = request.get_json()
             test_id = data.get('test_id')
             detalles = data.get('detalles', [])
-            
+        
             if not test_id:
                 return jsonify({
                     "success": False,
@@ -308,13 +306,15 @@ class TestController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] not in ['admin', 'teacher']:
+            if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({
                     "success": False,
                     "message": "Permisos insuficientes"
                 }), 403
 
             data = request.get_json() or {}
+            
+            
             page = data.get("page", 1)
             per_page = data.get("per_page", 20)
 
@@ -328,7 +328,6 @@ class TestController:
         }
 
             results = Test.get_paginated_tests(filters=filters, page=page, per_page=per_page)
-
             if isinstance(results, str):
                 return jsonify({"error": "Error en la base de datos", "details": results}), 500
 

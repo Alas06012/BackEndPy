@@ -5,6 +5,8 @@ import uuid
 from datetime import timedelta
 from werkzeug.utils import secure_filename
 
+#Generar diagrama UML
+
 def upload_file_to_gcs(file):
     try:
         client = storage.Client()

@@ -142,6 +142,19 @@ class QuestionTitle:
         users = cur.fetchall()
         return users
     
+    @staticmethod
+    def get_title_by_id(title_id):
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                SELECT * FROM questions_titles 
+                WHERE pk_title = %s
+            """, (title_id,))
+            result = cur.fetchone()
+            return result
+        except Exception as e:
+            print(f"Error getting title: {str(e)}")
+            return None
     
     @staticmethod
     def get_paginated_titles(title_name, status, page=1, per_page=20, title_type=None):
