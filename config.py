@@ -17,5 +17,5 @@ class Config:
     GCS_BUCKET_NAME = os.getenv('GCS_BUCKET_NAME', 'tesisdev-bucket')
     GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'storage-tesis.json')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'O8C6SqE5BpXmGVT1ePg0GML7GDK0HkQb')
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=15)
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3) #3 horas activo y luego expira
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
