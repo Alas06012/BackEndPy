@@ -17,30 +17,37 @@ class TitleController:
     def create_story():
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
-        
-        if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
-        
+
+        if user['user_role'] not in ['admin', 'teacher']:
+            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+
         data = request.get_json()
-        title = data.get('title')
-        content = data.get('content')
-        type_ = data.get('type')
-        url = data.get('url')
         
-        if not content or not title or not type_:
-            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+        title = data.get('title_name')         # 👈 correcto
+        content = data.get('title_test')       # 👈 correcto
+        title_type = data.get('title_type')    # 👈 correcto
+        url = data.get('title_url')            # 👈 correcto
 
-        if type_ != 'LISTENING' and type_ != 'READING':
-            return jsonify({"message": "Por favor, define si el tipo es LISTENING o READING"}), 400
+        # Validaciones básicas
+        if not title or not content or not title_type:
+            return jsonify({"error": "Por favor, completa todos los campos obligatorios"}), 400
 
-        response = QuestionTitle.create_title(title, content, type_, url)
-        
+        if title_type not in ['LISTENING', 'READING']:
+            return jsonify({"error": "El tipo debe ser LISTENING o READING"}), 400
+
+        if title_type == 'LISTENING' and not url:
+            return jsonify({"error": "Para LISTENING, se requiere una URL de audio"}), 400
+
+        response = QuestionTitle.create_title(title, content, title_type, url)
+
         if response == 'True':
-            return jsonify({"message": "Encabezado Creado Correctamente"}), 201
+            return jsonify({"message": "Título creado correctamente"}), 201
         else:
-            return jsonify({"error": "El encabezado no pudo ser registrado, hubo un error"}), 400
-        
-        
+            return jsonify({
+                "error": "No se pudo registrar el título",
+                "details": response
+            }), 400
+
     #METODO EDITAR TITLES 
     #--------------------
     # UNICAMENTE VALIDO PARA USUARIOS ADMIN
@@ -50,48 +57,35 @@ class TitleController:
     def edit_title():
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
-        
-        if user['user_role'] != 'admin':
+
+        if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
         data = request.get_json()
+
         id_ = data.get('id')
-        type_ = data.get('type')
-        url = data.get('url')
+        title_type = data.get('title_type')
+        title_url = data.get('title_url')
         status = data.get('status')
-        
+
         if not id_:
             return jsonify({"error": "El ID del título es requerido"}), 400
 
-        if type_ and type_ not in ['LISTENING', 'READING']:
-            return jsonify({"message": "Por favor, define si el tipo es LISTENING o READING"}), 400
-        else:
-            if not url and type_ == 'LISTENING':
-                return jsonify({"error": "Por favor, agrega la url del audio dentro del json"}), 400
-                
-        if status and status not in['INACTIVE','ACTIVE']:
-            return jsonify({"error": "El estado solo puede ser ACTIVE o INACTIVE"}), 400
-            
+        if title_type and title_type not in ['LISTENING', 'READING']:
+            return jsonify({"error": "El tipo debe ser LISTENING o READING"}), 400
 
-        # Mapeo del JSON recibido a los nombres de columnas reales
-        field_mapping = {
-            "title": "title_name",
-            "content": "title_test",
-            "type": "title_type",
-            "url": "title_url",
-            "status": "status"
-        }
+        if title_type == 'LISTENING' and not title_url:
+            return jsonify({"error": "Por favor, agrega la URL del audio"}), 400
 
-        # Construir diccionario solo con campos presentes en el JSON
-        update_fields = {
-            db_field: data[key]
-            for key, db_field in field_mapping.items()
-            if key in data
-        }
+        if status and status not in ['ACTIVE', 'INACTIVE']:
+            return jsonify({"error": "El estado debe ser ACTIVE o INACTIVE"}), 400
+
+        # Usamos directamente las claves ya que el frontend envía los nombres correctos
+        allowed_fields = ['title_name', 'title_test', 'title_type', 'title_url', 'status']
+        update_fields = {field: data[field] for field in allowed_fields if field in data}
 
         response = QuestionTitle.edit_title(id_, **update_fields)
-        
-        #Si el estado del titulo es INACTIVE se desactivaran tambien las preguntas asociadas al title
+
         if status == 'INACTIVE':
             QuestionTitle.deactivate_questions_per_title(title_id=id_)
         elif status == 'ACTIVE':
@@ -101,8 +95,7 @@ class TitleController:
             return jsonify({"message": "Encabezado actualizado correctamente"}), 200
         else:
             return jsonify({"error": "No se pudo actualizar el encabezado", "details": response}), 400
-    
-    
+
     
     #METODO BORRAR TITLES
     #----------------------------------------------
@@ -117,7 +110,7 @@ class TitleController:
             user = Usuario.get_user_by_id(current_user_id)
 
             # Verificación de permisos
-            if not user or user.get('user_role') != 'admin':
+            if not user or user.get('user_role') not in ['admin', 'teacher']:
                 return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
 
             # Obtener ID desde el body
@@ -154,16 +147,18 @@ class TitleController:
             # Validación de permisos
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
-            if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
             page = data.get('page', 1)
             per_page = data.get('per_page', 20)
-            status = data.get('status', 'ACTIVE')
-            title_type = data.get('title_type')  # Opcional
-
+            status = data.get('status', 'Todos')
+            title_type = data.get('title_type')  
+            title_name = data.get('title_name')
+            print("title_name:", data.get('title_name'))
+ 
             # Validación de paginación
             if page < 1 or per_page < 1:
                 return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
@@ -172,10 +167,11 @@ class TitleController:
 
             # Llamar al modelo
             paginated_results = QuestionTitle.get_paginated_titles(
-                status=status,
-                title_type=title_type,
-                page=page,
-                per_page=per_page
+                title_name = title_name,
+                status = status,
+                title_type = title_type,
+                page = page,
+                per_page = per_page
             )
 
             if isinstance(paginated_results, str):

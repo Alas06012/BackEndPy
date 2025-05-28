@@ -94,8 +94,8 @@ class SectionController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
-            return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+        if user['user_role'] not in ['admin', 'teacher']:
+            return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
         try:
             sections = Section.get_all_sections()
@@ -112,8 +112,8 @@ class SectionController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
@@ -161,8 +161,8 @@ class SectionController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Se requieren privilegios de administrador"}), 403
+            if user['user_role'] not in ['admin', 'teacher']:
+                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)
