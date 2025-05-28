@@ -16,8 +16,28 @@ class UserController:
     
     @staticmethod
     def send_verification_email(to, code):
-        msg = Message('Verification Code', recipients=[to])
-        msg.body = f'Your verification code is: {code}'
+        verification_link = f"http://localhost:5173/verify-code"
+        
+        msg = Message('🔐 Verify Your Email', recipients=[to])
+        
+        msg.html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e2e2; border-radius: 10px;">
+            <h2 style="color: #4b7af0;">Welcome to NECDiagnostics!</h2>
+            <p style="font-size: 16px; color: #333;">Thank you for registering. To complete your registration, please verify your email address using the verification code below:</p>
+            
+            <div style="font-size: 24px; font-weight: bold; color: #4b7af0; margin: 20px 0;">{code}</div>
+            
+            <p style="font-size: 16px; color: #333;">You can enter this code on the verification page by clicking the button below:</p>
+            
+            <a href="{verification_link}" style="display: inline-block; padding: 10px 20px; background-color: #4b7af0; color: white; text-decoration: none; border-radius: 5px;">
+                Verify Your Email
+            </a>
+            
+            <p style="font-size: 14px; color: #777; margin-top: 30px;">If you did not request this, please ignore this email.</p>
+            <p style="font-size: 14px; color: #aaa;">&copy; 2025 NECDiagnostics</p>
+        </div>
+        """
+
         mail.send(msg)
     
     @staticmethod
