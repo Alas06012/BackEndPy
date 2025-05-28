@@ -16,6 +16,8 @@ user_routes.route('/login', methods=['POST'])((UserController.login_user))
 user_routes.route('/auth/verify', methods=['GET'])(UserController.get_user_info)
 # Endpoint para refrescar el access token
 user_routes.route('/auth/refresh', methods=['POST'])(UserController.refresh_token)
+# Endpoint para verificar codigo enviado al correo
+user_routes.route('/verify-code', methods=['POST'])(UserController.verify_code)
 
 
 #   ADMINISTRACION DE USARIOS

@@ -3,9 +3,23 @@ from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import bcrypt
+import random
+from flask_mail import Message
+from app import mail
+
 
 class UserController:
 
+    @staticmethod
+    def generate_code():
+        return str(random.randint(100000, 999999))
+    
+    @staticmethod
+    def send_verification_email(to, code):
+        msg = Message('Verification Code', recipients=[to])
+        msg.body = f'Your verification code is: {code}'
+        mail.send(msg)
+    
     @staticmethod
     def register_user():
         data = request.get_json()
@@ -22,16 +36,37 @@ class UserController:
         # Hashear la contraseña antes de guardarla
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
+        #Generar codigo para doble autenticacion
+        code = UserController.generate_code()
+        
         # Crear el usuario en la base de datos
-        response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'))
+        response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'), code, is_verified=False)
         
         if response == 'True':
-            return jsonify({"message": "The user was successfully created"}), 201
+            UserController.send_verification_email(email, code)
+            return jsonify({"message": "User created - Check your email for the verification code"}), 201
         elif 'duplicate entry' in str(response).lower(): 
             return jsonify({"error": "The email or student ID is already registered"}), 400
         else:
             return jsonify({"error": "Registration failed due to an error"}), 400
         
+
+    @staticmethod
+    def verify_code():
+        data = request.get_json()
+        email = data.get('email')
+        code = data.get('code')
+        
+        if not email or not code:
+            return jsonify({"message": "Please complete all required fields"}), 400
+
+        result = Usuario.activate_user_by_code(email, code)
+
+        if result:
+            return jsonify({"message": "Email verified successfully."}), 200
+        else:
+            return jsonify({"error": "Invalid verification code"}), 400
+
 
     @staticmethod
     def login_user():
