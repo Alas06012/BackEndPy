@@ -24,10 +24,9 @@ class Usuario:
         return user
     
     @staticmethod
-    def get_user_by_email(email):
+    def get_user_by_email(email, status = 'ACTIVE'):
         cur = mysql.connection.cursor()
-        status = "ACTIVE"
-        cur.execute("""SELECT pk_user, user_name, user_lastname, user_email, user_role, user_password FROM users WHERE user_email = %s AND STATUS = %s""", (email,status))
+        cur.execute("""SELECT pk_user, user_name, user_lastname, user_email, user_role, user_password, is_verified, last_code_sent_at FROM users WHERE user_email = %s AND STATUS = %s""", (email,status))
         user = cur.fetchone()
         return user
 
@@ -67,6 +66,23 @@ class Usuario:
 
         cursor.close()
         return False
+    
+    @staticmethod
+    def update_verification_code(email, new_code):
+        try:
+            cursor = mysql.connection.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET verification_code = %s, last_code_sent_at = NOW()
+                WHERE user_email = %s
+            """, (new_code, email))
+            mysql.connection.commit()
+            cursor.close()
+            return True
+        except Exception as e:
+            print(f"Error updating verification code: {e}")
+            return False
+
 
             
 
@@ -121,7 +137,7 @@ class Usuario:
             cur = mysql.connection.cursor()
             status = "ACTIVE"
             # Ejecutar la consulta SQL
-            cur.execute("""UPDATE users set status = %s where user_email = %s AND status = 'INACTIVE' """, 
+            cur.execute("""UPDATE users set status = %s where user_email = %s AND (status = 'INACTIVE' or status ='PENDING') """, 
                         (status,email))
             
             # Confirmar cambios en la base de datos

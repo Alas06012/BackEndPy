@@ -1,3 +1,4 @@
+import re
 from app.models.user_model import Usuario
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -6,6 +7,9 @@ import bcrypt
 import random
 from flask_mail import Message
 from app import mail
+from flask_limiter import Limiter
+from flask import current_app
+from datetime import datetime, timedelta
 
 
 class UserController:
@@ -63,10 +67,25 @@ class UserController:
         response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'), code, is_verified=False)
         
         if response == 'True':
-            UserController.send_verification_email(email, code)
-            return jsonify({"message": "User created - Check your email for the verification code"}), 201
-        elif 'duplicate entry' in str(response).lower(): 
+            try:
+                email_sent = UserController.send_verification_email(email, code)
+            except Exception:
+                 return jsonify({
+                    "message": "User created - Email for verification code was not sent. Please try resending."
+                }), 201
+            
+            if email_sent:
+                return jsonify({
+                    "message": "User created - Check your email for the verification code"
+                }), 201
+            else:
+                return jsonify({
+                    "message": "User created - Email for verification code was not sent. Please try resending."
+                }), 201
+
+        elif 'duplicate entry' in str(response).lower():
             return jsonify({"error": "The email or student ID is already registered"}), 400
+
         else:
             return jsonify({"error": "Registration failed due to an error"}), 400
         
@@ -86,6 +105,46 @@ class UserController:
             return jsonify({"message": "Email verified successfully."}), 200
         else:
             return jsonify({"error": "Invalid verification code"}), 400
+        
+        
+    @staticmethod
+    def resend_code():
+        data = request.get_json()
+        email = data.get('email')
+
+        if not email:
+            return jsonify({"message": "Email is required"}), 400
+
+        email_regex = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        if not re.match(email_regex, email):
+            return jsonify({"message": "Invalid email format"}), 400
+
+        user = Usuario.get_user_by_email(email=email, status='PENDING')
+
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        if user['is_verified']:
+            return jsonify({"message": "This account is already verified."}), 400
+
+        # Antispam: esperar 1 minuto entre envíos
+        last_sent = user.get('last_code_sent_at')
+        if last_sent:
+            if isinstance(last_sent, str):
+                last_sent = datetime.strptime(last_sent, "%Y-%m-%d %H:%M:%S") 
+            if datetime.now() - last_sent < timedelta(minutes=3):
+                return jsonify({"message": "Please wait 3 minutes before requesting another code."}), 429
+
+        new_code = UserController.generate_code()
+
+        update_result = Usuario.update_verification_code(email, new_code)
+        if update_result is not True:
+            return jsonify({"message": "Failed to update verification code."}), 500
+
+        UserController.send_verification_email(email, new_code)
+
+        return jsonify({"message": "Verification code resent successfully."}), 200
+
 
 
     @staticmethod

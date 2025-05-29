@@ -18,6 +18,9 @@ user_routes.route('/auth/verify', methods=['GET'])(UserController.get_user_info)
 user_routes.route('/auth/refresh', methods=['POST'])(UserController.refresh_token)
 # Endpoint para verificar codigo enviado al correo
 user_routes.route('/verify-code', methods=['POST'])(UserController.verify_code)
+# Endpoint para reenvio de codigo por correo
+user_routes.route('/resend-code', methods=['POST'])(UserController.resend_code)
+
 
 
 #   ADMINISTRACION DE USARIOS
