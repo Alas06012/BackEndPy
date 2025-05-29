@@ -21,11 +21,11 @@ def create_app():
     jwt.init_app(app)
     mail.init_app(app)
     
-    # limiter = Limiter(
+    # limiter_ = Limiter(
     #     key_func=get_remote_address,  # Usa la IP del usuario para limitar intentos
     #     default_limits=["15 per minute"]  # 15 intentos por minuto 
     # )
-    # limiter.init_app(app)
+    # limiter_.init_app(app)
     
     #CORS(app, resources={r"/register": {"origins": "http://localhost:5173"}})
     #CORS(app)

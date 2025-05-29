@@ -20,6 +20,10 @@ user_routes.route('/auth/refresh', methods=['POST'])(UserController.refresh_toke
 user_routes.route('/verify-code', methods=['POST'])(UserController.verify_code)
 # Endpoint para reenvio de codigo por correo
 user_routes.route('/resend-code', methods=['POST'])(UserController.resend_code)
+# Endpoint para forgot password por correo
+user_routes.route('/forgot-password', methods=['POST'])(UserController.forgot_password)
+# Endpoint para reset de contrasena 
+user_routes.route('/reset-password', methods=['POST'])(UserController.reset_password)
 
 
 

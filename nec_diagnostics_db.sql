@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2025 at 08:43 AM
+-- Generation Time: May 29, 2025 at 10:09 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -876,6 +876,20 @@ INSERT INTO `level_history` (`pk_history`, `level_fk`, `user_fk`, `created_at`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `login_attempts_ip`
+--
+
+CREATE TABLE `login_attempts_ip` (
+  `id` int(11) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `failed_count` int(11) DEFAULT 0,
+  `last_attempt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `blocked_until` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mcer_level`
 --
 
@@ -897,6 +911,20 @@ INSERT INTO `mcer_level` (`pk_level`, `level_name`, `level_desc`, `created_at`) 
 (4, 'B2', 'Intermedio-Avanzado', '2025-04-19 15:12:37'),
 (5, 'C1', 'Avanzado', '2025-04-19 15:13:23'),
 (6, 'C2', 'Experto', '2025-04-19 15:13:23');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -2799,8 +2827,8 @@ INSERT INTO `users` (`pk_user`, `user_email`, `user_password`, `user_name`, `use
 (10, 'marcos.morales@itca.edu.sv', '$2b$12$t3yCsokeRSihqI5YbY1Hxe9I/XS.k42pmrXr1uKctEmCE56PeZVmO', 'Marcos', 'Morales', '578855', 'student', '2025-05-08 20:52:41', '2025-05-28 23:52:25', 'INACTIVE', NULL, 1, NULL),
 (11, 'douglas.martinez@itca.edu.sv', '$2b$12$fI0c.zTk3w6f8962yVAisus4Ewes/h503BC/nctrQ8ZYyZEec47xe', 'Douglas', 'Martinez', '343544', 'student', '2025-05-08 20:54:23', '2025-05-28 23:52:33', 'ACTIVE', NULL, 1, NULL),
 (12, 'diegoalas06+1@gmail.com', '$2b$12$FAU8YLk1MEzKguzhj7aLEeQRhDZ7Xmqk0r8mDsRrhXyYk5hlecHJ.', 'Diego', 'Alas', '77777777', 'teacher', '2025-05-21 15:42:02', '2025-05-28 23:52:37', 'ACTIVE', NULL, 1, NULL),
-(13, 'diegoalas06+2@gmail.com', '$2b$12$28Ap79XXiswMR0yIskk5UeAe00EddugiyTkHadvKPsEJ3gjIMhXgm', 'Diego', 'Student Test', '22222222', 'student', '2025-05-21 16:34:37', '2025-05-28 23:52:40', 'ACTIVE', NULL, 1, NULL),
-(16, 'diegoalas06+3@itca.edu.sv', '$2b$12$le0iQnzdCrxT4YLcq5tLxu7ZkCr1QNavuWF6g7TpWh1zsZMUN9SCO', 'Diego', 'Test1', '11223344', 'student', '2025-05-28 16:18:51', '2025-05-28 16:18:51', 'PENDING', '850945', 0, NULL),
+(13, 'diegoalas06+2@gmail.com', '$2b$12$7xvmoVH2Kntfj17HMBJ2ceUnFU72IYB.zFSBJy.gJCuiOKNGF.5sO', 'Diego', 'Student Test', '22222222', 'student', '2025-05-21 16:34:37', '2025-05-29 13:31:23', 'ACTIVE', NULL, 1, NULL),
+(16, 'diegoalas06+3@gmail.com', '$2b$12$GAU361mOqm1QqCBEc1Ow7.ngeSEZfQWgOcH9Kygb5SU65xnDBDRWO', 'Diego', 'Test1', '11223344', 'student', '2025-05-28 16:18:51', '2025-05-29 14:08:06', 'ACTIVE', NULL, 1, '2025-05-29 14:00:22'),
 (18, 'diegoalas06+4@gmail.com', '$2b$12$NWQCoWTU3uiwIY6aiN097eSh7yX9Ssr91da0Ogao4iav98VKYctm2', 'Diego', 'Test2', '22334455', 'student', '2025-05-28 16:20:13', '2025-05-29 00:06:15', 'ACTIVE', NULL, 1, '2025-05-29 00:05:41'),
 (19, 'diegoalas06+5@gmail.com', '$2b$12$XUrHm3RIVzuWMX4TDQ8nl.0DZGRfxtXaj4DPwz5rWoKt7SJU1uI1a', 'Diego', 'Test2', '2233445555', 'student', '2025-05-28 16:25:56', '2025-05-28 16:29:01', 'ACTIVE', NULL, 1, NULL),
 (20, 'diegoalas06+6@gmail.com', '$2b$12$AtywakD1/AzN9ZPOMP6LzOu.VE5ewAMP/bjC6adW57R86NsXv5bM6', 'Usuario', 'Test', '33445566', 'student', '2025-05-28 17:07:13', '2025-05-28 17:08:23', 'ACTIVE', NULL, 1, NULL),
@@ -2863,10 +2891,24 @@ ALTER TABLE `level_history`
   ADD KEY `idx_user_fk` (`user_fk`);
 
 --
+-- Indexes for table `login_attempts_ip`
+--
+ALTER TABLE `login_attempts_ip`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `ip_address` (`ip_address`);
+
+--
 -- Indexes for table `mcer_level`
 --
 ALTER TABLE `mcer_level`
   ADD PRIMARY KEY (`pk_level`);
+
+--
+-- Indexes for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `prompts`
@@ -2978,10 +3020,22 @@ ALTER TABLE `level_history`
   MODIFY `pk_history` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
+-- AUTO_INCREMENT for table `login_attempts_ip`
+--
+ALTER TABLE `login_attempts_ip`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `mcer_level`
 --
 ALTER TABLE `mcer_level`
   MODIFY `pk_level` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `prompts`
@@ -3071,6 +3125,12 @@ ALTER TABLE `answers`
 ALTER TABLE `level_history`
   ADD CONSTRAINT `level_history_ibfk_1` FOREIGN KEY (`level_fk`) REFERENCES `mcer_level` (`pk_level`),
   ADD CONSTRAINT `level_history_ibfk_2` FOREIGN KEY (`user_fk`) REFERENCES `users` (`pk_user`);
+
+--
+-- Constraints for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD CONSTRAINT `password_reset_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`pk_user`);
 
 --
 -- Constraints for table `questions`

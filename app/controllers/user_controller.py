@@ -2,7 +2,7 @@ import re
 from app.models.user_model import Usuario
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
+from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, create_refresh_token
 import bcrypt
 import random
 from flask_mail import Message
@@ -10,7 +10,10 @@ from app import mail
 from flask_limiter import Limiter
 from flask import current_app
 from datetime import datetime, timedelta
+import secrets
 
+MAX_ATTEMPTS = 5
+BLOCK_MINUTES = 15
 
 class UserController:
 
@@ -43,6 +46,33 @@ class UserController:
         """
 
         mail.send(msg)
+        
+        
+    @staticmethod
+    def send_password_reset_email(to, token):
+        reset_link = f"http://localhost:5173/reset-password?token={token}"
+
+        msg = Message('🔐 Reset Your Password', recipients=[to])
+        
+        msg.html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e2e2; border-radius: 10px;">
+            <h2 style="color: #4b7af0;">Password Reset Request</h2>
+            <p style="font-size: 16px; color: #333;">We received a request to reset your password. If you didn’t make this request, you can safely ignore this email.</p>
+            
+            <p style="font-size: 16px; color: #333;">Click the button below to create a new password:</p>
+            
+            <a href="{reset_link}" style="display: inline-block; padding: 10px 20px; background-color: #4b7af0; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0;">
+                Reset Your Password
+            </a>
+
+            <p style="font-size: 14px; color: #777;">This link will expire in 1 hour for security reasons.</p>
+            <p style="font-size: 14px; color: #aaa;">&copy; 2025 NECDiagnostics</p>
+        </div>
+        """
+
+        mail.send(msg)
+
+
     
     @staticmethod
     def register_user():
@@ -152,30 +182,115 @@ class UserController:
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
+        ip = request.remote_addr
 
         if not email or not password:
             return jsonify({"message": "Email and password are required"}), 400
 
+        attempt = Usuario.get_ip_attempts(ip)
+
+        now = datetime.now()
+
+        # Si está bloqueado actualmente
+        if attempt and attempt['blocked_until'] and attempt['blocked_until'] > now:
+            minutes_left = int((attempt['blocked_until'] - now).total_seconds() / 60)
+            return jsonify({"message": f"Too many failed attempts. Try again in {minutes_left} minute(s)."}), 429
+
+        # Validar usuario
         user = Usuario.get_user_by_email(email)
 
-        if user and bcrypt.checkpw(password.encode('utf-8'), user['user_password'].encode('utf-8')):
-            access_token = create_access_token(identity=str(user['pk_user']))
-            refresh_token = create_access_token(identity=str(user['pk_user']), fresh=False)
-            return jsonify({
-                "access_token": access_token,
-                "refresh_token": refresh_token,
-                "user": {
-                    "id": user['pk_user'],  
-                    "name": user['user_name'],  
-                    "lastname": user['user_lastname'], 
-                    "email": user['user_email'],
-                    "role": user['user_role']
-                }
-            }), 200
+        if user:
+            if not user['is_verified']:
+                return jsonify({"message": "Account not verified. Please verify your email."}), 403
 
+            if bcrypt.checkpw(password.encode('utf-8'), user['user_password'].encode('utf-8')):
+                # Login correcto: limpiar intentos por IP
+                Usuario.clean_ip_attempts(ip)
+                
+                access_token = create_access_token(identity=str(user['pk_user']))
+                refresh_token = create_refresh_token(identity=str(user['pk_user']))
+
+                return jsonify({
+                    "access_token": access_token,
+                    "refresh_token": refresh_token,
+                    "user": {
+                        "id": user['pk_user'],
+                        "name": user['user_name'],
+                        "lastname": user['user_lastname'],
+                        "email": user['user_email'],
+                        "role": user['user_role']
+                    }
+                }), 200
+
+        # Fallo: actualizar o insertar intento
+        if attempt:
+            new_count = attempt['failed_count'] + 1
+            blocked_until = now + timedelta(minutes=BLOCK_MINUTES) if new_count >= MAX_ATTEMPTS else None
+            
+            Usuario.update_ip_attempt(new_count, now, blocked_until, ip)
+        else:
+            Usuario.insert_ip_attempt(ip_address=ip, failed_count=1, last_attempt=now, blocked_until=None)
+            
         return jsonify({"message": "Invalid email or password"}), 401
+    
+    
+
+    @staticmethod
+    def forgot_password():
+        data = request.get_json()
+        email = data.get("email")
+
+        if not email:
+            return jsonify({"message": "Email is required"}), 400
+
+        user = Usuario.get_user_by_email(email)
+
+        if not user:
+            return jsonify({"message": "User not found or not verified"}), 404
+
+        token = secrets.token_urlsafe(64)
+        expires_at = datetime.now() + timedelta(hours=1)
+
+        Usuario.insert_password_change_token(user['pk_user'], token, expires_at)
+
+        # Enviar correo
+        UserController.send_password_reset_email(to=email, token=token)
+
+        return jsonify({"message": "An email has been sent to reset your password."}), 200
 
 
+    
+    @staticmethod
+    def reset_password():
+        data = request.get_json()
+        token = data.get("token")
+        new_password = data.get("new_password")
+
+        if not token or not new_password:
+            return jsonify({"message": "Token and new password are required"}), 400
+        
+        if len(new_password) < 8:
+            return jsonify({"message": "Password must be at least 8 characters long"}), 400
+
+        pw_token = Usuario.get_password_change_token(token)
+        
+        if not pw_token:
+            return jsonify({"message": "Invalid or expired token"}), 400
+
+        if datetime.now() > pw_token['expires_at']:
+            return jsonify({"message": "Token expired"}), 400
+
+        hashed_pw = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+        
+        result = Usuario.change_password_with_token(hashed_pw=hashed_pw, user_id= pw_token['user_id'], token=token)
+     
+        if result:
+            return jsonify({"message": "Password updated successfully"}), 200
+        else:
+            return jsonify({"message": "An Error ocurred while updating password"}), 400
+
+
+        
 
     @staticmethod
     @jwt_required()
