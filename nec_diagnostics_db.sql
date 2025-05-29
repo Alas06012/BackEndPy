@@ -1,9 +1,9 @@
 -- phpMyAdmin SQL Dump
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
---ll
+--
 -- Host: 127.0.0.1
--- Generation Time: May 04, 2025 at 03:15 AM
+-- Generation Time: May 29, 2025 at 12:41 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -833,11 +833,11 @@ INSERT INTO `answers` (`pk_answer`, `question_fk`, `answer_text`, `is_correct`, 
 (789, 196, 'Continue shopping', 0, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
 (790, 196, 'Ask for assistance', 0, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
 (791, 196, 'Return an item', 0, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
-(792, 197, 'Shoppers together', 1, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
-(793, 197, 'Customer and cashier', 0, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
-(794, 197, 'Store manager and employee', 0, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
-(795, 197, 'Strangers', 0, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
-(796, 1, 'test answer', 0, 'ACTIVE', '2025-05-01 17:14:33', '2025-05-01 17:14:33');
+(796, 1, 'test answer', 0, 'ACTIVE', '2025-05-01 17:14:33', '2025-05-01 17:14:33'),
+(801, 197, 'Shoppers together', 1, 'ACTIVE', '2025-05-08 21:46:49', '2025-05-08 21:46:49'),
+(802, 197, 'Customer and cashier', 0, 'ACTIVE', '2025-05-08 21:46:49', '2025-05-08 21:46:49'),
+(803, 197, 'Store manager and employee', 0, 'ACTIVE', '2025-05-08 21:46:49', '2025-05-08 21:46:49'),
+(804, 197, 'Strangers', 0, 'ACTIVE', '2025-05-08 21:46:49', '2025-05-08 21:46:49');
 
 -- --------------------------------------------------------
 
@@ -852,6 +852,26 @@ CREATE TABLE `level_history` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `level_history`
+--
+
+INSERT INTO `level_history` (`pk_history`, `level_fk`, `user_fk`, `created_at`, `updated_at`) VALUES
+(6, 3, 1, '2025-05-05 15:20:16', '2025-05-05 15:20:16'),
+(7, 3, 1, '2025-05-05 15:22:34', '2025-05-05 15:22:34'),
+(8, 3, 1, '2025-05-07 17:40:25', '2025-05-07 17:40:25'),
+(9, 3, 1, '2025-05-07 17:43:45', '2025-05-07 17:43:45'),
+(10, 3, 1, '2025-05-09 11:06:35', '2025-05-09 11:06:35'),
+(11, 3, 1, '2025-05-21 12:40:22', '2025-05-21 12:40:22'),
+(12, 1, 1, '2025-05-21 12:56:05', '2025-05-21 12:56:05'),
+(13, 3, 1, '2025-05-21 12:58:42', '2025-05-21 12:58:42'),
+(14, 3, 1, '2025-05-21 12:59:57', '2025-05-21 12:59:57'),
+(15, 3, 1, '2025-05-26 08:50:26', '2025-05-26 08:50:26'),
+(16, 3, 13, '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
+(17, 3, 13, '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
+(18, 3, 1, '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
+(19, 1, 1, '2025-05-27 22:24:17', '2025-05-27 22:24:17');
 
 -- --------------------------------------------------------
 
@@ -901,10 +921,13 @@ INSERT INTO `prompts` (`pk_prompt`, `prompt_name`, `prompt_value`, `status`, `cr
 (1, 'Prompt 1', 'Hola soy un prompt', 'INACTIVE', '2025-04-20 14:47:45', '2025-04-20 15:27:52'),
 (2, 'Prompt 1', 'Hola soy un prompt 2', 'INACTIVE', '2025-04-20 14:58:34', '2025-05-03 18:22:42'),
 (3, 'Prompt 1', 'Hola soy un prompt 3', 'INACTIVE', '2025-04-20 14:58:58', '2025-04-20 15:10:52'),
-(4, 'traducción', '-------test', 'INACTIVE', '2025-04-20 15:10:52', '2025-04-20 15:26:50'),
+(4, 'traducción', '-------test', 'INACTIVE', '2025-04-20 15:10:52', '2025-05-08 21:11:32'),
 (5, 'Prompt Original', 'Asume el rol de un evaluador profesional de inglés especializado en el examen TOEIC. Tu tarea es analizar el desempeño de un estudiante en una prueba simulada de TOEIC, la cual contiene preguntas de las secciones READING y LISTENING. Debes realizar lo siguiente: 1. Evaluar el nivel general de inglés del estudiante según la escala MCER (A1, A2, B1, B2, C1, C2). 2. Calcular un puntaje estimado en el examen TOEIC (escala de 10 a 990 puntos). 3. Determinar si el estudiante ha aprobado la prueba considerando: - Universidades: entre 650 y 850 puntos. - Gobiernos: como en Japón, requieren un mínimo de 600 puntos. - Un puntaje menor a 600 debe considerarse como \'no aprobado\'. 4. Identificar fortalezas y debilidades basadas en las respuestas y nivel', 'INACTIVE', '2025-05-03 18:22:42', '2025-05-03 18:29:40'),
 (6, 'Prompt Original', 'Asume el rol de un evaluador profesional de inglés especializado en el examen TOEIC. Tu tarea es analizar el desempeño de un estudiante en una prueba simulada de TOEIC, la cual contiene preguntas de las secciones READING y LISTENING. Debes realizar lo siguiente: 1. Evaluar el nivel general de inglés del estudiante según la escala MCER (A1, A2, B1, B2, C1, C2). 2. Calcular un puntaje estimado en el examen TOEIC (escala de 10 a 990 puntos). 3. Determinar si el estudiante ha aprobado la prueba considerando: - Universidades: entre 650 y 850 puntos. - Gobiernos: como en Japón, requieren un mínimo de 600 puntos. - Un puntaje menor a 600 debe considerarse como \'no aprobado\'. 4. Identificar fortalezas y debilidades basadas en las respuestas y niveles de dificultad. 5. Proporcionar recomendaciones claras para mejorar su rendimiento, enfocadas en TOEIC. 6. Basar el análisis en el número de respuestas correctas e incorrectas, así como el nivel MCER asignado a cada pregunta. FORMATO DE ENTRADA: El input SIEMPRE será un JSON con la clave \'exam_data\', que contiene una lista de bloques. Cada bloque representa un texto o audio con un conjunto de preguntas. Cada pregunta contiene: - question_text: el texto de la pregunta. - section: READING o LISTENING comprehension. - student_answer: la respuesta proporcionada por el estudiante. - is_correct: indica si fue respondida correctamente. - level: nivel MCER representado por la pregunta (ej. A2, B1). - title: el texto o contexto que se usó para las preguntas. - title_type: puede ser \'READING\' o \'LISTENING\'. - title_url: solo para LISTENING, puede ser null. Este es el formato fijo y no modificable del input: {\'exam_data\':[{\'questions\':[{\'is_correct\':false,\'level\':\'A2\',\'question_text\':\'When is the application deadline?\',\'section\':\'Reading comprehension\',\'student_answer\':\'June 15th\'},{\'is_correct\':true,\'level\':\'B1\',\'question_text\':\'What type of internships are being offered?\',\'section\':\'Reading comprehension\',\'student_answer\':\'Summer internships\'}],\'title\':\'We are offering summer internships for undergraduate students in the Marketing and IT departments. Apply before May 30th.\',\'title_type\':\'READING\',\'title_url\':null}]} Este es el formato fijo y no modificable del OUTPUT, en el caso de strengths, weaknesses y recommendations necesito que seas detallado: {\'mcer_level\':\'B1\',\'toeic_score\':720,\'passed\':true,\'strengths\':[\'Buena comprensión lectora en preguntas de nivel B1\',\'Respuestas correctas en temas de vocabulario profesional\'],\'weaknesses\':[\'Errores frecuentes en preguntas de nivel A2\',\'Confusión con fechas y detalles específicos\'],\'recommendations\':[\'Reforzar comprensión de detalles en textos breves\',\'Practicar ejercicios de listening enfocados en conversaciones cotidianas\',\'Ampliar vocabulario relacionado a contextos laborales\']}', 'INACTIVE', '2025-05-03 18:29:40', '2025-05-03 18:48:21'),
-(7, 'Prompt Original', 'Asume el rol de un evaluador profesional de inglés especializado en el examen TOEIC. Tu tarea es analizar el desempeño de un estudiante en una prueba simulada de TOEIC, la cual contiene preguntas de las secciones READING y LISTENING. Debes realizar lo siguiente: 1. Evaluar el nivel general de inglés del estudiante según la escala MCER (A1, A2, B1, B2, C1, C2). 2. Calcular un puntaje estimado en el examen TOEIC (escala de 10 a 990 puntos). 3. Determinar si el estudiante ha aprobado la prueba considerando: - Universidades: entre 650 y 850 puntos. - Gobiernos: como en Japón, requieren un mínimo de 600 puntos. - Un puntaje menor a 600 debe considerarse como \'no aprobado\'. 4. Identificar fortalezas y debilidades basadas en las respuestas y niveles de dificultad. 5. Proporcionar recomendaciones claras para mejorar su rendimiento, enfocadas en TOEIC. 6. Basar el análisis en el número de respuestas correctas e incorrectas, así como el nivel MCER asignado a cada pregunta. FORMATO DE ENTRADA: El input SIEMPRE será un JSON con la clave \'exam_data\', que contiene una lista de bloques. Cada bloque representa un texto o audio con un conjunto de preguntas. Cada pregunta contiene: - question_text: el texto de la pregunta. - section: READING o LISTENING comprehension. - student_answer: la respuesta proporcionada por el estudiante. - is_correct: indica si fue respondida correctamente. - level: nivel MCER representado por la pregunta (ej. A2, B1). - title: el texto o contexto que se usó para las preguntas. - title_type: puede ser \'READING\' o \'LISTENING\'. - title_url: solo para LISTENING, puede ser null. Este es el formato fijo y no modificable del input: {\'exam_data\':[{\'questions\':[{\'is_correct\':false,\'level\':\'A2\',\'question_text\':\'When is the application deadline?\',\'section\':\'Reading comprehension\',\'student_answer\':\'June 15th\'},{\'is_correct\':true,\'level\':\'B1\',\'question_text\':\'What type of internships are being offered?\',\'section\':\'Reading comprehension\',\'student_answer\':\'Summer internships\'}],\'title\':\'We are offering summer internships for undergraduate students in the Marketing and IT departments. Apply before May 30th.\',\'title_type\':\'READING\',\'title_url\':null}]} Este es el formato fijo y no modificable del OUTPUT, en el caso de strengths, weaknesses y recommendations necesito que seas detallado enfocandote en casos especificos de las respuestas del estudiante: {\'mcer_level\':\'B1\',\'toeic_score\':720,\'passed\':true,\'strengths\':[\'Buena comprensión lectora en preguntas de nivel B1\',\'Respuestas correctas en temas de vocabulario profesional\'],\'weaknesses\':[\'Errores frecuentes en preguntas de nivel A2\',\'Confusión con fechas y detalles específicos\'],\'recommendations\':[\'Reforzar comprensión de detalles en textos breves\',\'Practicar ejercicios de listening enfocados en conversaciones cotidianas\',\'Ampliar vocabulario relacionado a contextos laborales\']}', 'ACTIVE', '2025-05-03 18:48:21', '2025-05-03 18:48:21');
+(7, 'Prompt Original', 'Asume el rol de un evaluador profesional de inglés especializado en el examen TOEIC. Tu tarea es analizar el desempeño de un estudiante en una prueba simulada de TOEIC, la cual contiene preguntas de las secciones READING y LISTENING. Debes realizar lo siguiente: 1. Evaluar el nivel general de inglés del estudiante según la escala MCER (A1, A2, B1, B2, C1, C2). 2. Calcular un puntaje estimado en el examen TOEIC (escala de 10 a 990 puntos). 3. Determinar si el estudiante ha aprobado la prueba considerando: - Universidades: entre 650 y 850 puntos. - Gobiernos: como en Japón, requieren un mínimo de 600 puntos. - Un puntaje menor a 600 debe considerarse como \'no aprobado\'. 4. Identificar fortalezas y debilidades basadas en las respuestas y niveles de dificultad. 5. Proporcionar recomendaciones claras para mejorar su rendimiento, enfocadas en TOEIC. 6. Basar el análisis en el número de respuestas correctas e incorrectas, así como el nivel MCER asignado a cada pregunta. FORMATO DE ENTRADA: El input SIEMPRE será un JSON con la clave \'exam_data\', que contiene una lista de bloques. Cada bloque representa un texto o audio con un conjunto de preguntas. Cada pregunta contiene: - question_text: el texto de la pregunta. - section: READING o LISTENING comprehension. - student_answer: la respuesta proporcionada por el estudiante. - is_correct: indica si fue respondida correctamente. - level: nivel MCER representado por la pregunta (ej. A2, B1). - title: el texto o contexto que se usó para las preguntas. - title_type: puede ser \'READING\' o \'LISTENING\'. - title_url: solo para LISTENING, puede ser null. Este es el formato fijo y no modificable del input: {\'exam_data\':[{\'questions\':[{\'is_correct\':false,\'level\':\'A2\',\'question_text\':\'When is the application deadline?\',\'section\':\'Reading comprehension\',\'student_answer\':\'June 15th\'},{\'is_correct\':true,\'level\':\'B1\',\'question_text\':\'What type of internships are being offered?\',\'section\':\'Reading comprehension\',\'student_answer\':\'Summer internships\'}],\'title\':\'We are offering summer internships for undergraduate students in the Marketing and IT departments. Apply before May 30th.\',\'title_type\':\'READING\',\'title_url\':null}]} Este es el formato fijo y no modificable del OUTPUT, en el caso de strengths, weaknesses y recommendations necesito que seas detallado enfocandote en casos especificos de las respuestas del estudiante: {\'mcer_level\':\'B1\',\'toeic_score\':720,\'passed\':true,\'strengths\':[\'Buena comprensión lectora en preguntas de nivel B1\',\'Respuestas correctas en temas de vocabulario profesional\'],\'weaknesses\':[\'Errores frecuentes en preguntas de nivel A2\',\'Confusión con fechas y detalles específicos\'],\'recommendations\':[\'Reforzar comprensión de detalles en textos breves\',\'Practicar ejercicios de listening enfocados en conversaciones cotidianas\',\'Ampliar vocabulario relacionado a contextos laborales\']}', 'INACTIVE', '2025-05-03 18:48:21', '2025-05-03 19:18:05'),
+(8, 'Prompt Original', 'Asume el rol de un evaluador profesional de inglés especializado en el examen TOEIC. Tu tarea es analizar el desempeño de un estudiante en una prueba simulada de TOEIC, la cual contiene preguntas de las secciones READING y LISTENING. Debes realizar lo siguiente: 1. Evaluar el nivel general de inglés del estudiante según la escala MCER (A1, A2, B1, B2, C1, C2). 2. Calcular un puntaje estimado en el examen TOEIC (escala de 10 a 990 puntos). 3. Determinar si el estudiante ha aprobado la prueba considerando: entre 650 y 850 puntos. - Un puntaje menor a 650 debe considerarse como \'no aprobado\'. 4. Identificar fortalezas y debilidades bastante detalladas basadas en las respuestas y niveles de dificultad. 5. Proporcionar recomendaciones claras y extensas para mejorar su rendimiento, enfocadas en TOEIC. 6. Basar el análisis en el número de respuestas correctas e incorrectas, así como el nivel MCER asignado a cada pregunta. FORMATO DE ENTRADA: El input SIEMPRE será un JSON con la clave \'exam_data\', que contiene una lista de bloques. Cada bloque representa un texto o audio con un conjunto de preguntas. Cada pregunta contiene: - question_text: el texto de la pregunta. - section: READING o LISTENING comprehension. - student_answer: la respuesta proporcionada por el estudiante. - is_correct: indica si fue respondida correctamente. - level: nivel MCER representado por la pregunta (ej. A2, B1). - title: el texto o contexto que se usó para las preguntas. - title_type: puede ser \'READING\' o \'LISTENING\'. - title_url: solo para LISTENING, puede ser null. Este es el formato fijo y no modificable del input: {\'exam_data\':[{\'questions\':[{\'is_correct\':false,\'level\':\'A2\',\'question_text\':\'When is the application deadline?\',\'section\':\'Reading comprehension\',\'student_answer\':\'June 15th\'},{\'is_correct\':true,\'level\':\'B1\',\'question_text\':\'What type of internships are being offered?\',\'section\':\'Reading comprehension\',\'student_answer\':\'Summer internships\'}],\'title\':\'We are offering summer internships for undergraduate students in the Marketing and IT departments. Apply before May 30th.\',\'title_type\':\'READING\',\'title_url\':null}]} Este es el formato fijo y no modificable del OUTPUT, en el caso de strengths, weaknesses y recommendations necesito que seas detallado enfocandote en casos especificos de las respuestas del estudiante: {\'mcer_level\':\'B1\',\'toeic_score\':720,\'passed\':true,\'strengths\':[\'aqui ran las fortalezas del estudiante en un parrafo\'],\'weaknesses\':[\'aqui ran las debilidades del estudiante en un parrafo\'],\'recommendations\':[\'aqui ira las recomendaciones para el estudiante en un parrafo\']}', 'ACTIVE', '2025-05-03 19:18:05', '2025-05-08 21:12:18'),
+(9, '---- test 2', 'es un test', 'INACTIVE', '2025-05-08 21:11:56', '2025-05-08 21:12:03'),
+(10, '---- test 2', 'es un test mas ', 'INACTIVE', '2025-05-08 21:12:10', '2025-05-08 21:12:18');
 
 -- --------------------------------------------------------
 
@@ -1124,7 +1147,7 @@ INSERT INTO `questions` (`pk_question`, `toeic_section_fk`, `question_text`, `ti
 (194, 7, 'What item is specifically mentioned?', 40, 2, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
 (195, 7, 'Where are the mentioned items already placed?', 40, 3, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
 (196, 7, 'What do the speakers decide to do next?', 40, 3, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01'),
-(197, 7, 'What is the relationship between the speakers?', 40, 4, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-01 16:35:01');
+(197, 3, 'What is the relationship between the speakers?', 100, 4, 'ACTIVE', '2025-05-01 16:35:01', '2025-05-08 21:46:49');
 
 -- --------------------------------------------------------
 
@@ -1247,9 +1270,10 @@ INSERT INTO `questions_titles` (`pk_title`, `title_name`, `title_test`, `title_t
 (97, 'Post Office Visit', '[SPEAKER_A] I need to send this package overnight.\n[SPEAKER_B] Please fill out this form.\n[SPEAKER_A] Done, thank you.', 'LISTENING', 'https://example.com/audio45.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
 (98, 'Hair Salon Call', '[SPEAKER_A] Can I book a haircut for tomorrow?\n[SPEAKER_B] We have an opening at 11 AM.\n[SPEAKER_A] I’ll take it.', 'LISTENING', 'https://example.com/audio46.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
 (99, 'Daily Routine', '[SPEAKER_A] I usually wake up at 6 AM.\n[SPEAKER_B] That’s early!\n[SPEAKER_A] I like to get a head start.', 'LISTENING', 'https://example.com/audio47.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
-(100, 'Grocery Store', '[SPEAKER_A] Where can I find the milk?\n[SPEAKER_B] Aisle 5, next to the cheese.\n[SPEAKER_A] Thanks!', 'LISTENING', 'https://example.com/audio48.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
+(100, 'Grocery Store', '[SPEAKER_A] Where can I find the milk????\n[SPEAKER_B] Aisle 5, next to the cheese.\n[SPEAKER_A] Thanks!', 'LISTENING', 'https://example.com/audio48.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-08 21:26:29'),
 (101, 'Morning Exercise', '[SPEAKER_A] Are you ready for our run?\n[SPEAKER_B] Yes, let me grab my water.\n[SPEAKER_A] Don’t forget sunscreen!', 'LISTENING', 'https://example.com/audio49.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
-(102, 'School Pickup', '[SPEAKER_A] I’m here to pick up my son, Daniel.\n[SPEAKER_B] He’s in Room 204.\n[SPEAKER_A] Thank you.', 'LISTENING', 'https://example.com/audio50.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53');
+(102, 'School Pickup', '[SPEAKER_A] I’m here to pick up my son, Daniel.\n[SPEAKER_B] He’s in Room 204.\n[SPEAKER_A] Thank you.', 'LISTENING', 'https://example.com/audio50.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
+(103, 'Reading Passage – Business Memo', 'To: All Staff\nFrom: Human Resources Department\nDate: May 9, 2025\nSubject: New Remote Work Policy\n\nAs part of our continued efforts to improve employee satisfaction and productivity, we are pleased to announce a new remote work policy. Beginning June 1, employees will be allowed to work from home up to three days per week, depending on departmental needs and manager approval.\n\nTo support this transition, the company will provide a stipend of $150 to assist with home office setup. We encourage all employees to speak with their supervisors to determine a schedule that works best for their team.\n\nTraining on remote collaboration tools will be offered next week. Please check your email for registration details.\n\nWe believe this change will help promote a better work-life balance and contribute to a more flexible and efficient work environment.\n\nIf you have any questions, do not hesitate to contact HR.', 'READING', '', 'ACTIVE', '2025-05-08 21:21:36', '2025-05-08 21:33:03');
 
 -- --------------------------------------------------------
 
@@ -1265,6 +1289,28 @@ CREATE TABLE `recommendations` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `recommendations`
+--
+
+INSERT INTO `recommendations` (`pk_recommend`, `test_fk`, `recommendation_text`, `created_at`, `updated_at`) VALUES
+(6, 29, 'To improve, the student should practice more with reading comprehension exercises focusing on detail-oriented questions to enhance their ability to catch specific information. For listening comprehension, engaging with a variety of audio materials, especially those involving interviews or conversations, can help in better understanding the context and nuances of spoken English. Additionally, taking timed practice tests can aid in improving both speed and accuracy in identifying correct answers.', '2025-05-05 15:20:16', '2025-05-05 15:20:16'),
+(7, 29, 'To improve, the student should focus on enhancing their attention to detail, particularly with dates and specific information in reading passages. Practicing with timed reading exercises can help. For listening comprehension, engaging with a variety of English audio materials, especially those involving interviews or conversations, can aid in better understanding context and distinguishing between similar questions. Additionally, taking practice TOEIC tests will familiarize them with the exam format and improve their ability to manage time effectively during the test.', '2025-05-05 15:22:34', '2025-05-05 15:22:34'),
+(8, 29, 'To improve, the student should practice more with reading comprehension exercises focusing on detail-oriented questions to enhance their ability to catch specific information. For listening comprehension, engaging with a variety of audio materials, especially those involving interviews or conversations, can help in better understanding the context and nuances of spoken English. Additionally, taking timed practice tests can aid in improving both speed and accuracy in identifying correct answers.', '2025-05-07 17:40:25', '2025-05-07 17:40:25'),
+(9, 29, 'To improve, the student should practice more with reading comprehension exercises, focusing on extracting specific details from texts. For listening, engaging with a variety of English audio materials and practicing note-taking can help in better understanding and remembering details. Additionally, reviewing common question patterns in the TOEIC exam and taking timed practice tests will aid in improving both speed and accuracy.', '2025-05-07 17:43:45', '2025-05-07 17:43:45'),
+(10, 29, 'To improve, the student should practice more with reading comprehension exercises focusing on detail-oriented questions to enhance their ability to catch specific information. For listening comprehension, engaging with a variety of audio materials, especially those involving interviews or conversations, can help in better understanding the context and nuances of spoken English. Additionally, taking timed practice tests can aid in improving both speed and accuracy in identifying correct answers.', '2025-05-09 11:06:35', '2025-05-09 11:06:35'),
+(11, 29, 'To improve reading comprehension, the student should practice skimming and scanning techniques to better locate specific information in texts, such as dates and key details. For listening skills, engaging with a variety of English audio materials, especially those involving interviews or conversations, can help enhance the ability to discern main ideas and details. Additionally, focusing on question interpretation and practicing with TOEIC-specific listening exercises will be beneficial.', '2025-05-21 12:40:22', '2025-05-21 12:40:22'),
+(12, 29, 'Begin with foundational English language learning to reach at least an A2 level before attempting TOEIC preparation. Focus on basic vocabulary, grammar, and comprehension skills.', '2025-05-21 12:56:05', '2025-05-21 12:56:05'),
+(13, 29, 'Familiarize yourself with the TOEIC exam format and types of questions asked in both the READING and LISTENING sections. Practice with sample questions and exams to understand the expectations.', '2025-05-21 12:56:05', '2025-05-21 12:56:05'),
+(14, 29, 'Engage in regular English language practice, including reading, writing, listening, and speaking, to improve overall proficiency. Use resources like language learning apps, online courses, and language exchange meetups.', '2025-05-21 12:56:05', '2025-05-21 12:56:05'),
+(15, 29, 'To improve, the student should focus on enhancing their attention to detail by practicing with more reading and listening exercises that require identifying specific information. They should also expand their vocabulary, especially terms related to time and professional contexts. Additionally, practicing with TOEIC-style questions will help them become more familiar with the format and types of questions asked, improving their overall test-taking strategy.', '2025-05-21 12:58:42', '2025-05-21 12:58:42'),
+(16, 29, 'To improve, the student should focus on enhancing their attention to detail, especially for dates and specific information in both reading and listening sections. Practicing with more listening exercises that involve understanding questions and responses in interviews or conversations would be beneficial. Additionally, engaging with a variety of reading materials that include deadlines and specific instructions could help in accurately identifying such details. Regular practice with TOEIC-specific materials that mimic the exam\'s format and question types is also recommended to familiarize themselves with the test\'s structure and improve overall performance.', '2025-05-21 12:59:57', '2025-05-21 12:59:57'),
+(17, 29, 'To improve performance, the student should practice more with reading comprehension exercises focusing on extracting and remembering specific details. For listening skills, engaging with a variety of English audio materials, especially those simulating interview scenarios, can help in better understanding context and nuances. Additionally, taking notes during listening exercises may aid in retaining key information. Regular practice with TOEIC-style questions, particularly those at the B1 and B2 levels, will also be beneficial in addressing these weaknesses.', '2025-05-26 08:50:26', '2025-05-26 08:50:26'),
+(18, 41, 'To improve reading comprehension, the student should practice with texts of varying difficulty levels, focusing on understanding main ideas and details. For listening skills, engaging with English audio materials, such as podcasts or news broadcasts, and practicing note-taking can enhance the ability to catch and remember key points. Additionally, working on vocabulary and grammar exercises tailored to the TOEIC format will help in addressing specific weaknesses identified in the test.', '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
+(19, 41, 'To improve, the student should focus on enhancing their comprehension skills at the A1 and A2 levels by practicing with simpler texts and listening exercises. Engaging with a variety of materials, such as news articles, simple stories, and instructional texts, can help. For listening, practicing with short conversations and focusing on key details will be beneficial. Additionally, the student should work on answering all questions, even if uncertain, to improve time management and guessing strategies. Regular practice with TOEIC-specific materials will also help familiarize the student with the exam format and question types.', '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
+(20, 29, 'To improve, the student should practice more with reading comprehension exercises focusing on dates and deadlines to enhance their attention to detail. For listening, engaging in exercises that simulate interview scenarios could help in better understanding questions and responses. Utilizing TOEIC practice tests that cover a wide range of topics and question types would also be beneficial in addressing these areas of weakness.', '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
+(21, 54, 'The student should focus on building a strong foundation in English vocabulary and grammar, starting with A1 level materials. Practicing with TOEIC-specific exercises can help familiarize them with the exam format. Additionally, working on reading and listening comprehension skills through daily practice with English texts and audio materials is essential. Time management strategies should also be developed to ensure all questions are attempted in future tests.', '2025-05-27 22:24:17', '2025-05-27 22:24:17');
+
 -- --------------------------------------------------------
 
 --
@@ -1278,6 +1324,26 @@ CREATE TABLE `strengths` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `strengths`
+--
+
+INSERT INTO `strengths` (`pk_strength`, `test_fk`, `strength_text`, `created_at`, `updated_at`) VALUES
+(6, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in reading comprehension where they correctly identified the type of internships offered and the departments involved. Their ability to grasp details from the listening section, such as the time frame and the candidate\'s aspirations, also indicates a solid foundation in listening comprehension.', '2025-05-05 15:20:16', '2025-05-05 15:20:16'),
+(7, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in identifying specific information in reading comprehension sections. For instance, they correctly answered questions about the type of internships offered and the departments involved, which are at A2 and B1 levels. In the listening section, they accurately identified the time frame mentioned and the candidate\'s aspirations, showing competence in understanding straightforward spoken English.', '2025-05-05 15:22:34', '2025-05-05 15:22:34'),
+(8, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in reading comprehension where they correctly identified the type of internships offered and the departments involved. Their ability to grasp details from the listening section, such as the time frame and the candidate\'s aspirations, also indicates a solid foundation in listening comprehension.', '2025-05-07 17:40:25', '2025-05-07 17:40:25'),
+(9, 29, 'The student demonstrates a good understanding of B1 level questions, as seen in their correct answers regarding the type of internships offered and the candidate\'s aspirations in the listening section. They also correctly identified the time frame mentioned in the listening section and the departments offering internships in the reading section, showing proficiency in A2 level comprehension.', '2025-05-07 17:43:45', '2025-05-07 17:43:45'),
+(10, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in reading comprehension where they correctly identified the type of internships offered and the departments involved. Their ability to grasp details from the listening section, such as the time frame and the candidate\'s aspirations, also indicates a solid foundation in listening comprehension.', '2025-05-09 11:06:35', '2025-05-09 11:06:35'),
+(11, 29, 'The student demonstrates a good understanding of basic to intermediate level reading comprehension questions, as evidenced by correctly answering questions about the type of internships offered and the departments involved. In the listening section, the student accurately identified the time frame mentioned and the candidate\'s aspirations, showing an ability to grasp key details from spoken English.', '2025-05-21 12:40:22', '2025-05-21 12:40:22'),
+(12, 29, 'The student attempted to respond, showing a willingness to engage with the exam, which is a positive first step in language learning.', '2025-05-21 12:56:05', '2025-05-21 12:56:05'),
+(13, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in reading comprehension where they correctly answered questions about the type of internships offered and the departments involved. Their ability to grasp details from the listening section, such as the time frame mentioned and the candidate\'s aspirations, also indicates a solid foundation in listening comprehension.', '2025-05-21 12:58:42', '2025-05-21 12:58:42'),
+(14, 29, 'The student demonstrates a good understanding of basic to intermediate level questions, particularly in the \'Reading comprehension\' section where they correctly answered questions about the type of internships being offered and the departments involved. Their ability to grasp and respond to \'Listening comprehension\' questions, especially those requiring understanding of specific details like time frames and aspirations, is also notable.', '2025-05-21 12:59:57', '2025-05-21 12:59:57'),
+(15, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in identifying specific information in the reading section, such as the type of internships offered and the departments involved. In the listening section, the student correctly identified the time frame mentioned and the candidate\'s aspirations, showing an ability to grasp key details from spoken English.', '2025-05-26 08:50:26', '2025-05-26 08:50:26'),
+(16, 41, 'The student demonstrates a strong understanding of grammar and vocabulary at the B1 and B2 levels, as evidenced by correct answers in incomplete sentences and some reading comprehension questions. They are particularly good at identifying the correct word or phrase to complete a sentence, showing a solid grasp of English syntax and usage.', '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
+(17, 41, 'The student demonstrates a good understanding of grammar and vocabulary at the B1 and B2 levels, as evidenced by correct answers in \'Incomplete sentences\' and \'Reading comprehension\' sections. For example, correctly using \'for\' in \'She has been working here _______ five years.\' and understanding the context in \'All the orders got _________ on schedule.\' with \'delivered\'. The student also shows ability to comprehend and respond to questions about instructions and safety procedures, such as correctly identifying the main purpose of fire evacuation instructions.', '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
+(18, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in identifying the type of internships offered and the departments involved. They also correctly answered questions related to the time frame mentioned in a conversation and the aspirations of a candidate, showing an ability to grasp key details in both reading and listening sections.', '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
+(19, 54, 'The student correctly identified the type of precipitation expected in one instance, showing a basic understanding of weather-related vocabulary.', '2025-05-27 22:24:17', '2025-05-27 22:24:17');
 
 -- --------------------------------------------------------
 
@@ -1318,11 +1384,18 @@ CREATE TABLE `tests` (
 --
 
 INSERT INTO `tests` (`pk_test`, `user_fk`, `test_points`, `test_passed`, `status`, `level_fk`, `created_at`, `updated_at`) VALUES
-(29, 2, NULL, NULL, 'CHECKING_ANSWERS', NULL, '2025-05-01 16:44:00', '2025-05-01 18:14:01'),
+(29, 2, 720, 1, 'COMPLETED', 3, '2025-05-01 16:44:00', '2025-05-26 11:33:17'),
 (30, 3, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-01 17:18:41', '2025-05-01 17:18:41'),
 (32, 3, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-01 17:21:05', '2025-05-01 17:21:05'),
 (34, 2, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-01 17:21:55', '2025-05-01 17:21:55'),
-(35, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-01 17:22:14', '2025-05-01 17:22:14');
+(35, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-01 17:22:14', '2025-05-01 17:22:14'),
+(40, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(41, 13, 720, 1, 'COMPLETED', 3, '2025-05-26 11:22:25', '2025-05-26 11:27:32'),
+(54, 1, 100, 0, 'COMPLETED', 1, '2025-05-27 22:22:42', '2025-05-27 22:24:17'),
+(55, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(57, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(58, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(59, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17');
 
 -- --------------------------------------------------------
 
@@ -1339,6 +1412,16 @@ CREATE TABLE `test_comments` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `test_comments`
+--
+
+INSERT INTO `test_comments` (`pk_comment`, `comment_title`, `comment_value`, `user_fk`, `test_fk`, `created_at`, `updated_at`) VALUES
+(1, 'Buen desempeño', 'El estudiante mostró una gran comprensión del tema.', 1, 29, '2025-05-13 13:41:10', '2025-05-13 13:41:10'),
+(2, 'Buen desempeño', 'El estudiante mostró una gran comprensión del tema.', 1, 29, '2025-05-21 13:37:35', '2025-05-21 13:37:35'),
+(3, 'Buen desempeño', 'El estudiante mostró una gran comprensión del tema.', 1, 29, '2025-05-21 13:38:17', '2025-05-21 13:38:17'),
+(4, 'Nuevo título del comentario', 'Este es el nuevo contenido del comentario...', 1, 29, '2025-05-21 13:38:21', '2025-05-21 14:19:09');
 
 -- --------------------------------------------------------
 
@@ -1680,7 +1763,680 @@ INSERT INTO `test_details` (`pk_testdetail`, `test_fk`, `title_fk`, `question_fk
 (325, 35, 6, 21, NULL, '2025-05-01 17:22:14', '2025-05-01 17:22:14'),
 (326, 35, 6, 23, NULL, '2025-05-01 17:22:14', '2025-05-01 17:22:14'),
 (327, 35, 6, 22, NULL, '2025-05-01 17:22:14', '2025-05-01 17:22:14'),
-(328, 35, 6, 24, NULL, '2025-05-01 17:22:14', '2025-05-01 17:22:14');
+(328, 35, 6, 24, NULL, '2025-05-01 17:22:14', '2025-05-01 17:22:14'),
+(581, 40, 22, 88, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(582, 40, 22, 85, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(583, 40, 22, 87, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(584, 40, 22, 86, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(585, 40, 26, 101, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(586, 40, 26, 102, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(587, 40, 26, 103, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(588, 40, 26, 104, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(589, 40, 25, 98, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(590, 40, 25, 99, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(591, 40, 25, 100, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(592, 40, 25, 97, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(593, 40, 24, 96, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(594, 40, 24, 94, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(595, 40, 24, 93, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(596, 40, 24, 95, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(597, 40, 47, 124, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(598, 40, 47, 125, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(599, 40, 47, 123, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(600, 40, 47, 122, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(601, 40, 20, 77, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(602, 40, 20, 78, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(603, 40, 20, 79, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(604, 40, 20, 80, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(605, 40, 16, 62, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(606, 40, 16, 61, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(607, 40, 16, 63, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(608, 40, 16, 64, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(609, 40, 17, 65, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(610, 40, 17, 67, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(611, 40, 17, 66, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(612, 40, 17, 68, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(613, 40, 19, 75, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(614, 40, 19, 74, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(615, 40, 19, 73, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(616, 40, 19, 76, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(617, 40, 44, 110, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(618, 40, 44, 112, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(619, 40, 44, 111, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(620, 40, 44, 113, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(621, 40, 49, 130, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(622, 40, 49, 132, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(623, 40, 49, 133, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(624, 40, 49, 131, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(625, 40, 51, 139, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(626, 40, 51, 140, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(627, 40, 51, 141, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(628, 40, 51, 138, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(629, 40, 6, 23, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(630, 40, 6, 22, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(631, 40, 6, 21, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(632, 40, 6, 24, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(633, 40, 31, 159, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(634, 40, 31, 161, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(635, 40, 31, 160, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(636, 40, 31, 158, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(637, 40, 34, 172, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(638, 40, 34, 173, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(639, 40, 34, 170, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(640, 40, 34, 171, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(641, 40, 15, 60, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(642, 40, 15, 58, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(643, 40, 15, 57, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(644, 40, 15, 59, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(645, 40, 13, 50, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(646, 40, 13, 51, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(647, 40, 13, 52, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(648, 40, 13, 49, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(649, 40, 35, 174, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(650, 40, 35, 176, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(651, 40, 35, 175, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(652, 40, 35, 177, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(653, 40, 37, 182, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(654, 40, 37, 183, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(655, 40, 37, 185, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(656, 40, 37, 184, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(657, 40, 38, 189, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(658, 40, 38, 188, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(659, 40, 38, 186, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(660, 40, 38, 187, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(661, 40, 11, 44, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(662, 40, 11, 42, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(663, 40, 11, 41, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(664, 40, 11, 43, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(665, 40, 8, 31, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(666, 40, 8, 32, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(667, 40, 8, 29, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(668, 40, 8, 30, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(669, 40, 32, 164, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(670, 40, 32, 165, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(671, 40, 32, 162, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(672, 40, 32, 163, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(673, 40, 14, 56, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(674, 40, 14, 54, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(675, 40, 14, 55, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(676, 40, 14, 53, NULL, '2025-05-26 11:19:46', '2025-05-26 11:19:46'),
+(677, 41, 51, 140, 566, '2025-05-26 11:22:25', '2025-05-26 11:27:10'),
+(678, 41, 51, 141, 569, '2025-05-26 11:22:25', '2025-05-26 11:27:10'),
+(679, 41, 51, 138, 557, '2025-05-26 11:22:25', '2025-05-26 11:27:10'),
+(680, 41, 51, 139, 561, '2025-05-26 11:22:25', '2025-05-26 11:27:10'),
+(681, 41, 26, 104, 435, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(682, 41, 26, 103, 431, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(683, 41, 26, 102, 427, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(684, 41, 26, 101, 424, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(685, 41, 2, 7, 26, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(686, 41, 2, 5, 20, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(687, 41, 2, 6, 24, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(688, 41, 2, 8, 29, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(689, 41, 27, 106, NULL, '2025-05-26 11:22:25', '2025-05-26 11:22:25'),
+(690, 41, 27, 105, 438, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(691, 41, 27, 108, NULL, '2025-05-26 11:22:25', '2025-05-26 11:22:25'),
+(692, 41, 27, 107, NULL, '2025-05-26 11:22:25', '2025-05-26 11:22:25'),
+(693, 41, 24, 93, 391, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(694, 41, 24, 94, 395, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(695, 41, 24, 95, 399, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(696, 41, 24, 96, 402, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(697, 41, 48, 127, 513, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(698, 41, 48, 126, 510, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(699, 41, 48, 128, 518, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(700, 41, 48, 129, 521, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(701, 41, 23, 92, 387, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(702, 41, 23, 91, 384, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(703, 41, 23, 90, 378, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(704, 41, 23, 89, 375, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(705, 41, 49, 132, 533, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(706, 41, 49, 130, 527, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(707, 41, 49, 131, 529, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(708, 41, 49, 133, 537, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(709, 41, 47, 122, 494, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(710, 41, 47, 125, 505, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(711, 41, 47, 124, 501, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(712, 41, 47, 123, 497, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(713, 41, 25, 98, 410, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(714, 41, 25, 97, 406, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(715, 41, 25, 99, 415, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(716, 41, 25, 100, 418, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(717, 41, 45, 114, 461, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(718, 41, 45, 117, 472, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(719, 41, 45, 116, 468, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(720, 41, 45, 115, 465, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(721, 41, 22, 85, NULL, '2025-05-26 11:22:25', '2025-05-26 11:22:25'),
+(722, 41, 22, 86, 353, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(723, 41, 22, 87, 356, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(724, 41, 22, 88, 361, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(725, 41, 39, 190, 764, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(726, 41, 39, 193, 777, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(727, 41, 39, 191, 769, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(728, 41, 39, 192, 773, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(729, 41, 37, 182, 734, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(730, 41, 37, 185, 745, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(731, 41, 37, 184, 741, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(732, 41, 37, 183, 739, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(733, 41, 15, 58, 241, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(734, 41, 15, 57, 236, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(735, 41, 15, 60, 247, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(736, 41, 15, 59, 244, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(737, 41, 28, 147, 593, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(738, 41, 28, 146, 588, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(739, 41, 28, 148, 598, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(740, 41, 28, 149, 601, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(741, 41, 12, 47, 196, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(742, 41, 12, 45, 186, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(743, 41, 12, 46, 191, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(744, 41, 12, 48, 199, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(745, 41, 31, 158, 636, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(746, 41, 31, 160, 644, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(747, 41, 31, 161, 649, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(748, 41, 31, 159, 640, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(749, 41, 32, 164, 661, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(750, 41, 32, 162, 653, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(751, 41, 32, 163, 656, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(752, 41, 32, 165, 664, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(753, 41, 30, 156, 628, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(754, 41, 30, 157, 633, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(755, 41, 30, 154, 621, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(756, 41, 30, 155, 624, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(757, 41, 36, 178, 716, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(758, 41, 36, 181, 730, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(759, 41, 36, 180, 724, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(760, 41, 36, 179, 720, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(761, 41, 6, 24, 102, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(762, 41, 6, 21, 90, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(763, 41, 6, 22, 94, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(764, 41, 6, 23, 100, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(765, 41, 34, 173, 697, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(766, 41, 34, 172, 694, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(767, 41, 34, 170, 686, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(768, 41, 34, 171, 689, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(769, 41, 29, 151, 610, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(770, 41, 29, 152, 614, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(771, 41, 29, 150, 604, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(772, 41, 29, 153, 617, '2025-05-26 11:22:25', '2025-05-26 11:26:53'),
+(1233, 54, 18, 72, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1234, 54, 18, 70, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1235, 54, 18, 69, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1236, 54, 18, 71, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1237, 54, 44, 113, 456, '2025-05-27 22:22:42', '2025-05-27 22:24:03'),
+(1238, 54, 44, 111, 451, '2025-05-27 22:22:42', '2025-05-27 22:24:03'),
+(1239, 54, 44, 110, 445, '2025-05-27 22:22:42', '2025-05-27 22:24:03'),
+(1240, 54, 44, 112, 454, '2025-05-27 22:22:42', '2025-05-27 22:24:03'),
+(1241, 54, 22, 87, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1242, 54, 22, 88, 358, '2025-05-27 22:22:42', '2025-05-27 22:24:03'),
+(1243, 54, 22, 86, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1244, 54, 22, 85, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1245, 54, 45, 115, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1246, 54, 45, 116, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1247, 54, 45, 117, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1248, 54, 45, 114, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1249, 54, 21, 82, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1250, 54, 21, 81, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1251, 54, 21, 83, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1252, 54, 21, 84, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1253, 54, 17, 67, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1254, 54, 17, 65, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1255, 54, 17, 68, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1256, 54, 17, 66, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1257, 54, 23, 89, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1258, 54, 23, 91, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1259, 54, 23, 92, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1260, 54, 23, 90, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1261, 54, 20, 77, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1262, 54, 20, 78, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1263, 54, 20, 79, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1264, 54, 20, 80, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1265, 54, 49, 130, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1266, 54, 49, 133, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1267, 54, 49, 131, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1268, 54, 49, 132, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1269, 54, 25, 98, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1270, 54, 25, 99, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1271, 54, 25, 97, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1272, 54, 25, 100, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1273, 54, 27, 107, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1274, 54, 27, 105, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1275, 54, 27, 106, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1276, 54, 27, 108, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1277, 54, 2, 8, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1278, 54, 2, 5, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1279, 54, 2, 6, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1280, 54, 2, 7, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1281, 54, 30, 154, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1282, 54, 30, 155, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1283, 54, 30, 156, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1284, 54, 30, 157, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1285, 54, 3, 12, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1286, 54, 3, 11, 52, '2025-05-27 22:22:42', '2025-05-27 22:24:02'),
+(1287, 54, 3, 10, 48, '2025-05-27 22:22:42', '2025-05-27 22:24:02'),
+(1288, 54, 3, 9, 42, '2025-05-27 22:22:42', '2025-05-27 22:24:02'),
+(1289, 54, 33, 166, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1290, 54, 33, 169, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1291, 54, 33, 168, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1292, 54, 33, 167, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1293, 54, 9, 35, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1294, 54, 9, 36, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1295, 54, 9, 34, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1296, 54, 9, 33, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1297, 54, 7, 26, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1298, 54, 7, 27, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1299, 54, 7, 28, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1300, 54, 7, 25, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1301, 54, 32, 164, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1302, 54, 32, 163, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1303, 54, 32, 162, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1304, 54, 32, 165, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1305, 54, 36, 179, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1306, 54, 36, 181, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1307, 54, 36, 178, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1308, 54, 36, 180, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1309, 54, 13, 50, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1310, 54, 13, 52, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1311, 54, 13, 51, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1312, 54, 13, 49, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1313, 54, 6, 22, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1314, 54, 6, 24, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1315, 54, 6, 21, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1316, 54, 6, 23, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1317, 54, 5, 19, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1318, 54, 5, 20, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1319, 54, 5, 17, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1320, 54, 5, 18, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1321, 54, 15, 58, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1322, 54, 15, 59, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1323, 54, 15, 60, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1324, 54, 15, 57, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1325, 54, 28, 148, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1326, 54, 28, 146, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1327, 54, 28, 147, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1328, 54, 28, 149, NULL, '2025-05-27 22:22:42', '2025-05-27 22:22:42'),
+(1329, 55, 50, 137, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1330, 55, 50, 134, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1331, 55, 50, 136, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1332, 55, 50, 135, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1333, 55, 17, 65, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1334, 55, 17, 68, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1335, 55, 17, 66, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1336, 55, 17, 67, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1337, 55, 46, 119, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1338, 55, 46, 121, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1339, 55, 46, 118, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1340, 55, 46, 120, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1341, 55, 26, 103, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1342, 55, 26, 101, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1343, 55, 26, 102, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1344, 55, 26, 104, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1345, 55, 16, 64, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1346, 55, 16, 62, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1347, 55, 16, 63, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1348, 55, 16, 61, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1349, 55, 52, 142, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1350, 55, 52, 144, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1351, 55, 52, 145, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1352, 55, 52, 143, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1353, 55, 19, 76, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1354, 55, 19, 74, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1355, 55, 19, 73, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1356, 55, 19, 75, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1357, 55, 20, 77, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1358, 55, 20, 80, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1359, 55, 20, 79, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1360, 55, 20, 78, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1361, 55, 47, 125, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1362, 55, 47, 123, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1363, 55, 47, 122, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1364, 55, 47, 124, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1365, 55, 23, 91, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1366, 55, 23, 92, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1367, 55, 23, 90, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1368, 55, 23, 89, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1369, 55, 25, 97, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1370, 55, 25, 99, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1371, 55, 25, 100, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1372, 55, 25, 98, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1373, 55, 21, 83, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1374, 55, 21, 82, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1375, 55, 21, 84, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1376, 55, 21, 81, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1377, 55, 34, 172, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1378, 55, 34, 171, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1379, 55, 34, 170, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1380, 55, 34, 173, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1381, 55, 12, 47, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1382, 55, 12, 45, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1383, 55, 12, 48, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1384, 55, 12, 46, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1385, 55, 9, 33, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1386, 55, 9, 34, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1387, 55, 9, 35, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1388, 55, 9, 36, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1389, 55, 37, 183, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1390, 55, 37, 184, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1391, 55, 37, 182, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1392, 55, 37, 185, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1393, 55, 5, 17, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1394, 55, 5, 18, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1395, 55, 5, 20, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1396, 55, 5, 19, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1397, 55, 29, 153, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1398, 55, 29, 152, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1399, 55, 29, 151, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1400, 55, 29, 150, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1401, 55, 6, 22, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1402, 55, 6, 24, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1403, 55, 6, 23, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1404, 55, 6, 21, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1405, 55, 36, 181, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1406, 55, 36, 180, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1407, 55, 36, 179, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1408, 55, 36, 178, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1409, 55, 15, 58, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1410, 55, 15, 57, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1411, 55, 15, 60, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1412, 55, 15, 59, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1413, 55, 11, 44, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1414, 55, 11, 42, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1415, 55, 11, 43, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1416, 55, 11, 41, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1417, 55, 39, 190, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1418, 55, 39, 191, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1419, 55, 39, 192, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1420, 55, 39, 193, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1421, 55, 30, 156, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1422, 55, 30, 155, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1423, 55, 30, 154, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1424, 55, 30, 157, NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
+(1441, 57, 46, 120, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1442, 57, 46, 118, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1443, 57, 46, 121, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1444, 57, 46, 119, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1445, 57, 22, 87, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1446, 57, 22, 85, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1447, 57, 22, 86, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1448, 57, 22, 88, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1449, 57, 25, 98, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1450, 57, 25, 100, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1451, 57, 25, 99, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1452, 57, 25, 97, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1453, 57, 51, 138, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1454, 57, 51, 141, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1455, 57, 51, 139, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53');
+INSERT INTO `test_details` (`pk_testdetail`, `test_fk`, `title_fk`, `question_fk`, `answer_fk`, `created_at`, `updated_at`) VALUES
+(1456, 57, 51, 140, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1457, 57, 18, 71, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1458, 57, 18, 69, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1459, 57, 18, 70, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1460, 57, 18, 72, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1461, 57, 21, 81, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1462, 57, 21, 83, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1463, 57, 21, 82, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1464, 57, 21, 84, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1465, 57, 27, 108, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1466, 57, 27, 106, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1467, 57, 27, 107, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1468, 57, 27, 105, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1469, 57, 26, 103, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1470, 57, 26, 101, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1471, 57, 26, 102, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1472, 57, 26, 104, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1473, 57, 24, 93, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1474, 57, 24, 96, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1475, 57, 24, 95, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1476, 57, 24, 94, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1477, 57, 19, 75, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1478, 57, 19, 74, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1479, 57, 19, 73, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1480, 57, 19, 76, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1481, 57, 20, 77, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1482, 57, 20, 78, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1483, 57, 20, 80, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1484, 57, 20, 79, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1485, 57, 45, 117, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1486, 57, 45, 115, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1487, 57, 45, 116, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1488, 57, 45, 114, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1489, 57, 5, 20, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1490, 57, 5, 19, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1491, 57, 5, 17, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1492, 57, 5, 18, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1493, 57, 10, 37, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1494, 57, 10, 39, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1495, 57, 10, 38, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1496, 57, 10, 40, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1497, 57, 36, 178, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1498, 57, 36, 180, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1499, 57, 36, 181, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1500, 57, 36, 179, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1501, 57, 8, 30, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1502, 57, 8, 32, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1503, 57, 8, 29, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1504, 57, 8, 31, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1505, 57, 37, 182, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1506, 57, 37, 185, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1507, 57, 37, 184, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1508, 57, 37, 183, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1509, 57, 30, 157, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1510, 57, 30, 154, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1511, 57, 30, 156, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1512, 57, 30, 155, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1513, 57, 7, 26, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1514, 57, 7, 28, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1515, 57, 7, 25, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1516, 57, 7, 27, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1517, 57, 34, 173, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1518, 57, 34, 170, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1519, 57, 34, 171, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1520, 57, 34, 172, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1521, 57, 13, 50, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1522, 57, 13, 49, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1523, 57, 13, 52, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1524, 57, 13, 51, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1525, 57, 12, 46, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1526, 57, 12, 48, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1527, 57, 12, 45, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1528, 57, 12, 47, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1529, 57, 6, 22, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1530, 57, 6, 24, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1531, 57, 6, 21, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1532, 57, 6, 23, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1533, 57, 32, 163, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1534, 57, 32, 164, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1535, 57, 32, 162, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1536, 57, 32, 165, NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
+(1537, 58, 26, 103, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1538, 58, 26, 101, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1539, 58, 26, 104, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1540, 58, 26, 102, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1541, 58, 45, 114, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1542, 58, 45, 116, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1543, 58, 45, 115, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1544, 58, 45, 117, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1545, 58, 46, 118, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1546, 58, 46, 119, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1547, 58, 46, 120, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1548, 58, 46, 121, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1549, 58, 18, 70, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1550, 58, 18, 72, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1551, 58, 18, 71, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1552, 58, 18, 69, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1553, 58, 1, 4, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1554, 58, 1, 1, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1555, 58, 1, 2, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1556, 58, 1, 3, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1557, 58, 24, 95, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1558, 58, 24, 94, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1559, 58, 24, 96, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1560, 58, 24, 93, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1561, 58, 49, 131, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1562, 58, 49, 133, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1563, 58, 49, 130, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1564, 58, 49, 132, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1565, 58, 16, 63, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1566, 58, 16, 64, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1567, 58, 16, 62, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1568, 58, 16, 61, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1569, 58, 27, 106, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1570, 58, 27, 108, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1571, 58, 27, 105, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1572, 58, 27, 107, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1573, 58, 25, 97, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1574, 58, 25, 100, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1575, 58, 25, 99, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1576, 58, 25, 98, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1577, 58, 51, 138, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1578, 58, 51, 139, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1579, 58, 51, 140, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1580, 58, 51, 141, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1581, 58, 44, 110, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1582, 58, 44, 113, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1583, 58, 44, 112, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1584, 58, 44, 111, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1585, 58, 35, 176, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1586, 58, 35, 177, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1587, 58, 35, 174, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1588, 58, 35, 175, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1589, 58, 7, 26, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1590, 58, 7, 25, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1591, 58, 7, 28, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1592, 58, 7, 27, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1593, 58, 10, 37, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1594, 58, 10, 40, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1595, 58, 10, 39, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1596, 58, 10, 38, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1597, 58, 36, 179, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1598, 58, 36, 180, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1599, 58, 36, 178, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1600, 58, 36, 181, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1601, 58, 39, 193, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1602, 58, 39, 190, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1603, 58, 39, 191, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1604, 58, 39, 192, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1605, 58, 33, 166, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1606, 58, 33, 169, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1607, 58, 33, 167, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1608, 58, 33, 168, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1609, 58, 5, 18, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1610, 58, 5, 20, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1611, 58, 5, 19, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1612, 58, 5, 17, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1613, 58, 38, 188, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1614, 58, 38, 187, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1615, 58, 38, 189, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1616, 58, 38, 186, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1617, 58, 30, 154, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1618, 58, 30, 156, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1619, 58, 30, 155, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1620, 58, 30, 157, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1621, 58, 9, 35, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1622, 58, 9, 33, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1623, 58, 9, 36, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1624, 58, 9, 34, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1625, 58, 8, 31, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1626, 58, 8, 32, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1627, 58, 8, 30, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1628, 58, 8, 29, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1629, 58, 3, 11, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1630, 58, 3, 12, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1631, 58, 3, 9, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1632, 58, 3, 10, NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
+(1633, 59, 49, 131, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1634, 59, 49, 132, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1635, 59, 49, 130, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1636, 59, 49, 133, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1637, 59, 20, 79, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1638, 59, 20, 77, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1639, 59, 20, 80, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1640, 59, 20, 78, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1641, 59, 46, 120, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1642, 59, 46, 118, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1643, 59, 46, 121, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1644, 59, 46, 119, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1645, 59, 47, 122, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1646, 59, 47, 124, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1647, 59, 47, 123, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1648, 59, 47, 125, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1649, 59, 1, 1, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1650, 59, 1, 2, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1651, 59, 1, 3, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1652, 59, 1, 4, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1653, 59, 17, 66, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1654, 59, 17, 68, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1655, 59, 17, 67, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1656, 59, 17, 65, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1657, 59, 23, 91, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1658, 59, 23, 90, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1659, 59, 23, 89, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1660, 59, 23, 92, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1661, 59, 51, 141, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1662, 59, 51, 138, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1663, 59, 51, 140, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1664, 59, 51, 139, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1665, 59, 44, 111, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1666, 59, 44, 110, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1667, 59, 44, 113, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1668, 59, 44, 112, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1669, 59, 22, 88, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1670, 59, 22, 86, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1671, 59, 22, 87, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1672, 59, 22, 85, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1673, 59, 50, 136, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1674, 59, 50, 137, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1675, 59, 50, 135, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1676, 59, 50, 134, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1677, 59, 26, 103, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1678, 59, 26, 101, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1679, 59, 26, 104, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1680, 59, 26, 102, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1681, 59, 5, 18, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1682, 59, 5, 20, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1683, 59, 5, 17, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1684, 59, 5, 19, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1685, 59, 15, 58, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1686, 59, 15, 60, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1687, 59, 15, 57, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1688, 59, 15, 59, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1689, 59, 8, 31, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1690, 59, 8, 29, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1691, 59, 8, 32, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1692, 59, 8, 30, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1693, 59, 39, 190, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1694, 59, 39, 193, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1695, 59, 39, 191, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1696, 59, 39, 192, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1697, 59, 4, 16, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1698, 59, 4, 15, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1699, 59, 4, 13, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1700, 59, 4, 14, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1701, 59, 29, 151, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1702, 59, 29, 153, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1703, 59, 29, 152, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1704, 59, 29, 150, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1705, 59, 14, 56, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1706, 59, 14, 53, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1707, 59, 14, 55, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1708, 59, 14, 54, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1709, 59, 30, 156, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1710, 59, 30, 154, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1711, 59, 30, 157, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1712, 59, 30, 155, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1713, 59, 13, 51, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1714, 59, 13, 49, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1715, 59, 13, 50, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1716, 59, 13, 52, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1717, 59, 37, 184, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1718, 59, 37, 183, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1719, 59, 37, 182, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1720, 59, 37, 185, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1721, 59, 38, 187, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1722, 59, 38, 189, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1723, 59, 38, 186, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1724, 59, 38, 188, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1725, 59, 11, 44, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1726, 59, 11, 42, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1727, 59, 11, 43, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1728, 59, 11, 41, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17');
 
 -- --------------------------------------------------------
 
@@ -1724,18 +2480,27 @@ CREATE TABLE `users` (
   `user_role` varchar(20) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  `status` varchar(10) DEFAULT NULL
+  `status` varchar(10) DEFAULT NULL,
+  `verification_code` varchar(25) DEFAULT NULL,
+  `is_verified` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`pk_user`, `user_email`, `user_password`, `user_name`, `user_lastname`, `user_carnet`, `user_role`, `created_at`, `updated_at`, `status`) VALUES
-(1, 'diego.alas20@itca.edu.sv', '$2b$12$c8UxdsABjP3wM4aBcMkFueZIhmEcZsOHIZiYiE/dhbVK2UncoPIha', 'Diego Alexander', 'Alas Morales', '024120', 'admin', '2025-04-17 14:41:40', '2025-04-19 11:03:40', 'ACTIVE'),
-(2, 'ivan.osorio20@itca.edu.sv', '$2b$12$I3HZ4ZZNpdUqo7PByHl.ae/LXwCDRbwQ2lMS8yfIsaqzLd9eJtDb6', 'Ivan', 'Osorio', '020320', 'student', '2025-04-17 14:42:48', '2025-04-17 14:42:48', 'ACTIVE'),
-(3, 'pedro@itca.edu.sv', '$2b$12$DC0q29icM2M5X7yJsW6Gj.Ley8qgXHfFyxbfvp.ItJO65pTXE.kMi', 'Pedro', 'Dias', '0000000', 'student', '2025-04-17 14:45:32', '2025-04-17 14:45:32', 'ACTIVE'),
-(6, 'roberto@itca.edu.sv', '$2b$12$eVRVCKS2FA8Ue7Yl.y02p.Mfnrt/cUhlgrp9R.UhXsN5RfXXmsm22', 'Roberto', 'Perez', '0000001', 'student', '2025-04-17 14:46:06', '2025-04-19 11:15:03', 'INACTIVE');
+INSERT INTO `users` (`pk_user`, `user_email`, `user_password`, `user_name`, `user_lastname`, `user_carnet`, `user_role`, `created_at`, `updated_at`, `status`, `verification_code`, `is_verified`) VALUES
+(1, 'diego.alas20@itca.edu.sv', '$2b$12$c8UxdsABjP3wM4aBcMkFueZIhmEcZsOHIZiYiE/dhbVK2UncoPIha', 'Diego Alexander', 'Alas Morales', '024120', 'admin', '2025-04-17 14:41:40', '2025-04-19 11:03:40', 'ACTIVE', NULL, NULL),
+(2, 'ivan.osorio20@itca.edu.sv', '$2b$12$I3HZ4ZZNpdUqo7PByHl.ae/LXwCDRbwQ2lMS8yfIsaqzLd9eJtDb6', 'Ivan', 'Osorio', '020320', 'student', '2025-04-17 14:42:48', '2025-04-17 14:42:48', 'ACTIVE', NULL, NULL),
+(3, 'pedro@itca.edu.sv', '$2b$12$DC0q29icM2M5X7yJsW6Gj.Ley8qgXHfFyxbfvp.ItJO65pTXE.kMi', 'Pedro', 'Dias', '123456', 'admin', '2025-04-17 14:45:32', '2025-05-08 20:51:33', 'ACTIVE', NULL, NULL),
+(6, 'roberto@itca.edu.sv', '$2b$12$eVRVCKS2FA8Ue7Yl.y02p.Mfnrt/cUhlgrp9R.UhXsN5RfXXmsm22', 'Roberto', 'Perez', '0000001', 'student', '2025-04-17 14:46:06', '2025-04-19 11:15:03', 'INACTIVE', NULL, NULL),
+(10, 'marcos.morales@itca.edu.sv', '$2b$12$t3yCsokeRSihqI5YbY1Hxe9I/XS.k42pmrXr1uKctEmCE56PeZVmO', 'Marcos', 'Morales', '578855', 'student', '2025-05-08 20:52:41', '2025-05-08 20:53:26', 'INACTIVE', NULL, NULL),
+(11, 'douglas.martinez@itca.edu.sv', '$2b$12$fI0c.zTk3w6f8962yVAisus4Ewes/h503BC/nctrQ8ZYyZEec47xe', 'Douglas', 'Martinez', '343544', 'student', '2025-05-08 20:54:23', '2025-05-08 20:54:23', 'ACTIVE', NULL, NULL),
+(12, 'diegoalas06+1@gmail.com', '$2b$12$FAU8YLk1MEzKguzhj7aLEeQRhDZ7Xmqk0r8mDsRrhXyYk5hlecHJ.', 'Diego', 'Alas', '77777777', 'teacher', '2025-05-21 15:42:02', '2025-05-21 16:20:59', 'ACTIVE', NULL, NULL),
+(13, 'diegoalas06+2@gmail.com', '$2b$12$28Ap79XXiswMR0yIskk5UeAe00EddugiyTkHadvKPsEJ3gjIMhXgm', 'Diego', 'Student Test', '22222222', 'student', '2025-05-21 16:34:37', '2025-05-26 11:37:12', 'ACTIVE', NULL, NULL),
+(16, 'diegoalas06+3@itca.edu.sv', '$2b$12$le0iQnzdCrxT4YLcq5tLxu7ZkCr1QNavuWF6g7TpWh1zsZMUN9SCO', 'Diego', 'Test1', '11223344', 'student', '2025-05-28 16:18:51', '2025-05-28 16:18:51', 'PENDING', '850945', 0),
+(18, 'diegoalas06+4@gmail.com', '$2b$12$NWQCoWTU3uiwIY6aiN097eSh7yX9Ssr91da0Ogao4iav98VKYctm2', 'Diego', 'Test2', '22334455', 'student', '2025-05-28 16:20:13', '2025-05-28 16:20:13', 'PENDING', '207554', 0),
+(19, 'diegoalas06+5@gmail.com', '$2b$12$XUrHm3RIVzuWMX4TDQ8nl.0DZGRfxtXaj4DPwz5rWoKt7SJU1uI1a', 'Diego', 'Test2', '2233445555', 'student', '2025-05-28 16:25:56', '2025-05-28 16:29:01', 'ACTIVE', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -1750,6 +2515,26 @@ CREATE TABLE `weaknesses` (
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `weaknesses`
+--
+
+INSERT INTO `weaknesses` (`pk_weakness`, `test_fk`, `weakness_text`, `created_at`, `updated_at`) VALUES
+(6, 29, 'The student missed a straightforward question about the application deadline in the reading section, which was an A2 level question, suggesting a need for more attention to detail. Additionally, they incorrectly answered a B1 level question in the listening section about what the interviewer asked, indicating potential difficulties with understanding specific questions or nuances in spoken English.', '2025-05-05 15:20:16', '2025-05-05 15:20:16'),
+(7, 29, 'The student struggles with accurately recalling specific details, such as the application deadline in the reading section, which was an A2 level question. Additionally, in the listening section, they misinterpreted the interviewer\'s question about the candidate\'s future aspirations as being about previous work experience, indicating a need for improved listening comprehension skills, especially in distinguishing between similar topics.', '2025-05-05 15:22:34', '2025-05-05 15:22:34'),
+(8, 29, 'The student missed a straightforward question about the application deadline in the reading section, which was an A2 level question, suggesting a need for more attention to detail. Additionally, they incorrectly answered a B1 level question in the listening section about what the interviewer asked, indicating potential difficulties with understanding specific questions or nuances in spoken English.', '2025-05-07 17:40:25', '2025-05-07 17:40:25'),
+(9, 29, 'The student struggled with an A2 level question in the reading section about the application deadline, incorrectly answering \'June 15th\' instead of \'May 30th\'. This indicates a need for closer attention to detail in reading comprehension. Additionally, they missed a B1 level question in the listening section about what the interviewer asked, suggesting some difficulty in fully grasping the context or details in spoken English.', '2025-05-07 17:43:45', '2025-05-07 17:43:45'),
+(10, 29, 'The student missed a straightforward question about the application deadline in the reading section, which was an A2 level question, suggesting a need for more attention to detail. Additionally, they incorrectly answered a B1 level question in the listening section about what the interviewer asked, indicating potential difficulties with understanding specific questions or nuances in spoken English.', '2025-05-09 11:06:35', '2025-05-09 11:06:35'),
+(11, 29, 'The student struggled with identifying the application deadline in the reading section, indicating a need for improvement in attention to detail and specific information retrieval. Additionally, the incorrect answer regarding what the interviewer asked about in the listening section suggests difficulties in interpreting questions or main ideas from spoken dialogues, especially at the B1 level.', '2025-05-21 12:40:22', '2025-05-21 12:40:22'),
+(12, 29, 'The response \'hola\' is not relevant to any TOEIC exam sections or questions, indicating a significant lack of understanding or preparation for the exam format and requirements.', '2025-05-21 12:56:05', '2025-05-21 12:56:05'),
+(13, 29, 'The student struggled with accurately identifying specific details, such as the application deadline in the reading section and the main topic of the interviewer\'s question in the listening section. This suggests a need for improvement in attention to detail and possibly in vocabulary related to time and work experience.', '2025-05-21 12:58:42', '2025-05-21 12:58:42'),
+(14, 29, 'The student struggles with accurately identifying application deadlines in the \'Reading comprehension\' section, as evidenced by the incorrect answer regarding the deadline. Additionally, in the \'Listening comprehension\' section, there was a misunderstanding of the interviewer\'s question about previous work experience, indicating a need for improved listening skills for detail and context.', '2025-05-21 12:59:57', '2025-05-21 12:59:57'),
+(15, 29, 'The student struggles with accurately recalling specific details, such as the application deadline in the reading section, indicating a need for improved attention to detail. Additionally, the incorrect answer regarding what the interviewer asks about in the listening section suggests a difficulty in fully understanding the context or nuances of spoken English, especially in more complex questions.', '2025-05-26 08:50:26', '2025-05-26 08:50:26'),
+(16, 41, 'The student struggles with reading comprehension questions, especially those at the A1 and A2 levels, indicating difficulty with basic understanding and inference from texts. There are also instances of unanswered questions and incorrect answers in listening comprehension, suggesting challenges in processing spoken English and extracting key information from conversations.', '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
+(17, 41, 'The student struggles with basic comprehension in some A1 level questions, particularly in the \'Reading comprehension\' and \'Short conversation\' sections. For instance, incorrectly answering \'What should you use in case of fire?\' with \'Elevators\' instead of \'stairs\', and misunderstanding simple instructions or details in conversations. There are also instances where the student did not answer questions, indicating possible difficulties with time management or understanding the questions.', '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
+(18, 29, 'The student struggled with accurately identifying the application deadline, confusing \'May 30th\' with \'June 15th\'. Additionally, they misinterpreted the interviewer\'s question about the candidate\'s future, indicating a need for improved attention to detail and comprehension in both reading and listening contexts.', '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
+(19, 54, 'The student failed to answer the majority of the questions, including very basic ones at the A1 level, indicating significant gaps in both vocabulary and comprehension skills across all tested areas. The student also did not attempt many questions, which suggests difficulties with time management or confidence in their English abilities.', '2025-05-27 22:24:17', '2025-05-27 22:24:17');
 
 --
 -- Indexes for dumped tables
@@ -1877,13 +2662,13 @@ ALTER TABLE `weaknesses`
 -- AUTO_INCREMENT for table `answers`
 --
 ALTER TABLE `answers`
-  MODIFY `pk_answer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=797;
+  MODIFY `pk_answer` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=805;
 
 --
 -- AUTO_INCREMENT for table `level_history`
 --
 ALTER TABLE `level_history`
-  MODIFY `pk_history` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pk_history` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `mcer_level`
@@ -1895,7 +2680,7 @@ ALTER TABLE `mcer_level`
 -- AUTO_INCREMENT for table `prompts`
 --
 ALTER TABLE `prompts`
-  MODIFY `pk_prompt` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `pk_prompt` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `questions`
@@ -1907,19 +2692,19 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `questions_titles`
 --
 ALTER TABLE `questions_titles`
-  MODIFY `pk_title` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=103;
+  MODIFY `pk_title` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT for table `recommendations`
 --
 ALTER TABLE `recommendations`
-  MODIFY `pk_recommend` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pk_recommend` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `strengths`
 --
 ALTER TABLE `strengths`
-  MODIFY `pk_strength` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pk_strength` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `study_materials`
@@ -1931,19 +2716,19 @@ ALTER TABLE `study_materials`
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `pk_test` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `pk_test` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
 -- AUTO_INCREMENT for table `test_comments`
 --
 ALTER TABLE `test_comments`
-  MODIFY `pk_comment` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pk_comment` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `test_details`
 --
 ALTER TABLE `test_details`
-  MODIFY `pk_testdetail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=329;
+  MODIFY `pk_testdetail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1729;
 
 --
 -- AUTO_INCREMENT for table `toeic_sections`
@@ -1955,13 +2740,13 @@ ALTER TABLE `toeic_sections`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `weaknesses`
 --
 ALTER TABLE `weaknesses`
-  MODIFY `pk_weakness` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pk_weakness` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Constraints for dumped tables
