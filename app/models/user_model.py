@@ -32,14 +32,14 @@ class Usuario:
         return user
 
     @staticmethod
-    def create_user(name, user_lastname, carnet, user_email, user_role, password):
+    def create_user(name, user_lastname, carnet, user_email, user_role, password, code, is_verified):
         try:
             # Conexión a la base de datos
             cur = mysql.connection.cursor()
-            status = "ACTIVE"
+            status = "PENDING"
             # Ejecutar la consulta SQL
-            cur.execute("INSERT INTO users (user_name, user_lastname, user_carnet, user_email, user_role, user_password, Status) VALUES (%s, %s, %s, %s, %s, %s, %s)", 
-                        (name, user_lastname, carnet, user_email, user_role, password, status))
+            cur.execute("INSERT INTO users (user_name, user_lastname, user_carnet, user_email, user_role, user_password, Status, verification_code, is_verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", 
+                        (name, user_lastname, carnet, user_email, user_role, password, status, code, is_verified))
             
             # Confirmar cambios en la base de datos
             mysql.connection.commit()
@@ -47,6 +47,27 @@ class Usuario:
             return 'True'
         except Exception as e:
            return str(e).lower()
+       
+       
+    @staticmethod
+    def activate_user_by_code(email, code):
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT verification_code FROM users WHERE user_email = %s", (email,))
+        user = cursor.fetchone()
+
+        if user and user['verification_code'] == code:
+            cursor.execute("""
+                UPDATE users
+                SET status = %s, is_verified = %s, verification_code = NULL
+                WHERE user_email = %s
+            """, ("ACTIVE", True, email))
+            mysql.connection.commit()
+            cursor.close()
+            return True
+
+        cursor.close()
+        return False
+
             
 
     @staticmethod

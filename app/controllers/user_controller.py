@@ -3,9 +3,43 @@ from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
 from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token
 import bcrypt
+import random
+from flask_mail import Message
+from app import mail
+
 
 class UserController:
 
+    @staticmethod
+    def generate_code():
+        return str(random.randint(100000, 999999))
+    
+    @staticmethod
+    def send_verification_email(to, code):
+        verification_link = f"http://localhost:5173/verify-code"
+        
+        msg = Message('🔐 Verify Your Email', recipients=[to])
+        
+        msg.html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e2e2; border-radius: 10px;">
+            <h2 style="color: #4b7af0;">Welcome to NECDiagnostics!</h2>
+            <p style="font-size: 16px; color: #333;">Thank you for registering. To complete your registration, please verify your email address using the verification code below:</p>
+            
+            <div style="font-size: 24px; font-weight: bold; color: #4b7af0; margin: 20px 0;">{code}</div>
+            
+            <p style="font-size: 16px; color: #333;">You can enter this code on the verification page by clicking the button below:</p>
+            
+            <a href="{verification_link}" style="display: inline-block; padding: 10px 20px; background-color: #4b7af0; color: white; text-decoration: none; border-radius: 5px;">
+                Verify Your Email
+            </a>
+            
+            <p style="font-size: 14px; color: #777; margin-top: 30px;">If you did not request this, please ignore this email.</p>
+            <p style="font-size: 14px; color: #aaa;">&copy; 2025 NECDiagnostics</p>
+        </div>
+        """
+
+        mail.send(msg)
+    
     @staticmethod
     def register_user():
         data = request.get_json()
@@ -17,21 +51,42 @@ class UserController:
         password = data.get('password')
 
         if not email or not password or not name or not lastname or not carnet:
-            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+            return jsonify({"message": "Please complete all required fields"}), 400
 
         # Hashear la contraseña antes de guardarla
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
+        #Generar codigo para doble autenticacion
+        code = UserController.generate_code()
+        
         # Crear el usuario en la base de datos
-        response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'))
+        response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'), code, is_verified=False)
         
         if response == 'True':
-            return jsonify({"message": "Usuario Creado Correctamente"}), 201
+            UserController.send_verification_email(email, code)
+            return jsonify({"message": "User created - Check your email for the verification code"}), 201
         elif 'duplicate entry' in str(response).lower(): 
-            return jsonify({"error": "El correo electrónico ya está registrado"}), 400
+            return jsonify({"error": "The email or student ID is already registered"}), 400
         else:
-            return jsonify({"error": "El usuario no pudo ser registrado, hubo un error"}), 400
+            return jsonify({"error": "Registration failed due to an error"}), 400
         
+
+    @staticmethod
+    def verify_code():
+        data = request.get_json()
+        email = data.get('email')
+        code = data.get('code')
+        
+        if not email or not code:
+            return jsonify({"message": "Please complete all required fields"}), 400
+
+        result = Usuario.activate_user_by_code(email, code)
+
+        if result:
+            return jsonify({"message": "Email verified successfully."}), 200
+        else:
+            return jsonify({"error": "Invalid verification code"}), 400
+
 
     @staticmethod
     def login_user():
@@ -102,7 +157,7 @@ class UserController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos para crear otros usuarios"}), 404
+            return jsonify({"message": "The user is not authorized to create other users"}), 404
         
         data = request.get_json()
         name = data.get('name')
@@ -114,7 +169,7 @@ class UserController:
         
         
         if not email or not password or not name or not lastname or not carnet:
-            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+            return jsonify({"message": "Please complete all required fields"}), 400
 
         # Hashear la contraseña antes de guardarla
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -123,11 +178,11 @@ class UserController:
         response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'))
         
         if response == 'True':
-            return jsonify({"message": "Usuario Creado Correctamente"}), 201
+            return jsonify({"message": "The user was successfully created"}), 201
         elif 'duplicate entry' in str(response).lower(): 
-            return jsonify({"error": "El correo electrónico ya está registrado"}), 400
+            return jsonify({"error": "The email or student ID is already registered"}), 400
         else:
-            return jsonify({"error": "El usuario no pudo ser registrado, hubo un error"}), 400
+            return jsonify({"error": "Registration failed due to an error"}), 400
         
         
     #METODO ELIMINAR USUARIO
@@ -141,23 +196,23 @@ class UserController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos para eliminar otros usuarios"}), 404
+            return jsonify({"message": "The user is not authorized to delete other users"}), 404
         
         data = request.get_json()
         email = data.get('email')
         
         if not email:
-            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+            return jsonify({"message": "Please complete all required fields"}), 400
 
         # Crear el usuario en la base de datos
         response = Usuario.delete_user(email)
         
         if response == 'True':
-            return jsonify({"message": "Usuario Desactivado Correctamente"}), 201
+            return jsonify({"message": "User successfully deactivated"}), 201
         elif 'duplicate entry' in str(response).lower(): 
-            return jsonify({"error": "El correo electrónico ya está registrado"}), 400
+            return jsonify({"error": "The email or student ID is already registered."}), 400
         else:
-            return jsonify({"error": "El usuario no pudo ser eliminado, hubo un error"}), 400
+            return jsonify({"error": "Failed to delete the user. An error occurred"}), 400
         
         
      #METODO ACTIVAR USUARIO
@@ -171,24 +226,24 @@ class UserController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos para activar otros usuarios"}), 404
+            return jsonify({"message": "The user is not authorized to activate other users."}), 404
         
         data = request.get_json()
         email = data.get('email')
         
         if not email:
-            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+            return jsonify({"message": "Please complete all required fields"}), 400
 
         # Crear el usuario en la base de datos
         response = Usuario.activate_user(email)
         print(response)
         
         if response == 'True':
-            return jsonify({"message": "Usuario Activado Correctamente"}), 201
+            return jsonify({"message": "The user was successfully activated"}), 201
         elif 'duplicate entry' in str(response).lower(): 
-            return jsonify({"error": "El correo electrónico ya está registrado"}), 400
+            return jsonify({"error": "The email or student ID is already registered"}), 400
         else:
-            return jsonify({"error": "El usuario no pudo ser activado, hubo un error"}), 400
+            return jsonify({"error": "Activation failed due to an error"}), 400
         
         
     #METODO EDITAR USUARIO
@@ -202,7 +257,7 @@ class UserController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos para modificar otros usuarios"}), 404
+            return jsonify({"message": "The user is not authorized to edit other users"}), 404
         
         data = request.get_json()
         name = data.get('name')
@@ -213,7 +268,7 @@ class UserController:
         role = data.get('role')
         
         if not current_email or not name or not lastname or not carnet or not role:
-            return jsonify({"message": "Por favor, llena toda la información requerida"}), 400
+            return jsonify({"message": "Please complete all required fields"}), 400
         elif not new_email :
             # Editar el usuario en la base de datos
             response = Usuario.edit_user(name, lastname, carnet, role, current_email)
@@ -222,11 +277,11 @@ class UserController:
             response = Usuario.edit_user(name, lastname, carnet, role, current_email, new_email)
                
         if response == 'True':
-            return jsonify({"message": "Usuario Modificado Correctamente"}), 201
+            return jsonify({"message": "The user was successfully modified"}), 201
         elif 'duplicate entry' in str(response).lower(): 
-            return jsonify({"error": "El correo electrónico ya está registrado"}), 400
+            return jsonify({"error": "The email or student ID is already registered"}), 400
         else:
-            return jsonify({"error": "El usuario no pudo ser modificado, hubo un error"}), 400
+            return jsonify({"error": "Action modify failed due to an error"}), 400
         
 
     @staticmethod
@@ -237,7 +292,7 @@ class UserController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "The user is not authorized to fetch users data"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)
@@ -259,7 +314,7 @@ class UserController:
             )
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Error in database", "details": paginated_results}), 500
 
             response = {
                 "users": paginated_results['data'],
@@ -275,7 +330,7 @@ class UserController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Exception", "details": str(e)}), 500
        
        
 
