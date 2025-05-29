@@ -192,7 +192,9 @@ class UserController:
                     "email": user['user_email'],
                     "role": user['user_role']
                 }), 200
-        return jsonify({"message": "User not found"}), 404
+
+        # Usuario no existe -> devolvemos 401 
+        return jsonify({"message": "Unauthorized"}), 401
     
     
     @staticmethod
