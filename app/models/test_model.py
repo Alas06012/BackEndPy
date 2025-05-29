@@ -269,8 +269,6 @@ class Test:
                 WHERE t.pk_test = %s
             """, (test_id,))
             test_info = cur.fetchone()
-            print("test_info:", test_info)
-            print("Tipo de test_info:", type(test_info))
 
             if not test_info:
                 return {"error": "Test no encontrado"}
