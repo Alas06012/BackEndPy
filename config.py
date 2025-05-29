@@ -19,3 +19,13 @@ class Config:
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'O8C6SqE5BpXmGVT1ePg0GML7GDK0HkQb')
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3) #3 horas activo y luego expira
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+    
+    # Configuración de Flask-Mail
+    MAIL_SERVER = 'smtp.gmail.com' # o tu proveedor SMTP
+    MAIL_USERNAME = 'tesisitca2025@gmail.com'
+    MAIL_PASSWORD = 'qmjgthagokbizqcs'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USE_SSL = False
+    MAIL_DEFAULT_SENDER = ('NecDiagnostics', 'tesisitca2025@gmail.com')
+    

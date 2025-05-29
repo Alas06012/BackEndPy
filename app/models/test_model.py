@@ -250,7 +250,30 @@ class Test:
     def get_test_analysis_by_id(test_id):
         try:
             conn = mysql.connection
-            cur = conn.cursor()
+            cur = conn.cursor()  # <-- cursor como diccionario
+
+            # Obtener datos del test
+            cur.execute("""
+                SELECT 
+                    t.pk_test AS test_id,
+                    t.test_points AS score,
+                    t.test_passed,
+                    t.created_at AS date,
+                    u.user_name AS user_name,
+                    u.user_lastname AS user_lastname,
+                    u.user_email AS user_email,
+                    l.level_name AS level_name
+                FROM tests t
+                JOIN users u ON t.user_fk = u.pk_user
+                JOIN mcer_level l ON t.level_fk = l.pk_level
+                WHERE t.pk_test = %s
+            """, (test_id,))
+            test_info = cur.fetchone()
+            print("test_info:", test_info)
+            print("Tipo de test_info:", type(test_info))
+
+            if not test_info:
+                return {"error": "Test no encontrado"}
 
             # Obtener fortalezas
             cur.execute("""
@@ -258,7 +281,7 @@ class Test:
                 FROM strengths
                 WHERE test_fk = %s
             """, (test_id,))
-            strengths = cur.fetchall()
+            strengths = [{"id": s['pk_strength'], "text": s['strength_text']} for s in cur.fetchall()]
 
             # Obtener debilidades
             cur.execute("""
@@ -266,7 +289,7 @@ class Test:
                 FROM weaknesses
                 WHERE test_fk = %s
             """, (test_id,))
-            weaknesses = cur.fetchall()
+            weaknesses = [{"id": w['pk_weakness'], "text": w['weakness_text']} for w in cur.fetchall()]
 
             # Obtener recomendaciones
             cur.execute("""
@@ -274,10 +297,17 @@ class Test:
                 FROM recommendations
                 WHERE test_fk = %s
             """, (test_id,))
-            recommendations = cur.fetchall()
+            recommendations = [{"id": r['pk_recommend'], "text": r['recommendation_text']} for r in cur.fetchall()]
 
             return {
-                "test_id": test_id,
+                "test_id": test_info['test_id'],
+                "score": test_info['score'],
+                "test_passed": test_info['test_passed'],
+                "date": test_info['date'],
+                "user_name": test_info['user_name'],
+                "user_lastname": test_info['user_lastname'],
+                "user_email": test_info['user_email'],
+                "level_name": test_info['level_name'],
                 "strengths": strengths,
                 "weaknesses": weaknesses,
                 "recommendations": recommendations
@@ -285,7 +315,9 @@ class Test:
 
         except Exception as e:
             print(f"Error en get_test_analysis_by_id: {str(e)}")
-            return str(e)
+            return {"error": str(e)}
+
+
 
 
     
