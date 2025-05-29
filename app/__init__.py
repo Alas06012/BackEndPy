@@ -23,9 +23,9 @@ def create_app():
     
     # limiter = Limiter(
     #     key_func=get_remote_address,  # Usa la IP del usuario para limitar intentos
-    #     app=app,
-    #     default_limits=["5 per minute"]  # 5 intentos por minuto 
+    #     default_limits=["15 per minute"]  # 15 intentos por minuto 
     # )
+    # limiter.init_app(app)
     
     #CORS(app, resources={r"/register": {"origins": "http://localhost:5173"}})
     #CORS(app)
