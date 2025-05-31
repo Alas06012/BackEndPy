@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2025 at 12:41 AM
+-- Generation Time: May 29, 2025 at 10:09 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -876,6 +876,20 @@ INSERT INTO `level_history` (`pk_history`, `level_fk`, `user_fk`, `created_at`, 
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `login_attempts_ip`
+--
+
+CREATE TABLE `login_attempts_ip` (
+  `id` int(11) NOT NULL,
+  `ip_address` varchar(45) NOT NULL,
+  `failed_count` int(11) DEFAULT 0,
+  `last_attempt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `blocked_until` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `mcer_level`
 --
 
@@ -897,6 +911,20 @@ INSERT INTO `mcer_level` (`pk_level`, `level_name`, `level_desc`, `created_at`) 
 (4, 'B2', 'Intermedio-Avanzado', '2025-04-19 15:12:37'),
 (5, 'C1', 'Avanzado', '2025-04-19 15:13:23'),
 (6, 'C2', 'Experto', '2025-04-19 15:13:23');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `password_reset_tokens`
+--
+
+CREATE TABLE `password_reset_tokens` (
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `expires_at` datetime NOT NULL,
+  `created_at` datetime DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -1172,7 +1200,7 @@ CREATE TABLE `questions_titles` (
 
 INSERT INTO `questions_titles` (`pk_title`, `title_name`, `title_test`, `title_type`, `title_url`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'Dear Helen - Workshop Feedback', 'Dear Helen,\n\nI would like to congratulate you on organising such an excellent and informative workshop. I know a lot of people learnt a great deal from it. Can you pass on my thanks to Doctor Friedman for his fascinating talk on Staff Motivation? I realise how lucky we were that he was able to find the time for us. The feedback from the staff was very positive. Let’s hope we actually see an improvement in staff motivation as a result!\n\nBy the way, I’m missing my list of addresses of the delegates who attended. Did I happen to leave it in your office? It’s just that I haven’t seen it since our meeting on Friday.\n\nThanks again for a great day,\nAnne', 'READING', NULL, 'ACTIVE', '2025-04-19 12:47:13', '2025-04-19 16:33:59'),
-(2, 'Incomplete Sentences', 'For each question you will see an incomplete sentence. You are to choose the one word or phrase that best completes the sentence', 'READING', NULL, 'ACTIVE', '2025-04-19 14:46:19', '2025-04-19 16:39:35'),
+(2, 'Dear Helen - Workshop Feedback', 'Dear Helen,\n\nI would like to congratulate you on organising such an excellent and informative workshop. I know a lot of people learnt a great deal from it. Can you pass on my thanks to Doctor Friedman for his fascinating talk on Staff Motivation? I realise how lucky we were that he was able to find the time for us. The feedback from the staff was very positive. Let’s hope we actually see an improvement in staff motivation as a result!\n\nBy the way, I’m missing my list of addresses of the delegates who attended. Did I happen to leave it in your office? It’s just that I haven’t seen it since our meeting on Friday.\n\nThanks again for a great day,\nAnne', 'READING', NULL, 'ACTIVE', '2025-04-19 14:46:19', '2025-05-28 21:24:34'),
 (3, 'Daily Conversation - Coffee Shop', '[SPEAKER_A] Hi, can I get a large coffee?\n[SPEAKER_B] Sure, do you want cream or sugar?\n[SPEAKER_A] Just black, please.', 'LISTENING', 'https://example.com/audio1.mp3', 'ACTIVE', '2025-05-01 13:41:26', '2025-05-01 13:41:26'),
 (4, 'Office Meeting', '[SPEAKER_A] Did you get the report?\n[SPEAKER_B] Yes, I sent it yesterday.\n[SPEAKER_A] Great, we need it for today\'s meeting.', 'LISTENING', 'https://example.com/audio2.mp3', 'ACTIVE', '2025-05-01 13:41:26', '2025-05-01 13:41:26'),
 (5, 'Ordering Food', '[SPEAKER_A] I\'d like a cheeseburger and fries.\n[SPEAKER_B] Would you like a drink with that?\n[SPEAKER_A] Yes, a soda please.', 'LISTENING', 'https://example.com/audio3.mp3', 'ACTIVE', '2025-05-01 13:41:26', '2025-05-01 13:41:26'),
@@ -1273,7 +1301,10 @@ INSERT INTO `questions_titles` (`pk_title`, `title_name`, `title_test`, `title_t
 (100, 'Grocery Store', '[SPEAKER_A] Where can I find the milk????\n[SPEAKER_B] Aisle 5, next to the cheese.\n[SPEAKER_A] Thanks!', 'LISTENING', 'https://example.com/audio48.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-08 21:26:29'),
 (101, 'Morning Exercise', '[SPEAKER_A] Are you ready for our run?\n[SPEAKER_B] Yes, let me grab my water.\n[SPEAKER_A] Don’t forget sunscreen!', 'LISTENING', 'https://example.com/audio49.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
 (102, 'School Pickup', '[SPEAKER_A] I’m here to pick up my son, Daniel.\n[SPEAKER_B] He’s in Room 204.\n[SPEAKER_A] Thank you.', 'LISTENING', 'https://example.com/audio50.mp3', 'ACTIVE', '2025-05-01 13:51:53', '2025-05-01 13:51:53'),
-(103, 'Reading Passage – Business Memo', 'To: All Staff\nFrom: Human Resources Department\nDate: May 9, 2025\nSubject: New Remote Work Policy\n\nAs part of our continued efforts to improve employee satisfaction and productivity, we are pleased to announce a new remote work policy. Beginning June 1, employees will be allowed to work from home up to three days per week, depending on departmental needs and manager approval.\n\nTo support this transition, the company will provide a stipend of $150 to assist with home office setup. We encourage all employees to speak with their supervisors to determine a schedule that works best for their team.\n\nTraining on remote collaboration tools will be offered next week. Please check your email for registration details.\n\nWe believe this change will help promote a better work-life balance and contribute to a more flexible and efficient work environment.\n\nIf you have any questions, do not hesitate to contact HR.', 'READING', '', 'ACTIVE', '2025-05-08 21:21:36', '2025-05-08 21:33:03');
+(103, 'Reading Passage – Business Memo', 'To: All Staff\nFrom: Human Resources Department\nDate: May 9, 2025\nSubject: New Remote Work Policy\n\nAs part of our continued efforts to improve employee satisfaction and productivity, we are pleased to announce a new remote work policy. Beginning June 1, employees will be allowed to work from home up to three days per week, depending on departmental needs and manager approval.\n\nTo support this transition, the company will provide a stipend of $150 to assist with home office setup. We encourage all employees to speak with their supervisors to determine a schedule that works best for their team.\n\nTraining on remote collaboration tools will be offered next week. Please check your email for registration details.\n\nWe believe this change will help promote a better work-life balance and contribute to a more flexible and efficient work environment.\n\nIf you have any questions, do not hesitate to contact HR.', 'READING', '', 'ACTIVE', '2025-05-08 21:21:36', '2025-05-08 21:33:03'),
+(104, 'The Lost Phone', 'Last Saturday, Emma went to the park with her little brother to play soccer. It was a sunny day, and the park was full of people. After playing for an hour, they sat under a tree to rest. Emma took out her phone to check the time, but then she put it on the grass and forgot about it', 'LISTENING', 'https://storage.googleapis.com/necdiagnostics-bucket/audios/20250528-dcec30082ef5431c9acebfd5883e6edc.mp3', 'ACTIVE', '2025-05-28 20:57:57', '2025-05-28 20:57:57'),
+(105, 'The Lost Phone 2', 'Last Saturday, Emma went to the park with her little brother to play soccer. It was a sunny day, and the park was full of people. NEW AUDIO.', 'LISTENING', 'https://storage.googleapis.com/necdiagnostics-bucket/audios/20250528-25b54aa08ad24004a952d90bf044469e.mp3', 'ACTIVE', '2025-05-28 21:18:11', '2025-05-28 21:31:17'),
+(106, 'The Lost Phone 3', 'After playing for an hour, they sat under a tree to rest. Emma took out her phone to check the time, but then she put it on the grass and forgot about it.', 'READING', NULL, 'ACTIVE', '2025-05-28 21:19:32', '2025-05-28 21:19:32');
 
 -- --------------------------------------------------------
 
@@ -1362,6 +1393,13 @@ CREATE TABLE `study_materials` (
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `study_materials`
+--
+
+INSERT INTO `study_materials` (`pk_studymaterial`, `studymaterial_title`, `studymaterial_desc`, `studymaterial_type`, `studymaterial_url`, `level_fk`, `studymaterial_tags`, `created_at`) VALUES
+(1, 'Material Test', 'test de material', 'PDF', 'https://storage.googleapis.com/necdiagnostics-bucket/f8ba9de0-0cbe-4647-b9f7-2f88d98dbc58-Bitacora_del_Proyecto_de_Tesis_NECDiagnostics.pdf', 2, 'PDF, BITACORA', '2025-05-28 21:56:25');
+
 -- --------------------------------------------------------
 
 --
@@ -1395,7 +1433,10 @@ INSERT INTO `tests` (`pk_test`, `user_fk`, `test_points`, `test_passed`, `status
 (55, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-27 22:27:13', '2025-05-27 22:27:13'),
 (57, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:10:53', '2025-05-28 13:10:53'),
 (58, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:11:09', '2025-05-28 13:11:09'),
-(59, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17');
+(59, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(60, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(61, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(62, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38');
 
 -- --------------------------------------------------------
 
@@ -2436,7 +2477,295 @@ INSERT INTO `test_details` (`pk_testdetail`, `test_fk`, `title_fk`, `question_fk
 (1725, 59, 11, 44, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
 (1726, 59, 11, 42, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
 (1727, 59, 11, 43, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
-(1728, 59, 11, 41, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17');
+(1728, 59, 11, 41, NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
+(1729, 60, 18, 70, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1730, 60, 18, 69, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1731, 60, 18, 71, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1732, 60, 18, 72, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1733, 60, 50, 136, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1734, 60, 50, 134, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1735, 60, 50, 135, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1736, 60, 50, 137, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1737, 60, 24, 94, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1738, 60, 24, 96, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1739, 60, 24, 93, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1740, 60, 24, 95, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1741, 60, 1, 3, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1742, 60, 1, 1, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1743, 60, 1, 4, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1744, 60, 1, 2, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1745, 60, 44, 111, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1746, 60, 44, 112, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1747, 60, 44, 113, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1748, 60, 44, 110, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1749, 60, 22, 86, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1750, 60, 22, 87, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1751, 60, 22, 88, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1752, 60, 22, 85, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1753, 60, 51, 140, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1754, 60, 51, 138, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1755, 60, 51, 139, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1756, 60, 51, 141, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1757, 60, 2, 7, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1758, 60, 2, 6, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1759, 60, 2, 8, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1760, 60, 2, 5, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1761, 60, 19, 74, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1762, 60, 19, 76, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1763, 60, 19, 73, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1764, 60, 19, 75, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1765, 60, 49, 131, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1766, 60, 49, 132, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1767, 60, 49, 133, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1768, 60, 49, 130, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1769, 60, 46, 120, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1770, 60, 46, 118, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1771, 60, 46, 121, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1772, 60, 46, 119, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1773, 60, 23, 91, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1774, 60, 23, 92, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1775, 60, 23, 90, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1776, 60, 23, 89, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1777, 60, 31, 158, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1778, 60, 31, 159, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1779, 60, 31, 160, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1780, 60, 31, 161, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1781, 60, 34, 171, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1782, 60, 34, 170, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1783, 60, 34, 172, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1784, 60, 34, 173, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1785, 60, 29, 152, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1786, 60, 29, 150, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1787, 60, 29, 153, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1788, 60, 29, 151, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1789, 60, 39, 192, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1790, 60, 39, 193, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1791, 60, 39, 191, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1792, 60, 39, 190, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1793, 60, 36, 178, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1794, 60, 36, 181, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1795, 60, 36, 179, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1796, 60, 36, 180, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1797, 60, 28, 149, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1798, 60, 28, 146, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1799, 60, 28, 148, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1800, 60, 28, 147, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1801, 60, 4, 15, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1802, 60, 4, 13, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1803, 60, 4, 14, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1804, 60, 4, 16, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1805, 60, 3, 9, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1806, 60, 3, 11, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1807, 60, 3, 10, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1808, 60, 3, 12, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1809, 60, 35, 174, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1810, 60, 35, 176, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1811, 60, 35, 177, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1812, 60, 35, 175, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1813, 60, 5, 19, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1814, 60, 5, 17, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1815, 60, 5, 20, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1816, 60, 5, 18, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1817, 60, 11, 42, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1818, 60, 11, 44, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1819, 60, 11, 43, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1820, 60, 11, 41, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1821, 60, 12, 46, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1822, 60, 12, 45, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1823, 60, 12, 47, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1824, 60, 12, 48, NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
+(1825, 61, 26, 103, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1826, 61, 26, 101, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1827, 61, 26, 102, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1828, 61, 26, 104, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1829, 61, 20, 79, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1830, 61, 20, 80, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1831, 61, 20, 77, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1832, 61, 20, 78, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1833, 61, 24, 94, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1834, 61, 24, 93, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1835, 61, 24, 96, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1836, 61, 24, 95, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1837, 61, 51, 138, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1838, 61, 51, 139, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1839, 61, 51, 141, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1840, 61, 51, 140, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1841, 61, 2, 6, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1842, 61, 2, 7, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1843, 61, 2, 5, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1844, 61, 2, 8, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1845, 61, 50, 134, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1846, 61, 50, 136, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1847, 61, 50, 137, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1848, 61, 50, 135, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1849, 61, 16, 63, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1850, 61, 16, 64, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1851, 61, 16, 61, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1852, 61, 16, 62, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1853, 61, 49, 133, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1854, 61, 49, 131, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1855, 61, 49, 130, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1856, 61, 49, 132, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1857, 61, 47, 123, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1858, 61, 47, 124, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1859, 61, 47, 122, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1860, 61, 47, 125, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1861, 61, 25, 100, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1862, 61, 25, 97, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1863, 61, 25, 99, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1864, 61, 25, 98, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1865, 61, 48, 127, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1866, 61, 48, 128, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1867, 61, 48, 129, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1868, 61, 48, 126, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1869, 61, 44, 111, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1870, 61, 44, 113, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1871, 61, 44, 110, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1872, 61, 44, 112, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1873, 61, 14, 55, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1874, 61, 14, 56, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1875, 61, 14, 53, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1876, 61, 14, 54, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1877, 61, 32, 165, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1878, 61, 32, 164, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1879, 61, 32, 163, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1880, 61, 32, 162, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1881, 61, 31, 161, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1882, 61, 31, 159, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1883, 61, 31, 158, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1884, 61, 31, 160, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1885, 61, 10, 37, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1886, 61, 10, 38, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1887, 61, 10, 39, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1888, 61, 10, 40, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1889, 61, 39, 192, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1890, 61, 39, 193, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1891, 61, 39, 190, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1892, 61, 39, 191, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1893, 61, 9, 33, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1894, 61, 9, 34, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1895, 61, 9, 35, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1896, 61, 9, 36, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1897, 61, 30, 154, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1898, 61, 30, 157, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1899, 61, 30, 155, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1900, 61, 30, 156, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1901, 61, 5, 20, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1902, 61, 5, 19, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1903, 61, 5, 17, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1904, 61, 5, 18, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1905, 61, 11, 43, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1906, 61, 11, 44, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1907, 61, 11, 41, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1908, 61, 11, 42, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1909, 61, 29, 153, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1910, 61, 29, 151, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1911, 61, 29, 152, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1912, 61, 29, 150, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1913, 61, 13, 52, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1914, 61, 13, 49, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1915, 61, 13, 51, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1916, 61, 13, 50, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1917, 61, 35, 174, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1918, 61, 35, 175, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1919, 61, 35, 177, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1920, 61, 35, 176, NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
+(1921, 62, 21, 82, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1922, 62, 21, 83, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1923, 62, 21, 84, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1924, 62, 21, 81, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1925, 62, 24, 93, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1926, 62, 24, 94, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1927, 62, 24, 95, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1928, 62, 24, 96, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1929, 62, 23, 90, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1930, 62, 23, 91, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1931, 62, 23, 89, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1932, 62, 23, 92, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1933, 62, 47, 125, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1934, 62, 47, 124, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1935, 62, 47, 123, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1936, 62, 47, 122, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1937, 62, 17, 67, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1938, 62, 17, 65, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1939, 62, 17, 68, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1940, 62, 17, 66, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1941, 62, 16, 61, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1942, 62, 16, 64, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1943, 62, 16, 63, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1944, 62, 16, 62, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1945, 62, 48, 126, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1946, 62, 48, 129, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1947, 62, 48, 128, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1948, 62, 48, 127, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1949, 62, 26, 101, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1950, 62, 26, 103, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1951, 62, 26, 104, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1952, 62, 26, 102, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1953, 62, 46, 119, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1954, 62, 46, 118, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1955, 62, 46, 120, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1956, 62, 46, 121, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1957, 62, 18, 72, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1958, 62, 18, 69, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1959, 62, 18, 71, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1960, 62, 18, 70, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1961, 62, 50, 137, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1962, 62, 50, 134, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1963, 62, 50, 135, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1964, 62, 50, 136, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1965, 62, 20, 80, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1966, 62, 20, 77, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1967, 62, 20, 78, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1968, 62, 20, 79, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1969, 62, 28, 147, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1970, 62, 28, 148, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1971, 62, 28, 149, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1972, 62, 28, 146, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1973, 62, 14, 55, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1974, 62, 14, 53, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1975, 62, 14, 54, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1976, 62, 14, 56, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1977, 62, 3, 9, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1978, 62, 3, 11, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1979, 62, 3, 10, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1980, 62, 3, 12, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1981, 62, 5, 18, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1982, 62, 5, 20, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1983, 62, 5, 17, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1984, 62, 5, 19, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1985, 62, 31, 158, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1986, 62, 31, 161, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1987, 62, 31, 159, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1988, 62, 31, 160, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1989, 62, 12, 48, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1990, 62, 12, 45, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1991, 62, 12, 46, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1992, 62, 12, 47, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1993, 62, 39, 191, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1994, 62, 39, 192, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1995, 62, 39, 193, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1996, 62, 39, 190, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1997, 62, 30, 154, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1998, 62, 30, 156, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(1999, 62, 30, 155, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2000, 62, 30, 157, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2001, 62, 11, 42, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2002, 62, 11, 43, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2003, 62, 11, 41, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2004, 62, 11, 44, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2005, 62, 38, 187, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2006, 62, 38, 188, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2007, 62, 38, 186, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2008, 62, 38, 189, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2009, 62, 35, 176, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2010, 62, 35, 174, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2011, 62, 35, 177, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2012, 62, 35, 175, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2013, 62, 9, 33, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2014, 62, 9, 35, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2015, 62, 9, 34, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2016, 62, 9, 36, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38');
 
 -- --------------------------------------------------------
 
@@ -2482,25 +2811,31 @@ CREATE TABLE `users` (
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `status` varchar(10) DEFAULT NULL,
   `verification_code` varchar(25) DEFAULT NULL,
-  `is_verified` tinyint(1) DEFAULT NULL
+  `is_verified` tinyint(1) DEFAULT NULL,
+  `last_code_sent_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`pk_user`, `user_email`, `user_password`, `user_name`, `user_lastname`, `user_carnet`, `user_role`, `created_at`, `updated_at`, `status`, `verification_code`, `is_verified`) VALUES
-(1, 'diego.alas20@itca.edu.sv', '$2b$12$c8UxdsABjP3wM4aBcMkFueZIhmEcZsOHIZiYiE/dhbVK2UncoPIha', 'Diego Alexander', 'Alas Morales', '024120', 'admin', '2025-04-17 14:41:40', '2025-04-19 11:03:40', 'ACTIVE', NULL, NULL),
-(2, 'ivan.osorio20@itca.edu.sv', '$2b$12$I3HZ4ZZNpdUqo7PByHl.ae/LXwCDRbwQ2lMS8yfIsaqzLd9eJtDb6', 'Ivan', 'Osorio', '020320', 'student', '2025-04-17 14:42:48', '2025-04-17 14:42:48', 'ACTIVE', NULL, NULL),
-(3, 'pedro@itca.edu.sv', '$2b$12$DC0q29icM2M5X7yJsW6Gj.Ley8qgXHfFyxbfvp.ItJO65pTXE.kMi', 'Pedro', 'Dias', '123456', 'admin', '2025-04-17 14:45:32', '2025-05-08 20:51:33', 'ACTIVE', NULL, NULL),
-(6, 'roberto@itca.edu.sv', '$2b$12$eVRVCKS2FA8Ue7Yl.y02p.Mfnrt/cUhlgrp9R.UhXsN5RfXXmsm22', 'Roberto', 'Perez', '0000001', 'student', '2025-04-17 14:46:06', '2025-04-19 11:15:03', 'INACTIVE', NULL, NULL),
-(10, 'marcos.morales@itca.edu.sv', '$2b$12$t3yCsokeRSihqI5YbY1Hxe9I/XS.k42pmrXr1uKctEmCE56PeZVmO', 'Marcos', 'Morales', '578855', 'student', '2025-05-08 20:52:41', '2025-05-08 20:53:26', 'INACTIVE', NULL, NULL),
-(11, 'douglas.martinez@itca.edu.sv', '$2b$12$fI0c.zTk3w6f8962yVAisus4Ewes/h503BC/nctrQ8ZYyZEec47xe', 'Douglas', 'Martinez', '343544', 'student', '2025-05-08 20:54:23', '2025-05-08 20:54:23', 'ACTIVE', NULL, NULL),
-(12, 'diegoalas06+1@gmail.com', '$2b$12$FAU8YLk1MEzKguzhj7aLEeQRhDZ7Xmqk0r8mDsRrhXyYk5hlecHJ.', 'Diego', 'Alas', '77777777', 'teacher', '2025-05-21 15:42:02', '2025-05-21 16:20:59', 'ACTIVE', NULL, NULL),
-(13, 'diegoalas06+2@gmail.com', '$2b$12$28Ap79XXiswMR0yIskk5UeAe00EddugiyTkHadvKPsEJ3gjIMhXgm', 'Diego', 'Student Test', '22222222', 'student', '2025-05-21 16:34:37', '2025-05-26 11:37:12', 'ACTIVE', NULL, NULL),
-(16, 'diegoalas06+3@itca.edu.sv', '$2b$12$le0iQnzdCrxT4YLcq5tLxu7ZkCr1QNavuWF6g7TpWh1zsZMUN9SCO', 'Diego', 'Test1', '11223344', 'student', '2025-05-28 16:18:51', '2025-05-28 16:18:51', 'PENDING', '850945', 0),
-(18, 'diegoalas06+4@gmail.com', '$2b$12$NWQCoWTU3uiwIY6aiN097eSh7yX9Ssr91da0Ogao4iav98VKYctm2', 'Diego', 'Test2', '22334455', 'student', '2025-05-28 16:20:13', '2025-05-28 16:20:13', 'PENDING', '207554', 0),
-(19, 'diegoalas06+5@gmail.com', '$2b$12$XUrHm3RIVzuWMX4TDQ8nl.0DZGRfxtXaj4DPwz5rWoKt7SJU1uI1a', 'Diego', 'Test2', '2233445555', 'student', '2025-05-28 16:25:56', '2025-05-28 16:29:01', 'ACTIVE', NULL, 1);
+INSERT INTO `users` (`pk_user`, `user_email`, `user_password`, `user_name`, `user_lastname`, `user_carnet`, `user_role`, `created_at`, `updated_at`, `status`, `verification_code`, `is_verified`, `last_code_sent_at`) VALUES
+(1, 'diego.alas20@itca.edu.sv', '$2b$12$c8UxdsABjP3wM4aBcMkFueZIhmEcZsOHIZiYiE/dhbVK2UncoPIha', 'Diego Alexander', 'Alas Morales', '024120', 'admin', '2025-04-17 14:41:40', '2025-05-28 23:52:04', 'ACTIVE', '223813', 1, '2025-05-28 23:51:26'),
+(2, 'ivan.osorio20@itca.edu.sv', '$2b$12$I3HZ4ZZNpdUqo7PByHl.ae/LXwCDRbwQ2lMS8yfIsaqzLd9eJtDb6', 'Ivan', 'Osorio', '020320', 'student', '2025-04-17 14:42:48', '2025-05-28 23:52:12', 'ACTIVE', NULL, 1, NULL),
+(3, 'pedro@itca.edu.sv', '$2b$12$DC0q29icM2M5X7yJsW6Gj.Ley8qgXHfFyxbfvp.ItJO65pTXE.kMi', 'Pedro', 'Dias', '123456', 'admin', '2025-04-17 14:45:32', '2025-05-28 23:52:17', 'ACTIVE', NULL, 1, NULL),
+(6, 'roberto@itca.edu.sv', '$2b$12$eVRVCKS2FA8Ue7Yl.y02p.Mfnrt/cUhlgrp9R.UhXsN5RfXXmsm22', 'Roberto', 'Perez', '0000001', 'student', '2025-04-17 14:46:06', '2025-05-28 23:52:21', 'INACTIVE', NULL, 1, NULL),
+(10, 'marcos.morales@itca.edu.sv', '$2b$12$t3yCsokeRSihqI5YbY1Hxe9I/XS.k42pmrXr1uKctEmCE56PeZVmO', 'Marcos', 'Morales', '578855', 'student', '2025-05-08 20:52:41', '2025-05-28 23:52:25', 'INACTIVE', NULL, 1, NULL),
+(11, 'douglas.martinez@itca.edu.sv', '$2b$12$fI0c.zTk3w6f8962yVAisus4Ewes/h503BC/nctrQ8ZYyZEec47xe', 'Douglas', 'Martinez', '343544', 'student', '2025-05-08 20:54:23', '2025-05-28 23:52:33', 'ACTIVE', NULL, 1, NULL),
+(12, 'diegoalas06+1@gmail.com', '$2b$12$FAU8YLk1MEzKguzhj7aLEeQRhDZ7Xmqk0r8mDsRrhXyYk5hlecHJ.', 'Diego', 'Alas', '77777777', 'teacher', '2025-05-21 15:42:02', '2025-05-28 23:52:37', 'ACTIVE', NULL, 1, NULL),
+(13, 'diegoalas06+2@gmail.com', '$2b$12$7xvmoVH2Kntfj17HMBJ2ceUnFU72IYB.zFSBJy.gJCuiOKNGF.5sO', 'Diego', 'Student Test', '22222222', 'student', '2025-05-21 16:34:37', '2025-05-29 13:31:23', 'ACTIVE', NULL, 1, NULL),
+(16, 'diegoalas06+3@gmail.com', '$2b$12$GAU361mOqm1QqCBEc1Ow7.ngeSEZfQWgOcH9Kygb5SU65xnDBDRWO', 'Diego', 'Test1', '11223344', 'student', '2025-05-28 16:18:51', '2025-05-29 14:08:06', 'ACTIVE', NULL, 1, '2025-05-29 14:00:22'),
+(18, 'diegoalas06+4@gmail.com', '$2b$12$NWQCoWTU3uiwIY6aiN097eSh7yX9Ssr91da0Ogao4iav98VKYctm2', 'Diego', 'Test2', '22334455', 'student', '2025-05-28 16:20:13', '2025-05-29 00:06:15', 'ACTIVE', NULL, 1, '2025-05-29 00:05:41'),
+(19, 'diegoalas06+5@gmail.com', '$2b$12$XUrHm3RIVzuWMX4TDQ8nl.0DZGRfxtXaj4DPwz5rWoKt7SJU1uI1a', 'Diego', 'Test2', '2233445555', 'student', '2025-05-28 16:25:56', '2025-05-28 16:29:01', 'ACTIVE', NULL, 1, NULL),
+(20, 'diegoalas06+6@gmail.com', '$2b$12$AtywakD1/AzN9ZPOMP6LzOu.VE5ewAMP/bjC6adW57R86NsXv5bM6', 'Usuario', 'Test', '33445566', 'student', '2025-05-28 17:07:13', '2025-05-28 17:08:23', 'ACTIVE', NULL, 1, NULL),
+(21, 'diegoalas06+9@gmail.com', '$2b$12$qIsDHZIiK2eXGa1QB5Sc1.KfEoSmDJ5kNAP0zRN.RbADz4/NCJ12W', 'Test', 'Tes4', '999999999', 'student', '2025-05-28 18:18:25', '2025-05-28 18:19:08', 'ACTIVE', NULL, 1, NULL),
+(22, 'diegoalas06+10@gmail.com', '$2b$12$vM.B8CbA2OegkW2HOkBebO23IETP4rAaxIbcRHoxCyZ49gPOE3c/.', 'Diego Test', 'Alas Test', '88995511', 'student', '2025-05-28 23:38:10', '2025-05-29 00:19:33', 'ACTIVE', NULL, 1, '2025-05-29 00:17:48'),
+(24, 'diegoalas06+11@gmail.com', '$2b$12$SDMwZdfbO6x3E9aUvsLSeOXvXVkWzKDfuWZRLQC6X6tVoOrtIQWEG', 'Diego Test', 'Alas Test', '88995512', 'student', '2025-05-28 23:42:54', '2025-05-29 00:33:05', 'ACTIVE', NULL, 1, '2025-05-29 00:24:57'),
+(25, 'diegoalas06+12@gmail.com', '$2b$12$O5Ki5kFaOQuujMtiZbUZquFgUrKBAJZ9rcvkP8j/A.CzHDqawlOw.', 'Diego Test', 'Alas Test', '88995513', 'student', '2025-05-28 23:44:05', '2025-05-28 23:44:05', 'PENDING', '605492', 0, NULL);
 
 -- --------------------------------------------------------
 
@@ -2556,10 +2891,24 @@ ALTER TABLE `level_history`
   ADD KEY `idx_user_fk` (`user_fk`);
 
 --
+-- Indexes for table `login_attempts_ip`
+--
+ALTER TABLE `login_attempts_ip`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `ip_address` (`ip_address`);
+
+--
 -- Indexes for table `mcer_level`
 --
 ALTER TABLE `mcer_level`
   ADD PRIMARY KEY (`pk_level`);
+
+--
+-- Indexes for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_id` (`user_id`);
 
 --
 -- Indexes for table `prompts`
@@ -2671,10 +3020,22 @@ ALTER TABLE `level_history`
   MODIFY `pk_history` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
+-- AUTO_INCREMENT for table `login_attempts_ip`
+--
+ALTER TABLE `login_attempts_ip`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT for table `mcer_level`
 --
 ALTER TABLE `mcer_level`
   MODIFY `pk_level` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `prompts`
@@ -2692,7 +3053,7 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `questions_titles`
 --
 ALTER TABLE `questions_titles`
-  MODIFY `pk_title` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `pk_title` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
 
 --
 -- AUTO_INCREMENT for table `recommendations`
@@ -2710,13 +3071,13 @@ ALTER TABLE `strengths`
 -- AUTO_INCREMENT for table `study_materials`
 --
 ALTER TABLE `study_materials`
-  MODIFY `pk_studymaterial` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `pk_studymaterial` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `pk_test` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `pk_test` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `test_comments`
@@ -2728,7 +3089,7 @@ ALTER TABLE `test_comments`
 -- AUTO_INCREMENT for table `test_details`
 --
 ALTER TABLE `test_details`
-  MODIFY `pk_testdetail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1729;
+  MODIFY `pk_testdetail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2017;
 
 --
 -- AUTO_INCREMENT for table `toeic_sections`
@@ -2740,7 +3101,7 @@ ALTER TABLE `toeic_sections`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `weaknesses`
@@ -2764,6 +3125,12 @@ ALTER TABLE `answers`
 ALTER TABLE `level_history`
   ADD CONSTRAINT `level_history_ibfk_1` FOREIGN KEY (`level_fk`) REFERENCES `mcer_level` (`pk_level`),
   ADD CONSTRAINT `level_history_ibfk_2` FOREIGN KEY (`user_fk`) REFERENCES `users` (`pk_user`);
+
+--
+-- Constraints for table `password_reset_tokens`
+--
+ALTER TABLE `password_reset_tokens`
+  ADD CONSTRAINT `password_reset_tokens_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`pk_user`);
 
 --
 -- Constraints for table `questions`

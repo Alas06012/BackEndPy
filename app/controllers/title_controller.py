@@ -26,9 +26,9 @@ class TitleController:
             return jsonify({"message": "Permisos insuficientes"}), 403
         
         data = request.get_json()
-        title = data.get('title')
-        content = data.get('content')
-        type_ = data.get('type')
+        title = data.get('title_name')
+        content = data.get('title_test')
+        type_ = data.get('title_type')
         
         if not content or not title or not type_:
             return jsonify({"message": "Datos incompletos"}), 400
@@ -152,10 +152,10 @@ class TitleController:
         data = request.get_json()
 
         id_ = data.get('id')
-        new_content = data.get('content')
-        new_type = data.get('type')
+        new_content = data.get('title_test')
+        new_type = data.get('title_type')
         new_status = data.get('status')
-        new_title = data.get('title')
+        new_title = data.get('title_name')
         
         if not id_:
             return jsonify({"error": "ID requerido"}), 400

@@ -24,12 +24,58 @@ class Usuario:
         return user
     
     @staticmethod
-    def get_user_by_email(email):
+    def get_user_by_email(email, status = 'ACTIVE'):
         cur = mysql.connection.cursor()
-        status = "ACTIVE"
-        cur.execute("""SELECT pk_user, user_name, user_lastname, user_email, user_role, user_password FROM users WHERE user_email = %s AND STATUS = %s""", (email,status))
+        cur.execute("""SELECT pk_user, user_name, user_lastname, user_email, user_role, user_password, is_verified, last_code_sent_at FROM users WHERE user_email = %s AND STATUS = %s""", (email,status))
         user = cur.fetchone()
         return user
+
+    @staticmethod
+    def get_password_change_token(token):
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT user_id, expires_at FROM password_reset_tokens
+            WHERE token = %s
+        """, (token,))
+        pw_token = cur.fetchone()
+        return pw_token
+
+    @staticmethod
+    def get_ip_attempts(ip):
+        cur = mysql.connection.cursor()
+        # Consultar intentos por IP
+        cur.execute("""
+            SELECT failed_count, blocked_until
+            FROM login_attempts_ip
+            WHERE ip_address = %s
+        """, (ip,))
+        n_attempts = cur.fetchone()
+        return n_attempts
+    
+    
+    @staticmethod
+    def change_password_with_token(hashed_pw, user_id, token):
+        try:
+            cur = mysql.connection.cursor()
+
+            cur.execute("SELECT * FROM password_reset_tokens WHERE token = %s AND user_id = %s", (token, user_id))
+            token_row = cur.fetchone()
+
+            if not token_row:
+                mysql.connection.rollback()
+                return False
+
+            cur.execute("UPDATE users SET user_password = %s WHERE pk_user = %s", (hashed_pw, user_id))
+            cur.execute("DELETE FROM password_reset_tokens WHERE token = %s", (token,))
+
+            mysql.connection.commit()
+            return True
+
+        except Exception as e:
+            mysql.connection.rollback()
+            return False
+
+        
 
     @staticmethod
     def create_user(name, user_lastname, carnet, user_email, user_role, password, code, is_verified):
@@ -67,6 +113,23 @@ class Usuario:
 
         cursor.close()
         return False
+    
+    @staticmethod
+    def update_verification_code(email, new_code):
+        try:
+            cursor = mysql.connection.cursor()
+            cursor.execute("""
+                UPDATE users 
+                SET verification_code = %s, last_code_sent_at = NOW()
+                WHERE user_email = %s
+            """, (new_code, email))
+            mysql.connection.commit()
+            cursor.close()
+            return True
+        except Exception as e:
+            print(f"Error updating verification code: {e}")
+            return False
+
 
             
 
@@ -93,9 +156,6 @@ class Usuario:
                 return str(e).lower()
         
        
-   
-        
-
     @staticmethod
     def delete_user(email):
         try:
@@ -115,13 +175,68 @@ class Usuario:
        
        
     @staticmethod
+    def clean_ip_attempts(ip):
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("DELETE FROM login_attempts_ip WHERE ip_address = %s", (ip,))
+            mysql.connection.commit()
+        except Exception as e:
+           return str(e).lower()       
+       
+       
+    @staticmethod
+    def update_ip_attempt(new_count, now, blocked_until, ip):
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                UPDATE login_attempts_ip
+                SET failed_count = %s, last_attempt = %s, blocked_until = %s
+                WHERE ip_address = %s
+            """, (new_count, now, blocked_until, ip))
+            mysql.connection.commit()
+        except Exception as e:
+           return str(e).lower()    
+       
+       
+    @staticmethod
+    def insert_ip_attempt(ip_address, failed_count, last_attempt, blocked_until):
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                INSERT INTO login_attempts_ip (ip_address, failed_count, last_attempt, blocked_until)
+                VALUES (%s, %s, %s, %s)
+            """, (ip_address, failed_count, last_attempt, blocked_until))
+            mysql.connection.commit()
+        except Exception as e:
+           return str(e).lower() 
+       
+       
+       
+    @staticmethod
+    def insert_password_change_token(pk_user, token, expires_at):
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                INSERT INTO password_reset_tokens (user_id, token, expires_at)
+                VALUES (%s, %s, %s)
+            """, (pk_user, token, expires_at))
+            mysql.connection.commit()  
+        except Exception as e:
+           return str(e).lower() 
+       
+    
+    
+       
+       
+       
+    @staticmethod
     def activate_user(email):
         try:
        # Conexión a la base de datos
             cur = mysql.connection.cursor()
             status = "ACTIVE"
             # Ejecutar la consulta SQL
-            cur.execute("""UPDATE users set status = %s where user_email = %s AND status = 'INACTIVE' """, 
+            cur.execute("""UPDATE users set status = %s where user_email = %s AND (status = 'INACTIVE' or status ='PENDING') """, 
                         (status,email))
             
             # Confirmar cambios en la base de datos
