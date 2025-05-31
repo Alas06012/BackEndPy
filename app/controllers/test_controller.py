@@ -208,7 +208,7 @@ class TestController:
 
             # 1. Verificar si el test está marcado como FAILED
             test = Test.get_test_by_id(test_id)
-            if not test or test['status'] != 'FAILED':
+            if not test or (test['status'] != 'FAILED' and test['status'] != 'IN_PROGRESS'):
                 return jsonify({
                     "success": False,
                     "message": "El examen no está en estado 'FAILED' o no existe"
