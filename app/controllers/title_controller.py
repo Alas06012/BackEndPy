@@ -355,7 +355,6 @@ class TitleController:
             status = data.get('status', 'Todos')
             title_type = data.get('title_type')  
             title_name = data.get('title_name')
-            print("title_name:", data.get('title_name'))
  
             # Validación de paginación
             if page < 1 or per_page < 1:

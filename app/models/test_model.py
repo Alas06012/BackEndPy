@@ -149,7 +149,7 @@ class Test:
                 )
 
             status = 'COMPLETED'
-            print(status ,passed, toeic_score, test_id)
+            
             # 3. Marcar test como completado
             cur.execute(
                 """UPDATE tests 
@@ -170,6 +170,7 @@ class Test:
         
     @staticmethod
     def get_paginated_tests(filters=None, page=1, per_page=20):
+        print(filters)
         try:
             conn = mysql.connection
             cur = conn.cursor()

@@ -323,10 +323,9 @@ class TestController:
             "user_name": data.get("user_name"),
             "user_lastname": data.get("user_lastname"),
             "test_passed": data.get("test_passed"),
-            "level_name": data.get("level"),
+            "level_name": data.get("level_name"),
             "status": data.get("status")
         }
-
             results = Test.get_paginated_tests(filters=filters, page=page, per_page=per_page)
             if isinstance(results, str):
                 return jsonify({"error": "Error en la base de datos", "details": results}), 500

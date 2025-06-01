@@ -412,8 +412,7 @@ class UserController:
 
         # Crear el usuario en la base de datos
         response = Usuario.activate_user(email)
-        print(response)
-        
+              
         if response == 'True':
             return jsonify({"message": "The user was successfully activated"}), 201
         elif 'duplicate entry' in str(response).lower(): 

@@ -161,8 +161,6 @@ class QuestionTitle:
         try:
             conn = mysql.connection
             cur = conn.cursor(MySQLdb.cursors.DictCursor)
-            print("title_type:", title_type)
-            print("status:", status)
 
             # Inicializar los filtros
             where_clauses = []

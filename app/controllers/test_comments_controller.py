@@ -72,8 +72,6 @@ class TestComments:
                 return jsonify({"success": False, "message": "ID del test inválido"}), 400
 
             comments = TestCommentsModel.get_comments_by_test_id(int(test_id))
-
-            print(comments)
             return jsonify({
                 "success": True,
                 "data": comments
