@@ -125,3 +125,4 @@ class TestDetailController:
 
         except Exception as e:
             return jsonify({"error": "Error interno", "details": str(e)}), 500
+        print(e)
