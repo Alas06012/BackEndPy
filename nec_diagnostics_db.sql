@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2025 at 10:09 PM
--- Server version: 10.4.28-MariaDB
--- PHP Version: 8.2.4
+-- Generation Time: Jun 07, 2025 at 10:52 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -871,7 +871,8 @@ INSERT INTO `level_history` (`pk_history`, `level_fk`, `user_fk`, `created_at`, 
 (16, 3, 13, '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
 (17, 3, 13, '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
 (18, 3, 1, '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
-(19, 1, 1, '2025-05-27 22:24:17', '2025-05-27 22:24:17');
+(19, 1, 1, '2025-05-27 22:24:17', '2025-05-27 22:24:17'),
+(20, 2, 1, '2025-06-07 13:14:34', '2025-06-07 13:14:34');
 
 -- --------------------------------------------------------
 
@@ -1304,7 +1305,8 @@ INSERT INTO `questions_titles` (`pk_title`, `title_name`, `title_test`, `title_t
 (103, 'Reading Passage – Business Memo', 'To: All Staff\nFrom: Human Resources Department\nDate: May 9, 2025\nSubject: New Remote Work Policy\n\nAs part of our continued efforts to improve employee satisfaction and productivity, we are pleased to announce a new remote work policy. Beginning June 1, employees will be allowed to work from home up to three days per week, depending on departmental needs and manager approval.\n\nTo support this transition, the company will provide a stipend of $150 to assist with home office setup. We encourage all employees to speak with their supervisors to determine a schedule that works best for their team.\n\nTraining on remote collaboration tools will be offered next week. Please check your email for registration details.\n\nWe believe this change will help promote a better work-life balance and contribute to a more flexible and efficient work environment.\n\nIf you have any questions, do not hesitate to contact HR.', 'READING', '', 'ACTIVE', '2025-05-08 21:21:36', '2025-05-08 21:33:03'),
 (104, 'The Lost Phone', 'Last Saturday, Emma went to the park with her little brother to play soccer. It was a sunny day, and the park was full of people. After playing for an hour, they sat under a tree to rest. Emma took out her phone to check the time, but then she put it on the grass and forgot about it', 'LISTENING', 'https://storage.googleapis.com/necdiagnostics-bucket/audios/20250528-dcec30082ef5431c9acebfd5883e6edc.mp3', 'ACTIVE', '2025-05-28 20:57:57', '2025-05-28 20:57:57'),
 (105, 'The Lost Phone 2', 'Last Saturday, Emma went to the park with her little brother to play soccer. It was a sunny day, and the park was full of people. NEW AUDIO.', 'LISTENING', 'https://storage.googleapis.com/necdiagnostics-bucket/audios/20250528-25b54aa08ad24004a952d90bf044469e.mp3', 'ACTIVE', '2025-05-28 21:18:11', '2025-05-28 21:31:17'),
-(106, 'The Lost Phone 3', 'After playing for an hour, they sat under a tree to rest. Emma took out her phone to check the time, but then she put it on the grass and forgot about it.', 'READING', NULL, 'ACTIVE', '2025-05-28 21:19:32', '2025-05-28 21:19:32');
+(106, 'The Lost Phone 3', 'After playing for an hour, they sat under a tree to rest. Emma took out her phone to check the time, but then she put it on the grass and forgot about it.', 'READING', NULL, 'ACTIVE', '2025-05-28 21:19:32', '2025-05-28 21:19:32'),
+(107, 'Short Talk', 'person 1: Hello, how are you?\nperson 2: Fine, thank you.', 'LISTENING', 'https://storage.googleapis.com/necdiagnostics-bucket/audios/20250607-77af993e21a342ee8655a80fd5509116.mp3', 'ACTIVE', '2025-06-07 13:19:01', '2025-06-07 13:19:01');
 
 -- --------------------------------------------------------
 
@@ -1340,7 +1342,8 @@ INSERT INTO `recommendations` (`pk_recommend`, `test_fk`, `recommendation_text`,
 (18, 41, 'To improve reading comprehension, the student should practice with texts of varying difficulty levels, focusing on understanding main ideas and details. For listening skills, engaging with English audio materials, such as podcasts or news broadcasts, and practicing note-taking can enhance the ability to catch and remember key points. Additionally, working on vocabulary and grammar exercises tailored to the TOEIC format will help in addressing specific weaknesses identified in the test.', '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
 (19, 41, 'To improve, the student should focus on enhancing their comprehension skills at the A1 and A2 levels by practicing with simpler texts and listening exercises. Engaging with a variety of materials, such as news articles, simple stories, and instructional texts, can help. For listening, practicing with short conversations and focusing on key details will be beneficial. Additionally, the student should work on answering all questions, even if uncertain, to improve time management and guessing strategies. Regular practice with TOEIC-specific materials will also help familiarize the student with the exam format and question types.', '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
 (20, 29, 'To improve, the student should practice more with reading comprehension exercises focusing on dates and deadlines to enhance their attention to detail. For listening, engaging in exercises that simulate interview scenarios could help in better understanding questions and responses. Utilizing TOEIC practice tests that cover a wide range of topics and question types would also be beneficial in addressing these areas of weakness.', '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
-(21, 54, 'The student should focus on building a strong foundation in English vocabulary and grammar, starting with A1 level materials. Practicing with TOEIC-specific exercises can help familiarize them with the exam format. Additionally, working on reading and listening comprehension skills through daily practice with English texts and audio materials is essential. Time management strategies should also be developed to ensure all questions are attempted in future tests.', '2025-05-27 22:24:17', '2025-05-27 22:24:17');
+(21, 54, 'The student should focus on building a strong foundation in English vocabulary and grammar, starting with A1 level materials. Practicing with TOEIC-specific exercises can help familiarize them with the exam format. Additionally, working on reading and listening comprehension skills through daily practice with English texts and audio materials is essential. Time management strategies should also be developed to ensure all questions are attempted in future tests.', '2025-05-27 22:24:17', '2025-05-27 22:24:17'),
+(22, 63, 'To improve, the student should focus on expanding their vocabulary and practicing with materials that cover a wide range of topics to enhance comprehension skills. Regular practice with TOEIC-style questions, especially those at the A2 and B1 levels, will help. For listening, engaging with English audio materials daily can improve comprehension and speed. For reading, practicing skimming and scanning techniques will aid in quickly identifying key information. Additionally, working on time management during the test is crucial to ensure all questions are attempted.', '2025-06-07 13:14:34', '2025-06-07 13:14:34');
 
 -- --------------------------------------------------------
 
@@ -1374,7 +1377,8 @@ INSERT INTO `strengths` (`pk_strength`, `test_fk`, `strength_text`, `created_at`
 (16, 41, 'The student demonstrates a strong understanding of grammar and vocabulary at the B1 and B2 levels, as evidenced by correct answers in incomplete sentences and some reading comprehension questions. They are particularly good at identifying the correct word or phrase to complete a sentence, showing a solid grasp of English syntax and usage.', '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
 (17, 41, 'The student demonstrates a good understanding of grammar and vocabulary at the B1 and B2 levels, as evidenced by correct answers in \'Incomplete sentences\' and \'Reading comprehension\' sections. For example, correctly using \'for\' in \'She has been working here _______ five years.\' and understanding the context in \'All the orders got _________ on schedule.\' with \'delivered\'. The student also shows ability to comprehend and respond to questions about instructions and safety procedures, such as correctly identifying the main purpose of fire evacuation instructions.', '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
 (18, 29, 'The student demonstrates a good understanding of basic and intermediate level questions, particularly in identifying the type of internships offered and the departments involved. They also correctly answered questions related to the time frame mentioned in a conversation and the aspirations of a candidate, showing an ability to grasp key details in both reading and listening sections.', '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
-(19, 54, 'The student correctly identified the type of precipitation expected in one instance, showing a basic understanding of weather-related vocabulary.', '2025-05-27 22:24:17', '2025-05-27 22:24:17');
+(19, 54, 'The student correctly identified the type of precipitation expected in one instance, showing a basic understanding of weather-related vocabulary.', '2025-05-27 22:24:17', '2025-05-27 22:24:17'),
+(20, 63, 'The student demonstrated a basic understanding of simple texts and conversations, particularly in identifying the type of document in a reading comprehension question and correctly answering a question about who is calling in a listening comprehension section.', '2025-06-07 13:14:34', '2025-06-07 13:14:34');
 
 -- --------------------------------------------------------
 
@@ -1436,7 +1440,8 @@ INSERT INTO `tests` (`pk_test`, `user_fk`, `test_points`, `test_passed`, `status
 (59, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 13:11:17', '2025-05-28 13:11:17'),
 (60, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 22:57:22', '2025-05-28 22:57:22'),
 (61, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 22:58:18', '2025-05-28 22:58:18'),
-(62, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38');
+(62, 1, NULL, NULL, 'IN_PROGRESS', NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(63, 1, 400, 0, 'COMPLETED', 2, '2025-06-07 13:12:18', '2025-06-07 13:14:34');
 
 -- --------------------------------------------------------
 
@@ -1462,7 +1467,8 @@ INSERT INTO `test_comments` (`pk_comment`, `comment_title`, `comment_value`, `us
 (1, 'Buen desempeño', 'El estudiante mostró una gran comprensión del tema.', 1, 29, '2025-05-13 13:41:10', '2025-05-13 13:41:10'),
 (2, 'Buen desempeño', 'El estudiante mostró una gran comprensión del tema.', 1, 29, '2025-05-21 13:37:35', '2025-05-21 13:37:35'),
 (3, 'Buen desempeño', 'El estudiante mostró una gran comprensión del tema.', 1, 29, '2025-05-21 13:38:17', '2025-05-21 13:38:17'),
-(4, 'Nuevo título del comentario', 'Este es el nuevo contenido del comentario...', 1, 29, '2025-05-21 13:38:21', '2025-05-21 14:19:09');
+(4, 'Nuevo título del comentario', 'Este es el nuevo contenido del comentario...', 1, 29, '2025-05-21 13:38:21', '2025-05-21 14:19:09'),
+(5, 'Mejora en Vocabulario', 'En la pregunta 5, algo.', 1, 63, '2025-06-07 13:15:39', '2025-06-07 13:15:39');
 
 -- --------------------------------------------------------
 
@@ -2765,7 +2771,103 @@ INSERT INTO `test_details` (`pk_testdetail`, `test_fk`, `title_fk`, `question_fk
 (2013, 62, 9, 33, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
 (2014, 62, 9, 35, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
 (2015, 62, 9, 34, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
-(2016, 62, 9, 36, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38');
+(2016, 62, 9, 36, NULL, '2025-05-28 23:20:38', '2025-05-28 23:20:38'),
+(2017, 63, 18, 70, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2018, 63, 18, 72, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2019, 63, 18, 69, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2020, 63, 18, 71, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2021, 63, 45, 116, 469, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2022, 63, 45, 114, 461, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2023, 63, 45, 117, 473, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2024, 63, 45, 115, 464, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2025, 63, 21, 82, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2026, 63, 21, 81, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2027, 63, 21, 84, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2028, 63, 21, 83, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2029, 63, 49, 132, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2030, 63, 49, 130, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2031, 63, 49, 131, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2032, 63, 49, 133, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2033, 63, 51, 140, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2034, 63, 51, 141, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2035, 63, 51, 138, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2036, 63, 51, 139, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2037, 63, 46, 118, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2038, 63, 46, 119, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2039, 63, 46, 120, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2040, 63, 46, 121, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2041, 63, 27, 105, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2042, 63, 27, 107, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2043, 63, 27, 106, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2044, 63, 27, 108, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2045, 63, 26, 104, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2046, 63, 26, 101, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2047, 63, 26, 103, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2048, 63, 26, 102, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2049, 63, 23, 90, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2050, 63, 23, 92, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2051, 63, 23, 91, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2052, 63, 23, 89, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2053, 63, 50, 135, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2054, 63, 50, 136, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2055, 63, 50, 137, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2056, 63, 50, 134, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2057, 63, 19, 76, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2058, 63, 19, 75, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2059, 63, 19, 73, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2060, 63, 19, 74, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2061, 63, 20, 77, 316, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2062, 63, 20, 79, 325, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2063, 63, 20, 80, 326, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2064, 63, 20, 78, 319, '2025-06-07 13:12:18', '2025-06-07 13:14:19'),
+(2065, 63, 32, 164, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2066, 63, 32, 165, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2067, 63, 32, 162, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2068, 63, 32, 163, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2069, 63, 6, 24, 103, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2070, 63, 6, 21, 90, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2071, 63, 6, 23, 99, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2072, 63, 6, 22, 95, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2073, 63, 5, 17, 76, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2074, 63, 5, 20, 86, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2075, 63, 5, 19, 83, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2076, 63, 5, 18, 79, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2077, 63, 31, 160, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2078, 63, 31, 158, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2079, 63, 31, 159, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2080, 63, 31, 161, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2081, 63, 38, 188, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2082, 63, 38, 186, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2083, 63, 38, 189, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2084, 63, 38, 187, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2085, 63, 28, 149, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2086, 63, 28, 148, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2087, 63, 28, 146, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2088, 63, 28, 147, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2089, 63, 12, 45, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2090, 63, 12, 47, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2091, 63, 12, 48, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2092, 63, 12, 46, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2093, 63, 30, 155, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2094, 63, 30, 156, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2095, 63, 30, 154, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2096, 63, 30, 157, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2097, 63, 9, 36, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2098, 63, 9, 35, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2099, 63, 9, 34, 143, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2100, 63, 9, 33, 138, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2101, 63, 34, 171, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2102, 63, 34, 173, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2103, 63, 34, 172, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2104, 63, 34, 170, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2105, 63, 8, 31, 132, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2106, 63, 8, 32, 135, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2107, 63, 8, 30, 128, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2108, 63, 8, 29, 122, '2025-06-07 13:12:18', '2025-06-07 13:14:18'),
+(2109, 63, 33, 166, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2110, 63, 33, 168, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2111, 63, 33, 167, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18'),
+(2112, 63, 33, 169, NULL, '2025-06-07 13:12:18', '2025-06-07 13:12:18');
 
 -- --------------------------------------------------------
 
@@ -2805,7 +2907,7 @@ CREATE TABLE `users` (
   `user_password` varchar(100) NOT NULL,
   `user_name` varchar(100) NOT NULL,
   `user_lastname` varchar(100) NOT NULL,
-  `user_carnet` varchar(10) NOT NULL,
+  `user_carnet` varchar(10) DEFAULT NULL,
   `user_role` varchar(20) DEFAULT NULL,
   `created_at` datetime DEFAULT current_timestamp(),
   `updated_at` datetime DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -2835,7 +2937,12 @@ INSERT INTO `users` (`pk_user`, `user_email`, `user_password`, `user_name`, `use
 (21, 'diegoalas06+9@gmail.com', '$2b$12$qIsDHZIiK2eXGa1QB5Sc1.KfEoSmDJ5kNAP0zRN.RbADz4/NCJ12W', 'Test', 'Tes4', '999999999', 'student', '2025-05-28 18:18:25', '2025-05-28 18:19:08', 'ACTIVE', NULL, 1, NULL),
 (22, 'diegoalas06+10@gmail.com', '$2b$12$vM.B8CbA2OegkW2HOkBebO23IETP4rAaxIbcRHoxCyZ49gPOE3c/.', 'Diego Test', 'Alas Test', '88995511', 'student', '2025-05-28 23:38:10', '2025-05-29 00:19:33', 'ACTIVE', NULL, 1, '2025-05-29 00:17:48'),
 (24, 'diegoalas06+11@gmail.com', '$2b$12$SDMwZdfbO6x3E9aUvsLSeOXvXVkWzKDfuWZRLQC6X6tVoOrtIQWEG', 'Diego Test', 'Alas Test', '88995512', 'student', '2025-05-28 23:42:54', '2025-05-29 00:33:05', 'ACTIVE', NULL, 1, '2025-05-29 00:24:57'),
-(25, 'diegoalas06+12@gmail.com', '$2b$12$O5Ki5kFaOQuujMtiZbUZquFgUrKBAJZ9rcvkP8j/A.CzHDqawlOw.', 'Diego Test', 'Alas Test', '88995513', 'student', '2025-05-28 23:44:05', '2025-05-28 23:44:05', 'PENDING', '605492', 0, NULL);
+(25, 'diegoalas06+12@gmail.com', '$2b$12$O5Ki5kFaOQuujMtiZbUZquFgUrKBAJZ9rcvkP8j/A.CzHDqawlOw.', 'Diego Test', 'Alas Test', '88995513', 'student', '2025-05-28 23:44:05', '2025-05-28 23:44:05', 'PENDING', '605492', 0, NULL),
+(26, 'diegoalas06@gmail.com', '$2b$12$NdBFpQDVbuF7VNF8iIJRFuli/KChCh9yx/LXMtNv8cPOAoKkvhPGe', 'Diego', 'Alas', NULL, 'student', '2025-06-07 13:57:17', '2025-06-07 13:58:28', 'ACTIVE', NULL, 1, NULL),
+(27, 'diegoalas06+22@gmail.com', '$2b$12$/u0qUChHJS5RneX56urV9O3X/ZBskOr.kDbfPA2X8Sc6g/Y5uHkHe', 'Diego', 'Alas', NULL, 'student', '2025-06-07 14:02:16', '2025-06-07 14:02:16', 'ACTIVE', NULL, 1, NULL),
+(28, 'diegoalas06+23@gmail.com', '$2b$12$Rns2jPLw4ccDZR.uq/0LKuPBTJLG6cXj34/s3N0et/8nsvWtWuxNm', 'Diego', 'Alas', NULL, 'student', '2025-06-07 14:03:12', '2025-06-07 14:05:16', 'ACTIVE', NULL, 1, NULL),
+(29, 'diegoalas06+24@gmail.com', '$2b$12$ucj.iG3vQ9d8YFa5QsCPHOZrAqk71rwfjB8OVNDXqb6nt7ngSN4Wq', 'Diego', 'Alas', NULL, 'student', '2025-06-07 14:13:23', '2025-06-07 14:16:46', 'ACTIVE', NULL, 1, NULL),
+(30, 'diegoalas06+25@gmail.com', '$2b$12$y2OeiysnzQT2X3rHc9Fwx.i6TpxF4o7UEpwccPUYS6psqMeuKkUQO', 'Diego', 'Alas', NULL, 'student', '2025-06-07 14:19:22', '2025-06-07 14:19:47', 'ACTIVE', NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -2869,7 +2976,8 @@ INSERT INTO `weaknesses` (`pk_weakness`, `test_fk`, `weakness_text`, `created_at
 (16, 41, 'The student struggles with reading comprehension questions, especially those at the A1 and A2 levels, indicating difficulty with basic understanding and inference from texts. There are also instances of unanswered questions and incorrect answers in listening comprehension, suggesting challenges in processing spoken English and extracting key information from conversations.', '2025-05-26 11:27:10', '2025-05-26 11:27:10'),
 (17, 41, 'The student struggles with basic comprehension in some A1 level questions, particularly in the \'Reading comprehension\' and \'Short conversation\' sections. For instance, incorrectly answering \'What should you use in case of fire?\' with \'Elevators\' instead of \'stairs\', and misunderstanding simple instructions or details in conversations. There are also instances where the student did not answer questions, indicating possible difficulties with time management or understanding the questions.', '2025-05-26 11:27:32', '2025-05-26 11:27:32'),
 (18, 29, 'The student struggled with accurately identifying the application deadline, confusing \'May 30th\' with \'June 15th\'. Additionally, they misinterpreted the interviewer\'s question about the candidate\'s future, indicating a need for improved attention to detail and comprehension in both reading and listening contexts.', '2025-05-26 11:33:17', '2025-05-26 11:33:17'),
-(19, 54, 'The student failed to answer the majority of the questions, including very basic ones at the A1 level, indicating significant gaps in both vocabulary and comprehension skills across all tested areas. The student also did not attempt many questions, which suggests difficulties with time management or confidence in their English abilities.', '2025-05-27 22:24:17', '2025-05-27 22:24:17');
+(19, 54, 'The student failed to answer the majority of the questions, including very basic ones at the A1 level, indicating significant gaps in both vocabulary and comprehension skills across all tested areas. The student also did not attempt many questions, which suggests difficulties with time management or confidence in their English abilities.', '2025-05-27 22:24:17', '2025-05-27 22:24:17'),
+(20, 63, 'The student struggled with answering questions correctly across both reading and listening sections, especially those requiring comprehension of slightly more complex information or context. Many questions were left unanswered, indicating difficulty with time management or understanding the material. Specific areas of difficulty include understanding detailed instructions, identifying main purposes of texts, and comprehending conversations that include indirect information or require inference.', '2025-06-07 13:14:34', '2025-06-07 13:14:34');
 
 --
 -- Indexes for dumped tables
@@ -2992,9 +3100,7 @@ ALTER TABLE `toeic_sections`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`pk_user`),
   ADD UNIQUE KEY `user_email` (`user_email`),
-  ADD UNIQUE KEY `user_carnet` (`user_carnet`),
-  ADD KEY `idx_email` (`user_email`),
-  ADD KEY `idx_carnet` (`user_carnet`);
+  ADD KEY `idx_email` (`user_email`);
 
 --
 -- Indexes for table `weaknesses`
@@ -3017,13 +3123,13 @@ ALTER TABLE `answers`
 -- AUTO_INCREMENT for table `level_history`
 --
 ALTER TABLE `level_history`
-  MODIFY `pk_history` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `pk_history` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `login_attempts_ip`
 --
 ALTER TABLE `login_attempts_ip`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `mcer_level`
@@ -3053,19 +3159,19 @@ ALTER TABLE `questions`
 -- AUTO_INCREMENT for table `questions_titles`
 --
 ALTER TABLE `questions_titles`
-  MODIFY `pk_title` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=107;
+  MODIFY `pk_title` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=108;
 
 --
 -- AUTO_INCREMENT for table `recommendations`
 --
 ALTER TABLE `recommendations`
-  MODIFY `pk_recommend` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `pk_recommend` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `strengths`
 --
 ALTER TABLE `strengths`
-  MODIFY `pk_strength` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `pk_strength` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `study_materials`
@@ -3077,19 +3183,19 @@ ALTER TABLE `study_materials`
 -- AUTO_INCREMENT for table `tests`
 --
 ALTER TABLE `tests`
-  MODIFY `pk_test` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `pk_test` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT for table `test_comments`
 --
 ALTER TABLE `test_comments`
-  MODIFY `pk_comment` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `pk_comment` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `test_details`
 --
 ALTER TABLE `test_details`
-  MODIFY `pk_testdetail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2017;
+  MODIFY `pk_testdetail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2113;
 
 --
 -- AUTO_INCREMENT for table `toeic_sections`
@@ -3101,13 +3207,13 @@ ALTER TABLE `toeic_sections`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `pk_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `weaknesses`
 --
 ALTER TABLE `weaknesses`
-  MODIFY `pk_weakness` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `pk_weakness` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- Constraints for dumped tables
