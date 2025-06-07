@@ -14,7 +14,7 @@ class LevelController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         level_name = data.get('level_name')
@@ -38,7 +38,7 @@ class LevelController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         id_ = data.get('id')
@@ -75,7 +75,7 @@ class LevelController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         id_ = data.get('id')
@@ -98,7 +98,7 @@ class LevelController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] != 'admin':
-            return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+            return jsonify({"message": "Insufficient permissions"}), 403
 
         try:
             levels = Level.get_all_levels()
@@ -116,7 +116,7 @@ class LevelController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
@@ -126,7 +126,7 @@ class LevelController:
 
             # Validación de paginación
             if page < 1 or per_page < 1:
-                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+                return jsonify({"error": "Pagination parameters must be ≥ 1"}), 400
             if per_page > 100:
                 per_page = 100
 
@@ -134,7 +134,7 @@ class LevelController:
             paginated_results = Level.get_paginated_levels(search=search, page=page, per_page=per_page)
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             # Construcción de la respuesta
             response = {
@@ -154,7 +154,7 @@ class LevelController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
                 
     # MÉTODO PARA OBTENER NIVELES PAGINADOS Y FILTRADOS
     @staticmethod
@@ -165,7 +165,7 @@ class LevelController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)
@@ -173,14 +173,14 @@ class LevelController:
             search = data.get('search', '')  # Búsqueda por nombre o descripción
 
             if page < 1 or per_page < 1:
-                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+                return jsonify({"error": "Pagination parameters must be ≥ 1"}), 400
             if per_page > 100:
                 per_page = 100
 
             paginated_results = Level.get_paginated_levels(search=search, page=page, per_page=per_page)
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             response = {
                 "levels": paginated_results['data'],
@@ -198,5 +198,5 @@ class LevelController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
 

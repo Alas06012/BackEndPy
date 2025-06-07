@@ -14,7 +14,7 @@ class PromptController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+            return jsonify({"message": "Insufficient permissions."}), 404
     
         response = Prompt.get_active_prompt()
 
@@ -31,7 +31,7 @@ class PromptController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+            return jsonify({"message": "Insufficient permissions."}), 404
         
         data = request.get_json()
         prompt_name = data.get('prompt_name')
@@ -56,7 +56,7 @@ class PromptController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+            return jsonify({"message": "Insufficient permissions."}), 404
         
         data = request.get_json()
         prompt_name = data.get('prompt_name')
@@ -81,7 +81,7 @@ class PromptController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+            return jsonify({"message": "Insufficient permissions."}), 404
         
         data = request.get_json()
         id_ = data.get('id_')
@@ -106,7 +106,7 @@ class PromptController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] != 'admin':
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)
@@ -125,7 +125,7 @@ class PromptController:
             )
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             response = {
                 "prompts": paginated_results['data'],
@@ -141,7 +141,7 @@ class PromptController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
        
        
 

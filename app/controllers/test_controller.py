@@ -328,7 +328,7 @@ class TestController:
         }
             results = Test.get_paginated_tests(filters=filters, page=page, per_page=per_page)
             if isinstance(results, str):
-                return jsonify({"error": "Error en la base de datos", "details": results}), 500
+                return jsonify({"error": "Database error", "details": results}), 500
 
             response = {
                 "tests": results["data"],
@@ -344,7 +344,7 @@ class TestController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
         
         
         
@@ -375,12 +375,12 @@ class TestController:
             result = Test.get_test_analysis_by_id(test_id)
 
             if isinstance(result, str):
-                return jsonify({"error": "Error en la base de datos", "details": result}), 500
+                return jsonify({"error": "Database error", "details": result}), 500
 
             return jsonify(result), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
 
 

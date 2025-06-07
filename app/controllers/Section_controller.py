@@ -13,7 +13,7 @@ class SectionController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         section_type = data.get('type_')
@@ -36,7 +36,7 @@ class SectionController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         section_pk = data.get('id')
@@ -72,7 +72,7 @@ class SectionController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] != 'admin':
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         section_pk = data.get('id')
@@ -95,7 +95,7 @@ class SectionController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+            return jsonify({"message": "Insufficient permissions"}), 403
 
         try:
             sections = Section.get_all_sections()
@@ -113,7 +113,7 @@ class SectionController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
@@ -123,7 +123,7 @@ class SectionController:
 
             # Validación de paginación
             if page < 1 or per_page < 1:
-                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+                return jsonify({"error": "Pagination parameters must be ≥ 1"}), 400
             if per_page > 100:
                 per_page = 100
 
@@ -131,7 +131,7 @@ class SectionController:
             paginated_results = Section.get_paginated_sections(search=search, page=page, per_page=per_page)
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             # Construcción de la respuesta
             response = {
@@ -151,7 +151,7 @@ class SectionController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
         
         
     @staticmethod
@@ -162,7 +162,7 @@ class SectionController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)
@@ -170,14 +170,14 @@ class SectionController:
             search = data.get('search', '')
 
             if page < 1 or per_page < 1:
-                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+                return jsonify({"error": "Pagination parameters must be ≥ 1"}), 400
             if per_page > 100:
                 per_page = 100
 
             paginated_results = Section.get_paginated_sections(search=search, page=page, per_page=per_page)
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             response = {
                 "sections": paginated_results['data'],
@@ -195,4 +195,4 @@ class SectionController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
