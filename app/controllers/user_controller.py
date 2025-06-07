@@ -79,12 +79,11 @@ class UserController:
         data = request.get_json()
         name = data.get('name')
         lastname = data.get('lastname')
-        carnet = data.get('carnet')
         email = data.get('email')
         role = 'student'
         password = data.get('password')
 
-        if not email or not password or not name or not lastname or not carnet:
+        if not email or not password or not name or not lastname:
             return jsonify({"message": "Please complete all required fields"}), 400
 
         # Hashear la contraseña antes de guardarla
@@ -94,7 +93,7 @@ class UserController:
         code = UserController.generate_code()
         
         # Crear el usuario en la base de datos
-        response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'), code, is_verified=False)
+        response = Usuario.create_user(name, lastname, email, role, hashed_password.decode('utf-8'), code, is_verified=False)
         
         if response == 'True':
             try:
@@ -338,20 +337,19 @@ class UserController:
         data = request.get_json()
         name = data.get('name')
         lastname = data.get('lastname')
-        carnet = data.get('carnet')
         email = data.get('email')
         role = 'student'
         password = data.get('password')
         
         
-        if not email or not password or not name or not lastname or not carnet:
+        if not email or not password or not name or not lastname:
             return jsonify({"message": "Please complete all required fields"}), 400
 
         # Hashear la contraseña antes de guardarla
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
         
         # Crear el usuario en la base de datos
-        response = Usuario.create_user(name, lastname, carnet, email, role, hashed_password.decode('utf-8'))
+        response = Usuario.create_user(name, lastname, email, role, hashed_password.decode('utf-8'), status="ACTIVE", code=None, is_verified=True)
         
         if response == 'True':
             return jsonify({"message": "The user was successfully created"}), 201
@@ -437,19 +435,18 @@ class UserController:
         data = request.get_json()
         name = data.get('name')
         lastname = data.get('lastname')
-        carnet = data.get('carnet')
         current_email = data.get('current_email')
         new_email = data.get('new_email')
         role = data.get('role')
         
-        if not current_email or not name or not lastname or not carnet or not role:
+        if not current_email or not name or not lastname or not role:
             return jsonify({"message": "Please complete all required fields"}), 400
         elif not new_email :
             # Editar el usuario en la base de datos
-            response = Usuario.edit_user(name, lastname, carnet, role, current_email)
+            response = Usuario.edit_user(name, lastname, role, current_email)
         else:
              # Editar el usuario en la base de datos
-            response = Usuario.edit_user(name, lastname, carnet, role, current_email, new_email)
+            response = Usuario.edit_user(name, lastname, role, current_email, new_email)
                
         if response == 'True':
             return jsonify({"message": "The user was successfully modified"}), 201
@@ -477,7 +474,6 @@ class UserController:
                 "user_email": data.get("user_email"),
                 "user_name": data.get("user_name"),
                 "user_lastname": data.get("user_lastname"),
-                "user_carnet": data.get("user_carnet"),
                 "user_role": data.get("user_role"),
                 "status": data.get("status")
             }

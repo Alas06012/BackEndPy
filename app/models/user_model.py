@@ -78,14 +78,17 @@ class Usuario:
         
 
     @staticmethod
-    def create_user(name, user_lastname, carnet, user_email, user_role, password, code, is_verified):
+    def create_user(name, user_lastname, user_email, user_role, password, code, is_verified, status=None):
         try:
             # Conexión a la base de datos
             cur = mysql.connection.cursor()
-            status = "PENDING"
+            
+            if status == None:
+                status = "PENDING"
+                
             # Ejecutar la consulta SQL
-            cur.execute("INSERT INTO users (user_name, user_lastname, user_carnet, user_email, user_role, user_password, Status, verification_code, is_verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)", 
-                        (name, user_lastname, carnet, user_email, user_role, password, status, code, is_verified))
+            cur.execute("INSERT INTO users (user_name, user_lastname, user_email, user_role, user_password, Status, verification_code, is_verified) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)", 
+                        (name, user_lastname, user_email, user_role, password, status, code, is_verified))
             
             # Confirmar cambios en la base de datos
             mysql.connection.commit()
@@ -134,13 +137,13 @@ class Usuario:
             
 
     @staticmethod
-    def edit_user(name, user_lastname, carnet, user_role, current_email, new_email = None):
+    def edit_user(name, user_lastname, user_role, current_email, new_email = None):
         
         if new_email == None:
             try:
                 cur = mysql.connection.cursor()
-                cur.execute("UPDATE users SET user_name = %s, user_lastname = %s,  user_carnet = %s, user_role=%s WHERE user_email = %s", 
-                            (name, user_lastname, carnet, user_role, current_email))
+                cur.execute("UPDATE users SET user_name = %s, user_lastname = %s, user_role=%s WHERE user_email = %s", 
+                            (name, user_lastname, user_role, current_email))
                 mysql.connection.commit()
                 return 'True'
             except Exception as e:
@@ -148,8 +151,8 @@ class Usuario:
         else:
             try:
                 cur = mysql.connection.cursor()
-                cur.execute("UPDATE users SET user_name = %s, user_lastname = %s, user_carnet = %s, user_role=%s, user_email=%s WHERE user_email = %s", 
-                            (name, user_lastname, carnet, user_role, new_email, current_email))
+                cur.execute("UPDATE users SET user_name = %s, user_lastname = %s, user_role=%s, user_email=%s WHERE user_email = %s", 
+                            (name, user_lastname, user_role, new_email, current_email))
                 mysql.connection.commit()
                 return 'True'
             except Exception as e:
@@ -269,10 +272,6 @@ class Usuario:
                     where_clauses.append("user_lastname LIKE %s")
                     params.append(f"%{filters['user_lastname']}%")
 
-                if filters.get("user_carnet"):
-                    where_clauses.append("user_carnet LIKE %s")
-                    params.append(f"%{filters['user_carnet']}%")
-
                 if filters.get("user_role"):
                     where_clauses.append("user_role = %s")
                     params.append(filters["user_role"])
@@ -296,7 +295,6 @@ class Usuario:
                     user_email,
                     user_name,
                     user_lastname,
-                    user_carnet,
                     user_role,
                     status,
                     created_at,
