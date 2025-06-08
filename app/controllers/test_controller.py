@@ -144,6 +144,7 @@ class TestController:
 
                 for attempt in range(max_retries):
                     apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
+                    print(apiresponse)
                     if TestController._is_valid_ia_response(apiresponse):
                         break
                     apiresponse = None  # asegurarse de que si no es válida, se descarte
