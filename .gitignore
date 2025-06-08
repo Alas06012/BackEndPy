@@ -39,13 +39,4 @@ vendor/
 /app/__pycache__
 /app/models/__pycache__
 /app/routes/__pycache__
-
-#Omiciones de la adaptacion en la nube
-dockerignore
-.dockerignore
-*.dockerignore
-
-/app/__init__.py
-.config.py
-*.config.py
-config.py
+storage-tesis.json
