@@ -42,3 +42,4 @@ wrapt==1.17.2
 flask_mail
 google-cloud-storage
 google-cloud-texttospeech
+pandas
