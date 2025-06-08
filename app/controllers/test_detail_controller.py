@@ -28,6 +28,7 @@ class TestDetailController:
             sections = {}
             for row in raw_data:
                 try:
+                    # Extraer valores de la fila
                     section_type = row['section_type']
                     section_desc = row['section_desc']
                     title_id = row['title_id']
@@ -42,11 +43,19 @@ class TestDetailController:
                     is_correct = row['is_correct']
                     selected_answer_id = row['selected_answer_id']
 
-                    if section_type not in sections:
-                        sections[section_type] = {'section_desc': section_desc, 'titles': {}}
+                    # FIX: usar una clave compuesta para distinguir secciones correctamente
+                    section_key = f"{section_type}::{section_desc}"
 
-                    if title_id not in sections[section_type]['titles']:
-                        sections[section_type]['titles'][title_id] = {
+                    if section_key not in sections:
+                        sections[section_key] = {
+                            'section_type': section_type,
+                            'section_desc': section_desc,
+                            'titles': {}
+                        }
+
+                    if title_id not in sections[section_key]['titles']:
+                        sections[section_key]['titles'][title_id] = {
+                            'title_id': title_id,
                             'title_name': title_name,
                             'title_test': title_test,
                             'title_type': title_type,
@@ -54,28 +63,37 @@ class TestDetailController:
                             'questions': {}
                         }
 
-                    if question_id not in sections[section_type]['titles'][title_id]['questions']:
-                        sections[section_type]['titles'][title_id]['questions'][question_id] = {
+                    if question_id not in sections[section_key]['titles'][title_id]['questions']:
+                        sections[section_key]['titles'][title_id]['questions'][question_id] = {
+                            'question_id': question_id,
                             'question_text': question_text,
                             'options': [],
                             'student_answer': None,
                             'correct_answer': None
                         }
 
-                    option = {'option_id': answer_id, 'text': answer_text, 'is_correct': bool(is_correct)}
-                    sections[section_type]['titles'][title_id]['questions'][question_id]['options'].append(option)
+                    # Agregar opción
+                    option = {
+                        'option_id': answer_id,
+                        'text': answer_text,
+                        'is_correct': bool(is_correct)
+                    }
+                    sections[section_key]['titles'][title_id]['questions'][question_id]['options'].append(option)
 
+                    # Marcar respuesta seleccionada por el estudiante
                     if selected_answer_id and selected_answer_id == answer_id:
-                        sections[section_type]['titles'][title_id]['questions'][question_id]['student_answer'] = {
+                        sections[section_key]['titles'][title_id]['questions'][question_id]['student_answer'] = {
                             'option_id': answer_id,
                             'text': answer_text
                         }
 
+                    # Marcar respuesta correcta
                     if is_correct:
-                        sections[section_type]['titles'][title_id]['questions'][question_id]['correct_answer'] = {
+                        sections[section_key]['titles'][title_id]['questions'][question_id]['correct_answer'] = {
                             'option_id': answer_id,
                             'text': answer_text
                         }
+
                 except KeyError as e:
                     print(f"Clave no encontrada en row: {e}, row: {row}")
                     raise
@@ -83,9 +101,14 @@ class TestDetailController:
                     print(f"Error procesando fila: {e}, row: {row}")
                     raise
 
+            # Construir respuesta final
             response_data = []
-            for section_type, section_data in sections.items():
-                section = {'section_type': section_type, 'section_desc': section_data['section_desc'], 'titles': []}
+            for section_key, section_data in sections.items():
+                section = {
+                    'section_type': section_data['section_type'],
+                    'section_desc': section_data['section_desc'],
+                    'titles': []
+                }
                 for title_id, title_data in section_data['titles'].items():
                     title = {
                         'title_id': title_id,
