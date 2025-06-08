@@ -29,6 +29,6 @@ class Config:
     MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '')
     MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
-    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True') == 'True'
-    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'False') == 'False'
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True')
+    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'False')
     MAIL_DEFAULT_SENDER = (os.getenv('MAIL_SENDER_NAME', ''), os.getenv('MAIL_SENDER_EMAIL', ''))
