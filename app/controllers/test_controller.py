@@ -457,48 +457,62 @@ class TestController:
             "test_id": test_id,
             "sections": []
         }
+
+        # Mapa para acceso rápido
         section_map = {}
 
         for row in data:
-            section_key = row['section_type']
+            # Clave única para la sección
+            section_key = f"{row['section_type']}|{row['section_desc']}"
+
+            # Obtener o crear la sección
             if section_key not in section_map:
                 section_data = {
                     "section_type": row['section_type'],
                     "section_desc": row['section_desc'],
-                    "titles": []
+                    "titles": [],
+                    "_titles_map": {}  # mapa interno para acelerar búsqueda de títulos
                 }
                 section_map[section_key] = section_data
                 exam_structure["sections"].append(section_data)
             else:
                 section_data = section_map[section_key]
 
-            titles = section_data["titles"]
-            title = next((t for t in titles if t["title_id"] == row['title_id']), None)
-            if not title:
-                title = {
+            # Obtener o crear el título
+            titles_map = section_data["_titles_map"]
+            if row['title_id'] not in titles_map:
+                title_data = {
                     "title_id": row['title_id'],
                     "title_name": row['title_name'],
                     "title_test": row['title_test'],
                     "title_type": row['title_type'],
                     "title_url": row['title_url'],
-                    "questions": []
+                    "questions": [],
+                    "_questions_map": {}  # mapa interno para acelerar búsqueda de preguntas
                 }
-                titles.append(title)
+                titles_map[row['title_id']] = title_data
+                section_data["titles"].append(title_data)
+            else:
+                title_data = titles_map[row['title_id']]
 
-            questions = title["questions"]
-            question = next((q for q in questions if q["question_id"] == row['question_id']), None)
-            if not question:
-                question = {
+            # Obtener o crear la pregunta
+            questions_map = title_data["_questions_map"]
+            if row['question_id'] not in questions_map:
+                question_data = {
                     "question_id": row['question_id'],
                     "question_text": row['question_text'],
                     "selected_answer_id": row['selected_answer_id'],
-                    "is_selected_correct": None,  # se establecerá más adelante
+                    "is_selected_correct": None,
                     "answers": []
                 }
-                questions.append(question)
+                questions_map[row['question_id']] = question_data
+                title_data["questions"].append(question_data)
+            else:
+                question_data = questions_map[row['question_id']]
 
+            # Añadir respuesta
             is_selected = row['answer_id'] == row['selected_answer_id']
-            question["answers"].append({
+            question_data["answers"].append({
                 "answer_id": row['answer_id'],
                 "answer_text": row['answer_text'],
                 "is_correct": row['is_correct'],
@@ -506,11 +520,13 @@ class TestController:
             })
 
             # Evaluar si la respuesta seleccionada es la correcta
-            if is_selected and row['is_correct']:
-                question["is_selected_correct"] = True
-            elif is_selected and not row['is_correct']:
-                question["is_selected_correct"] = False
+            if is_selected:
+                question_data["is_selected_correct"] = bool(row['is_correct'])
+
+        # Limpieza final: eliminar los mapas internos
+        for section in exam_structure["sections"]:
+            for title in section["titles"]:
+                del title["_questions_map"]
+            del section["_titles_map"]
 
         return exam_structure
-
-        
