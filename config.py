@@ -18,7 +18,7 @@ class Config:
     # Configuración específica de Cloud
     DEEPSEEK_APIKEY = os.getenv('DEEPSEEK_APIKEY', '')
     GCS_BUCKET_NAME = os.getenv('GCS_BUCKET_NAME', '')
-    GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', '')
+    #GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', '')
     
     # Tokens JWT (ajustables por entorno)
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3)
