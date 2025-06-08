@@ -21,6 +21,11 @@ import bcrypt
 from app import mysql
 from dotenv import load_dotenv 
 import time
+import logging
+
+# Configuración básica para Cloud Logging
+logging.basicConfig(level=logging.INFO)  # O WARNING/DEBUG/ERROR según se necesite
+logger = logging.getLogger(__name__)
 
 # Cargar variables del archivo .env
 load_dotenv()
@@ -145,10 +150,13 @@ class TestController:
                 for attempt in range(max_retries):
                     apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
                     print(apiresponse)
+                    logger.info(f"Respuesta intento {attempt + 1}: {apiresponse}")
                     if TestController._is_valid_ia_response(apiresponse):
                         break
                     apiresponse = None  # asegurarse de que si no es válida, se descarte
                     time.sleep(retry_delay)
+
+                logger.info(f"Respuesta final: {apiresponse}")
 
                 if not apiresponse or not isinstance(apiresponse, dict):
                     Test.mark_as_failed(test_id)
