@@ -21,7 +21,7 @@ class AnswersController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher'] :
-                return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+                return jsonify({"message": "Insufficient permissions."}), 403
 
             data = request.get_json()
             question_id = data.get("question_id")
@@ -39,7 +39,7 @@ class AnswersController:
                 return jsonify({"error": "No se pudo agregar la respuesta", "details": response}), 400
 
         except Exception as e:
-            return jsonify({"error": f"Ocurrió un error: {str(e)}"}), 500
+            return jsonify({"error": f"Error occurred: {str(e)}"}), 500
         
         
     #METODO CREAR ANSWERS EN BULK
@@ -54,7 +54,7 @@ class AnswersController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+                return jsonify({"message": "Insufficient permissions."}), 403
 
             data = request.get_json()
             answers_list = data.get("answers")  # Espera una lista de diccionarios
@@ -80,7 +80,7 @@ class AnswersController:
                 return jsonify({"error": "No se pudieron agregar las respuestas", "details": response}), 400
 
         except Exception as e:
-            return jsonify({"error": f"Ocurrió un error: {str(e)}"}), 500
+            return jsonify({"error": f"Error occurred: {str(e)}"}), 500
         
     
     
@@ -96,7 +96,7 @@ class AnswersController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         answer_id = data.get('answer_id') 
@@ -149,7 +149,7 @@ class AnswersController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if not user or user.get('user_role') not in ['admin', 'teacher']:
-                return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+                return jsonify({"message": "Insufficient permissions."}), 403
 
             data = request.get_json()
             id_ = data.get('answer_id')
@@ -171,7 +171,7 @@ class AnswersController:
             }), 400
 
         except Exception as e:
-            return jsonify({"error": "Error interno del servidor", "detalle": str(e)}), 500
+            return jsonify({"error": "Internal server error", "detalle": str(e)}), 500
         
         
     
@@ -186,14 +186,14 @@ class AnswersController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+            return jsonify({"message": "Insufficient permissions."}), 404
         
         # Obtener ID desde el body
         data = request.get_json()
         id_ = data.get('question_id')
         
         if not id_:
-            return jsonify({"error": "El ID de la pregunta es requerido."}), 400
+            return jsonify({"error": "Question ID is required."}), 400
 
         answers = Answers.get_answers_per_question(question_id=id_)
         
@@ -217,7 +217,7 @@ class AnswersController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
@@ -228,7 +228,7 @@ class AnswersController:
 
             # Validación
             if page < 1 or per_page < 1:
-                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+                return jsonify({"error": "Pagination parameters must be ≥ 1"}), 400
             if per_page > 100:  # Límite máximo por seguridad
                 per_page = 100
 
@@ -241,7 +241,7 @@ class AnswersController:
             )
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             # Respuesta estructurada
             response = {
@@ -261,7 +261,7 @@ class AnswersController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
         
         
 

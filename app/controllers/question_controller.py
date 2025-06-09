@@ -19,7 +19,7 @@ class QuestionsController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
 
@@ -35,11 +35,11 @@ class QuestionsController:
         missing_fields = [field for field, value in required_fields.items() if not value]
 
         if missing_fields:
-            return jsonify({"error": f"Faltan los siguientes campos obligatorios: {', '.join(missing_fields)}"}), 400
+            return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
         answers = data["answers"]
         if not any(ans.get("is_correct") for ans in answers):
-            return jsonify({"error": "Debe proporcionar al menos una respuesta correcta."}), 400
+            return jsonify({"error": "Provide at least one correct answer."}), 400
 
         try:
             # Crear pregunta
@@ -57,10 +57,10 @@ class QuestionsController:
                 if text:
                     Answers.create_answer(question_id, text, is_correct)
 
-            return jsonify({"message": "Pregunta y respuestas creadas exitosamente"}), 201
+            return jsonify({"message": "Question and answers created successfully"}), 201
 
         except Exception as e:
-            return jsonify({"error": f"Ocurrió un error al crear la pregunta: {str(e)}"}), 500
+            return jsonify({"error": f"Error creating question: {str(e)}"}), 500
 
     #METODO CREAR QUESTIONS EN BULK
     #-----------------------------------------
@@ -73,21 +73,21 @@ class QuestionsController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
         fk_title = data.get("fk_title")
         questions = data.get("questions", [])
 
         if not fk_title or not questions:
-            return jsonify({"error": "El título o las preguntas están incompletas"}), 400
+            return jsonify({"error": "Incomplete title or questions."}), 400
 
         try:
             Questions.create_questions_with_answers_bulk(fk_title, questions)
-            return jsonify({"message": "Preguntas y respuestas creadas exitosamente"}), 201
+            return jsonify({"message": "Questions and answers created successfully"}), 201
 
         except Exception as e:
-            return jsonify({"error": f"Ocurrió un error: {str(e)}"}), 500
+            return jsonify({"error": f"Error occurred: {str(e)}"}), 500
         
     #METODO EDITAR QUESTION 
     #--------------------
@@ -100,13 +100,13 @@ class QuestionsController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
 
         question_id = data.get('question_id')
         if not question_id:
-            return jsonify({"error": "El ID de la pregunta es requerido"}), 400
+            return jsonify({"error": "Question ID is required"}), 400
 
         # Mapeo correcto según tu base de datos
         field_mapping = {
@@ -127,7 +127,7 @@ class QuestionsController:
         response = Questions.edit_question(question_id, **update_fields)
 
         if response != 'True':
-            return jsonify({"error": "No se pudo actualizar la pregunta", "details": response}), 400
+            return jsonify({"error": "Failed to update question", "details": response}), 400
 
         #Actualizar respuestas
         if 'answers' in data:
@@ -143,9 +143,9 @@ class QuestionsController:
                         Answers.create_answer(question_id, answer_text, is_correct)
 
             except Exception as e:
-                return jsonify({"error": f"Error actualizando respuestas: {str(e)}"}), 500
+                return jsonify({"error": f"Error updating answers: {str(e)}"}), 500
 
-        return jsonify({"message": "Pregunta actualizada correctamente"}), 200
+        return jsonify({"message": "Question updated successfully"}), 200
 
     #METODO BORRAR QUESTION
     #----------------------------------------------
@@ -161,7 +161,7 @@ class QuestionsController:
 
             # Verificación de permisos
             if not user or user.get('user_role') not in ['admin', 'teacher']:
-                return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+                return jsonify({"message": "Insufficient permissions."}), 403
 
             # Obtener ID y nuevo estado desde el body
             data = request.get_json()
@@ -175,15 +175,15 @@ class QuestionsController:
             response = Questions.delete_question(question_id, new_status)
 
             if response == 'True':
-                return jsonify({"message": f"Pregunta { 'activada' if new_status == 'ACTIVE' else 'desactivada' } correctamente."}), 200
+                return jsonify({"message": f"Question {'activated' if new_status == 'ACTIVE' else 'deactivated'} successfully."}), 200
 
             return jsonify({
-                "error": "No se pudo actualizar el estado de la pregunta.",
+                "error": "Failed to update question status",
                 "detalle": response
             }), 400
 
         except Exception as e:
-            return jsonify({"error": "Error interno del servidor", "detalle": str(e)}), 500
+            return jsonify({"error": "Internal server error", "detalle": str(e)}), 500
 
             
     #METODO MOSTRAR TODOS LOS QUESTIONS DE UN TITLE
@@ -197,20 +197,20 @@ class QuestionsController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 404
+            return jsonify({"message": "Insufficient permissions."}), 404
         
         # Obtener ID desde el body
         data = request.get_json()
         id_ = data.get('title_id')
         
         if not id_:
-            return jsonify({"error": "El ID del title es requerido."}), 400
+            return jsonify({"error": "Title ID is required"}), 400
 
         questions = Questions.get_questions_per_title(title_id=id_)
         
         # Si es un error en texto, retornamos como error
         if isinstance(questions, str):
-            return jsonify({"error": "No se pudieron obtener las preguntas", "detalle": questions}), 500
+            return jsonify({"error": "Failed to retrieve questions", "detalle": questions}), 500
         
         # Devolver usuarios en formato JSON
         return jsonify({"preguntas_activas": questions}), 200
@@ -225,7 +225,7 @@ class QuestionsController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             # Cuerpo del request
             data = request.get_json() or {}
@@ -235,10 +235,10 @@ class QuestionsController:
                 page = int(data.get('page', 1))
                 per_page = int(data.get('per_page', 20))
             except ValueError:
-                return jsonify({"error": "Parámetros de paginación inválidos"}), 400
+                return jsonify({"error": "Invalid pagination parameters"}), 400
 
             if page < 1 or per_page < 1:
-                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+                return jsonify({"error": "Pagination parameters must be ≥ 1"}), 400
             if per_page > 100:
                 per_page = 100  # Limitamos el máximo de preguntas por página a 100
 
@@ -262,7 +262,7 @@ class QuestionsController:
             )
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             response = {
                 "questions": paginated_results['data'],
@@ -283,7 +283,7 @@ class QuestionsController:
         except Exception as e:
             import traceback
             print(traceback.format_exc())  # Para depurar el error en el servidor
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
             
 

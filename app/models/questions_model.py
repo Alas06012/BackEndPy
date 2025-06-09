@@ -132,12 +132,12 @@ class Questions:
         return questions
 
     @staticmethod
-    def get_paginated_questions(status, page=1, per_page=20, title_id=None, level_id=None, toeic_section_id=None,question_text=None):
+    def get_paginated_questions(status=None, page=1, per_page=20, title_id=None, level_id=None, toeic_section_id=None,question_text=None):
         try:
             conn = mysql.connection
             cur = conn.cursor(MySQLdb.cursors.DictCursor)
      
-            if status == "Todos":
+            if status == "Todos" or status == None:
                 where_clauses = ["q.status IN (%s, %s)"]
                 params = ["ACTIVE", "INACTIVE"]
             else:

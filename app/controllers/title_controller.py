@@ -147,7 +147,7 @@ class TitleController:
         user = Usuario.get_user_by_id(current_user_id)
 
         if user['user_role'] not in ['admin', 'teacher']:
-            return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+            return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
 
@@ -309,7 +309,7 @@ class TitleController:
 
             # Verificación de permisos
             if not user or user.get('user_role') not in ['admin', 'teacher']:
-                return jsonify({"message": "El usuario no tiene permisos necesarios."}), 403
+                return jsonify({"message": "Insufficient permissions."}), 403
 
             # Obtener ID desde el body
             data = request.get_json()
@@ -334,7 +334,7 @@ class TitleController:
             }), 400
 
         except Exception as e:
-            return jsonify({"error": "Error interno del servidor", "detalle": str(e)}), 500
+            return jsonify({"error": "Internal server error", "detalle": str(e)}), 500
         
         
         
@@ -346,7 +346,7 @@ class TitleController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"message": "Insufficient permissions"}), 403
 
             # Parámetros del body con valores por defecto
             data = request.get_json() or {}
@@ -358,7 +358,7 @@ class TitleController:
  
             # Validación de paginación
             if page < 1 or per_page < 1:
-                return jsonify({"error": "Los parámetros de paginación deben ser ≥ 1"}), 400
+                return jsonify({"error": "Pagination parameters must be ≥ 1"}), 400
             if per_page > 100:
                 per_page = 100
 
@@ -372,7 +372,7 @@ class TitleController:
             )
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             # Construcción de la respuesta
             response = {
@@ -392,7 +392,7 @@ class TitleController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
         
         
 

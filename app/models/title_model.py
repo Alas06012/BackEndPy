@@ -165,22 +165,25 @@ class QuestionTitle:
             # Inicializar los filtros
             where_clauses = []
             params = []
-
+    
             # Filtro por status
-            if status == "":
+            if status == "" or status == "Todos":
                 where_clauses.append("status IN (%s, %s)")
                 params.extend(["ACTIVE", "INACTIVE"])
+               
             else:
                 where_clauses.append("status = %s")
                 params.append(status)
 
             # Filtro por title_type
-            if title_type == "":
+            if title_type == "" or title_type == None:
                 where_clauses.append("title_type IN (%s, %s)")
                 params.extend(["LISTENING", "READING"])
             else:
                 where_clauses.append("title_type = %s")
                 params.append(title_type)
+              
+            # Filtro por title_name  
             if title_name:
                 where_clauses.append("title_name LIKE %s")
                 params.append(f"%{title_name}%")
@@ -193,7 +196,7 @@ class QuestionTitle:
             cur.execute(count_query, tuple(params))
             total_result = cur.fetchone()
             total = total_result['total'] if total_result else 0
-
+            
             # Paginación
             offset = (page - 1) * per_page
             query = f"""

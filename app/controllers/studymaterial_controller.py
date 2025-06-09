@@ -15,7 +15,7 @@ class StudyMaterialController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"error": "Insufficient permissions"}), 403
 
             # Obtener datos del formulario
             title = request.form.get('studymaterial_title')
@@ -68,7 +68,7 @@ class StudyMaterialController:
                 return jsonify({"error": "Error al crear material", "details": response}), 500
 
         except Exception as e:
-            return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
     @staticmethod
     @jwt_required()
@@ -106,7 +106,7 @@ class StudyMaterialController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"error": "Insufficient permissions"}), 403
 
             data = request.get_json()
             material_id = data.get('pk_studymaterial')
@@ -136,7 +136,7 @@ class StudyMaterialController:
                 return jsonify({"error": "Error al actualizar material", "details": response}), 500
 
         except Exception as e:
-            return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
     @staticmethod
     @jwt_required()
@@ -146,7 +146,7 @@ class StudyMaterialController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"error": "Insufficient permissions"}), 403
 
             data = request.get_json()
             material_id = data.get('pk_studymaterial')
@@ -162,7 +162,7 @@ class StudyMaterialController:
                 return jsonify({"error": "Error al eliminar material", "details": response}), 500
 
         except Exception as e:
-            return jsonify({"error": "Error interno del servidor", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
 
     @staticmethod
     @jwt_required()
@@ -172,7 +172,7 @@ class StudyMaterialController:
             user = Usuario.get_user_by_id(current_user_id)
 
             if user['user_role'] not in ['admin', 'teacher']:
-                return jsonify({"error": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
+                return jsonify({"error": "Insufficient permissions"}), 403
 
             data = request.get_json() or {}
             page = data.get('page', 1)
@@ -193,7 +193,7 @@ class StudyMaterialController:
             )
 
             if isinstance(paginated_results, str):
-                return jsonify({"error": "Error en la base de datos", "details": paginated_results}), 500
+                return jsonify({"error": "Database error", "details": paginated_results}), 500
 
             response = {
                 "materials": paginated_results['data'],
@@ -209,4 +209,4 @@ class StudyMaterialController:
             return jsonify(response), 200
 
         except Exception as e:
-            return jsonify({"error": "Error interno", "details": str(e)}), 500
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
