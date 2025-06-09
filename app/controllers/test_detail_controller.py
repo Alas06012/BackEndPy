@@ -11,7 +11,7 @@ class TestDetailController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] not in ['admin', 'teacher']:
+            if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({"message": "Acceso denegado: Usuario sin privilegios suficientes"}), 403
 
             data = request.get_json() or {}
