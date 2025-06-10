@@ -306,7 +306,7 @@ class TestController:
         try:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
-
+         
             if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({
                     "success": False,
@@ -325,7 +325,9 @@ class TestController:
             "user_lastname": data.get("user_lastname"),
             "test_passed": data.get("test_passed"),
             "level_name": data.get("level_name"),
-            "status": data.get("status")
+            "status": data.get("status"),
+             "user_role": user['user_role'],
+             "user_id": user['pk_user']
         }
             results = Test.get_paginated_tests(filters=filters, page=page, per_page=per_page)
             if isinstance(results, str):
@@ -360,7 +362,7 @@ class TestController:
                 return jsonify({"message": "Usuario no encontrado"}), 404
             
             
-            if user['user_role'] not in ['admin', 'teacher']:
+            if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({
                     "success": False,
                     "message": "Permisos insuficientes"
