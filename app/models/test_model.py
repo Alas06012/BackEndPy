@@ -200,6 +200,11 @@ class Test:
                 if filters.get("status"):
                     where_clauses.append("t.status = %s")
                     params.append(filters["status"])
+                
+                # 👇 Filtro especial: si el rol es student, filtra por su user_id
+                if filters.get("user_role") == "student":
+                    where_clauses.append("t.user_fk = %s")
+                    params.append(filters["user_id"])
 
             where_clause = " AND ".join(where_clauses)
             offset = (page - 1) * per_page
