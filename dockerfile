@@ -22,9 +22,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copia el resto de la aplicación
 COPY . .
 
-#permisos de ejecución al script
-RUN chmod +x /app/entrypoint.sh
-
 # Expone el puerto que usa Flask
 EXPOSE 5000
 
