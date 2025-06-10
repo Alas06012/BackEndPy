@@ -28,7 +28,4 @@ RUN chmod +x /app/entrypoint.sh
 EXPOSE 5000
 
 # Comando para ejecutar la aplicación
-#CMD ["python", "run.py", "--host=0.0.0.0"]
-
-# Usa el entrypoint personalizado
-ENTRYPOINT ["/app/entrypoint.sh"]
+CMD ["python", "run.py", "--host=0.0.0.0"]
