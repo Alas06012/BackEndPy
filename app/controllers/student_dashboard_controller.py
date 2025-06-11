@@ -15,7 +15,7 @@ class StudentDashboard:
             # Obtener el ID del usuario autenticado
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
-
+    
             if not user or user.get('user_role') not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
@@ -24,10 +24,11 @@ class StudentDashboard:
 
             # Obtener los datos del dashboard para el usuario
             dashboard_data = StudentDashboardModel.get_dashboard_data(user_id=current_user_id)
-
+            
             if dashboard_data is None:
                 return jsonify({
                     "success": False,
+                    "data": False,
                     "message": "No se encontraron datos para el usuario"
                 }), 404
 
