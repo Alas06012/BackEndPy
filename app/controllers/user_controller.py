@@ -11,6 +11,7 @@ from flask_limiter import Limiter
 from flask import current_app
 from datetime import datetime, timedelta
 import secrets
+from config import Config
 
 MAX_ATTEMPTS = 5
 BLOCK_MINUTES = 15
@@ -23,7 +24,7 @@ class UserController:
     
     @staticmethod
     def send_verification_email(to, code):
-        verification_link = f"http://localhost:5173/verify-code"
+        verification_link = f"{Config.ALLOWED_ORIGINS}/verify-code"
         
         msg = Message('🔐 Verify Your Email', recipients=[to])
         
@@ -50,7 +51,7 @@ class UserController:
         
     @staticmethod
     def send_password_reset_email(to, token):
-        reset_link = f"http://localhost:5173/reset-password?token={token}"
+        reset_link = f"{Config.ALLOWED_ORIGINS}/reset-password?token={token}"
 
         msg = Message('🔐 Reset Your Password', recipients=[to])
         

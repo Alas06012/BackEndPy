@@ -29,3 +29,5 @@ class Config:
     MAIL_USE_SSL = False
     MAIL_DEFAULT_SENDER = ('NecDiagnostics', 'tesisitca2025@gmail.com')
     
+    ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173')
+    
