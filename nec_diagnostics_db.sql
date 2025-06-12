@@ -3296,3 +3296,156 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+DELIMITER //
+
+CREATE PROCEDURE get_user_diagnostic_stats(IN p_user_id INT)
+BEGIN
+    -- Descripción:
+    -- Este procedimiento almacenado se utiliza para obtener los datos estadísticos y de progreso de un estudiante
+    -- específico, destinados a ser mostrados en el dashboard de la aplicación. Recupera información como el nombre,
+    -- apellido, nivel de inglés actual, puntaje del último test, número de tests completados, posición en el ranking,
+    -- historial de los últimos 5 tests (con puntajes y fechas), así como recomendaciones, fortalezas y debilidades
+    -- basadas en el último test completado.
+    -- 
+    -- Parámetros:
+    -- @p_user_id (INT): El identificador único del usuario (estudiante) cuya información se desea consultar.
+    -- 
+    -- Columnas devueltas:
+    -- user_id (INT): Identificador único del estudiante.
+    -- user_name (VARCHAR): Nombre del estudiante.
+    -- user_lastname (VARCHAR): Apellido del estudiante.
+    -- english_level (VARCHAR): Nivel de inglés actual (ej. A1, B1).
+    -- last_test_id (INT): Identificador del último test completado.
+    -- last_test_score (INT): Puntaje obtenido en el último test.
+    -- last_test_date (DATETIME): Fecha y hora del último test.
+    -- tests_completed (INT): Número total de tests completados por el estudiante.
+    -- rank_position (INT): Posición del estudiante en el ranking basado en el puntaje del último test.
+    -- last_5_tests (TEXT): Cadena JSON con los puntajes y fechas de los últimos 5 tests (ordenados del más reciente al más antiguo).
+    -- recommendations (TEXT): Lista de recomendaciones basada en el último test, separada por comas.
+    -- strengths (TEXT): Lista de fortalezas identificadas en el último test, separada por comas.
+    -- weaknesses (TEXT): Lista de debilidades identificadas en el último test, separada por comas.
+    -- 
+    -- Notas:
+    -- - Requiere que las tablas 'users', 'level_history', 'mcer_level', 'tests', 'recommendations', 'strengths',
+    --   y 'weaknesses' existan con las columnas correspondientes.
+    -- - El ranking se calcula comparando el puntaje del último test con el de otros usuarios.
+    -- - Si no hay datos (por ejemplo, ningún test completado), algunas columnas pueden devolver NULL.
+
+    DECLARE v_user_name VARCHAR(100);
+    DECLARE v_user_lastname VARCHAR(100);
+    DECLARE v_english_level VARCHAR(50);
+    DECLARE v_last_test_id INT;
+    DECLARE v_last_test_score INT;
+    DECLARE v_last_test_date DATETIME;
+    DECLARE v_tests_completed INT;
+    DECLARE v_rank_position INT;
+    DECLARE v_last_5_tests TEXT;
+    DECLARE v_recommendations TEXT;
+    DECLARE v_strengths TEXT;
+    DECLARE v_weaknesses TEXT;
+
+    -- Obtener información básica del usuario y nivel
+    SELECT u.user_name, u.user_lastname, ml.level_name
+    INTO v_user_name, v_user_lastname, v_english_level
+    FROM users u
+    JOIN level_history lh ON lh.user_fk = u.pk_user
+    JOIN mcer_level ml ON ml.pk_level = lh.level_fk
+    WHERE u.pk_user = p_user_id
+    AND lh.created_at = (
+        SELECT MAX(created_at)
+        FROM level_history lh2
+        WHERE lh2.user_fk = u.pk_user
+    );
+
+    -- Obtener datos del último test
+    SELECT t.pk_test, t.test_points, t.created_at
+    INTO v_last_test_id, v_last_test_score, v_last_test_date
+    FROM tests t
+    WHERE t.user_fk = p_user_id
+    AND t.status = 'COMPLETED'
+    AND t.created_at = (
+        SELECT MAX(created_at)
+        FROM tests t2
+        WHERE t2.user_fk = t.user_fk AND t2.status = 'COMPLETED'
+    );
+
+    -- Obtener número de tests completados
+    SELECT COUNT(*)
+    INTO v_tests_completed
+    FROM tests
+    WHERE user_fk = p_user_id AND status = 'COMPLETED';
+
+    -- Obtener posición en el ranking
+    SELECT COUNT(*) + 1
+    INTO v_rank_position
+    FROM (
+        SELECT t2.user_fk, MAX(t2.created_at) AS max_date
+        FROM tests t2
+        WHERE t2.status = 'COMPLETED'
+        GROUP BY t2.user_fk
+    ) latest
+    JOIN tests t3 ON t3.user_fk = latest.user_fk AND t3.created_at = latest.max_date
+    WHERE t3.test_points > (
+        SELECT test_points
+        FROM tests t
+        WHERE t.user_fk = p_user_id
+        AND t.status = 'COMPLETED'
+        AND t.created_at = (
+            SELECT MAX(created_at)
+            FROM tests t2
+            WHERE t2.user_fk = t.user_fk AND t2.status = 'COMPLETED'
+        )
+    );
+
+    -- Obtener los últimos 5 tests
+    SELECT CONCAT('[', GROUP_CONCAT(
+        CONCAT('{',
+            '"score": ', test_points, ', ',
+            '"date": "', DATE_FORMAT(created_at, '%d %m %Y'), '"'
+        , '}')
+    ), ']')
+    INTO v_last_5_tests
+    FROM (
+        SELECT test_points, created_at
+        FROM tests
+        WHERE user_fk = p_user_id AND status = 'COMPLETED'
+        ORDER BY created_at DESC
+        LIMIT 5
+    ) t;
+
+    -- Obtener recomendaciones, fortalezas y debilidades (usando v_last_test_id)
+    SELECT GROUP_CONCAT(recommendation_text SEPARATOR ', ')
+    INTO v_recommendations
+    FROM recommendations
+    WHERE test_fk = v_last_test_id;
+
+    SELECT GROUP_CONCAT(strength_text SEPARATOR ', ')
+    INTO v_strengths
+    FROM strengths
+    WHERE test_fk = v_last_test_id;
+
+    SELECT GROUP_CONCAT(weakness_text SEPARATOR ', ')
+    INTO v_weaknesses
+    FROM weaknesses
+    WHERE test_fk = v_last_test_id;
+
+    -- Devolver los resultados
+    SELECT 
+        p_user_id AS user_id,
+        v_user_name AS user_name,
+        v_user_lastname AS user_lastname,
+        v_english_level AS english_level,
+        v_last_test_id AS last_test_id,
+        v_last_test_score AS last_test_score,
+        v_last_test_date AS last_test_date,
+        v_tests_completed AS tests_completed,
+        v_rank_position AS rank_position,
+        v_last_5_tests AS last_5_tests,
+        v_recommendations AS recommendations,
+        v_strengths AS strengths,
+        v_weaknesses AS weaknesses;
+
+END //
+
+DELIMITER ;
