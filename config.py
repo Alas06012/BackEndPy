@@ -24,11 +24,14 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     
-    # Configuración de email
-    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+    # Configuración de Flask-Mail
+    MAIL_SERVER = os.getenv('MAIL_SERVER', '') # o tu proveedor SMTP
     MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '')
-    MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
-    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True')
-    MAIL_USE_SSL = os.getenv('MAIL_USE_SSL', 'False')
-    MAIL_DEFAULT_SENDER = (os.getenv('MAIL_SENDER_NAME', ''), os.getenv('MAIL_SENDER_EMAIL', ''))
+    MAIL_PORT = os.getenv('MAIL_PORT', '')
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    MAIL_DEFAULT_SENDER = ('NecDiagnostics' ,'no.reply@necdiagnostics.online')
+    
+    ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173')
+    
