@@ -21,13 +21,13 @@ class Config:
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     
     # Configuración de Flask-Mail
-    MAIL_SERVER = 'smtp.gmail.com' # o tu proveedor SMTP
-    MAIL_USERNAME = 'tesisitca2025@gmail.com'
-    MAIL_PASSWORD = 'qmjgthagokbizqcs'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USE_SSL = False
-    MAIL_DEFAULT_SENDER = ('NecDiagnostics', 'tesisitca2025@gmail.com')
+    MAIL_SERVER = os.getenv('MAIL_SERVER', '') # o tu proveedor SMTP
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME', '')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', '')
+    MAIL_PORT = os.getenv('MAIL_PORT', '')
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    MAIL_DEFAULT_SENDER = ('NecDiagnostics' ,'no.reply@necdiagnostics.online')
     
     ALLOWED_ORIGINS = os.getenv('ALLOWED_ORIGINS', 'http://localhost:5173')
     
