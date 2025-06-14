@@ -144,7 +144,7 @@ class TestController:
 
                 for attempt in range(max_retries):
                     apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
-                    print(apiresponse)
+                    
                     if TestController._is_valid_ia_response(apiresponse):
                         break
                     apiresponse = None  # asegurarse de que si no es válida, se descarte
@@ -425,7 +425,7 @@ class TestController:
             title_data = {
                 "title": title,
                 "title_type": group['title_type'].iloc[0],
-                "title_url": group['title_url'].iloc[0] if pd.notna(group['title_url'].iloc[0]) else None,
+                #"title_url": group['title_url'].iloc[0] if pd.notna(group['title_url'].iloc[0]) else None,
                 "questions": []
             }
             
@@ -433,7 +433,7 @@ class TestController:
                 question = {
                     "question_text": row['question_text'],
                     "section": row['section'] if pd.notna(row['section']) else None,
-                    "level": row['level'] if pd.notna(row['level']) else None,
+                    #"level": row['level'] if pd.notna(row['level']) else None,
                     "student_answer": row['student_answer'] if pd.notna(row['student_answer']) else "No respondida",
                     "is_correct": bool(row['is_correct']) if pd.notna(row['is_correct']) else False
                 }
