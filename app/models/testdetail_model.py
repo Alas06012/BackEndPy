@@ -32,10 +32,10 @@ class TestDetail:
             SELECT 
                 qt.title_test AS title,
                 qt.title_type,
-                qt.title_url,
+                -- qt.title_url,
                 q.question_text,
                 ts.section_desc AS section,
-                ml.level_name AS level,
+                -- ml.level_name AS level,
                 a.answer_text AS student_answer,
                 a.is_correct
             FROM test_details t 
