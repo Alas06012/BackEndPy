@@ -61,3 +61,23 @@ class TestCommentsModel:
         except Exception as e:
             print("Error al actualizar comentario:", e)
             return False
+        
+        
+        
+    @staticmethod
+    def update_ai_comment(testdetail_id, comment_json):
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                UPDATE test_details 
+                SET ai_comments = %s 
+                WHERE pk_testdetail = %s
+            """, (comment_json, testdetail_id))
+            mysql.connection.commit()
+            return cur.rowcount > 0
+        except Exception as e:
+            print(f"Error al actualizar ai_comments: {str(e)}")
+            mysql.connection.rollback()
+            return False
+        finally:
+            cur.close()

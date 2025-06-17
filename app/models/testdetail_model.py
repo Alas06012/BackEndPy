@@ -66,12 +66,14 @@ class TestDetail:
                 qt.title_test,
                 qt.title_type,
                 qt.title_url,
+                td.pk_testdetail as testdetail_id,
                 q.pk_question as question_id,
                 q.question_text,
                 a.pk_answer as answer_id,
                 a.answer_text,
                 a.is_correct,
-                td.answer_fk as selected_answer_id
+                td.answer_fk as selected_answer_id,
+                td.ai_comments
             FROM tests as t
             INNER JOIN test_details as td ON t.pk_test = td.test_fk
             INNER JOIN questions_titles as qt ON td.title_fk = qt.pk_title
