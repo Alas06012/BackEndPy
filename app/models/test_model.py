@@ -200,6 +200,13 @@ class Test:
                 if filters.get("status"):
                     where_clauses.append("t.status = %s")
                     params.append(filters["status"])
+                    # Nuevos filtros de fecha
+                if filters.get("start_date"):
+                    where_clauses.append("DATE(t.created_at) >= %s")
+                    params.append(filters["start_date"])
+                if filters.get("end_date"):
+                    where_clauses.append("DATE(t.created_at) <= %s")
+                    params.append(filters["end_date"])
                 
                 # 👇 Filtro especial: si el rol es student, filtra por su user_id
                 if filters.get("user_role") == "student":

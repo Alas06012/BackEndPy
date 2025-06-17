@@ -19,7 +19,7 @@ class StudentDashboard:
             if not user or user.get('user_role') not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             # Obtener los datos del dashboard para el usuario

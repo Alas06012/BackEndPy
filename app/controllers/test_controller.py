@@ -33,7 +33,7 @@ class TestController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] not in ['admin' ,'student']:
-            return jsonify({"message": "Permisos insuficientes"}), 403
+            return jsonify({"message": "Unauthorized User"}), 403
             
         data = request.get_json()
         user_fk = user['pk_user']
@@ -95,7 +95,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             data = request.get_json()
@@ -281,7 +281,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
                 
             req = request.get_json()
@@ -310,7 +310,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             data = request.get_json() or {}
@@ -325,6 +325,8 @@ class TestController:
             "user_lastname": data.get("user_lastname"),
             "test_passed": data.get("test_passed"),
             "level_name": data.get("level_name"),
+            "start_date": data.get("start_date"),  
+            "end_date": data.get("end_date"),
             "status": data.get("status"),
              "user_role": user['user_role'],
              "user_id": user['pk_user']
@@ -365,7 +367,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
                 
             data = request.get_json()

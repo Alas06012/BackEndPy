@@ -1,4 +1,5 @@
 from app.models.test_comments_model import TestCommentsModel
+from app.models.apideepseek_model import ApiDeepSeekModel
 from app.models.user_model import Usuario
 
 from flask import json, jsonify, request
@@ -27,7 +28,7 @@ class TestComments:
             if user['user_role'] not in ['admin', 'teacher']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             req = request.get_json()
@@ -62,7 +63,7 @@ class TestComments:
             if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             req = request.get_json()
@@ -94,7 +95,7 @@ class TestComments:
             if user['user_role'] not in ['admin', 'teacher']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             req = request.get_json()
@@ -124,3 +125,81 @@ class TestComments:
                 "success": False,
                 "message": f"Error al actualizar comentario: {str(e)}"
             }), 500
+            
+            
+            
+    @staticmethod
+    @jwt_required()
+    def generate_ai_comment():
+        try:
+            current_user_id = get_jwt_identity()
+            user = Usuario.get_user_by_id(current_user_id)
+
+            if user['user_role'] not in ['admin', 'teacher']:
+                # Verificar límite solo para estudiantes
+                can_proceed, remaining = ApiDeepSeekModel.check_usage_limit(current_user_id)
+                if not can_proceed:
+                    return jsonify({
+                        "message": "Límite diario alcanzado",
+                        "error": "Has excedido el límite de 5 análisis por día"
+                    }), 429
+
+            data = request.get_json()
+            if not data:
+                return jsonify({"message": "No se proporcionaron datos"}), 400
+
+            required_fields = ['testdetail_id', 'question_text', 'student_answer', 'correct_answer', 'title_test']
+            if not all(field in data for field in required_fields):
+                return jsonify({"message": "Faltan campos requeridos"}), 400
+
+            if not data['title_test'] or not data['title_test'].strip():
+                return jsonify({"message": "El contexto del título no puede estar vacío"}), 400
+
+            # Registrar la petición (solo para estudiantes)
+            if user['user_role'] not in ['admin', 'teacher']:
+                request_count = ApiDeepSeekModel.log_request(current_user_id)
+                remaining_requests = 5 - request_count
+
+            # Resto de la lógica de procesamiento...
+            compressed_title = ' '.join(data['title_test'].strip().split())
+            analysis_data = ApiDeepSeekModel.query_deepseek_api(
+                data['question_text'],
+                data['student_answer'],
+                data['correct_answer'],
+                compressed_title
+            )
+
+            if not analysis_data:
+                return jsonify({"message": "Error al generar el análisis de IA"}), 500
+
+            if not all(key in analysis_data for key in ['evaluacion', 'explicacion', 'sugerencias']):
+                return jsonify({"message": "Formato de respuesta de IA inválido"}), 500
+
+            comment_json = json.dumps(analysis_data, ensure_ascii=False)
+            success = TestCommentsModel.update_ai_comment(data['testdetail_id'], comment_json)
+
+            if not success:
+                return jsonify({"message": "Error al guardar el comentario"}), 500
+
+            return jsonify({
+                "message": "Análisis generado y guardado exitosamente",
+                "analysis": analysis_data,
+                "remaining_requests": remaining_requests if user['user_role'] not in ['admin', 'teacher'] else 'unlimited'
+            }), 200
+
+        except Exception as e:
+            print(f"Error en generate_ai_comment: {str(e)}")
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
+        
+        
+        
+    @jwt_required()
+    def check_ai_requests():
+        current_user_id = get_jwt_identity()
+        user = Usuario.get_user_by_id(current_user_id)
+        
+        if user['user_role'] in ['admin', 'teacher']:
+            return jsonify({"remaining_requests": "unlimited"})
+        
+        can_proceed, remaining = ApiDeepSeekModel.check_usage_limit(current_user_id)
+        return jsonify({"remaining_requests": remaining})

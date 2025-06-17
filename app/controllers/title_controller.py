@@ -23,7 +23,7 @@ class TitleController:
         user = Usuario.get_user_by_id(current_user_id)
         
         if user['user_role'] != 'admin':
-            return jsonify({"message": "Permisos insuficientes"}), 403
+            return jsonify({"message": "Unauthorized User"}), 403
         
         data = request.get_json()
         title = data.get('title_name')

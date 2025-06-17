@@ -36,12 +36,14 @@ class TestDetailController:
                     title_test = row['title_test']
                     title_type = row['title_type']
                     title_url = row['title_url']
+                    testdetail_id = row['testdetail_id']  # <-- Nuevo campo
                     question_id = row['question_id']
                     question_text = row['question_text']
                     answer_id = row['answer_id']
                     answer_text = row['answer_text']
                     is_correct = row['is_correct']
                     selected_answer_id = row['selected_answer_id']
+                    ai_comments = row['ai_comments'] 
 
                     # FIX: usar una clave compuesta para distinguir secciones correctamente
                     section_key = f"{section_type}::{section_desc}"
@@ -67,9 +69,11 @@ class TestDetailController:
                         sections[section_key]['titles'][title_id]['questions'][question_id] = {
                             'question_id': question_id,
                             'question_text': question_text,
+                            'testdetail_id': testdetail_id,  
                             'options': [],
                             'student_answer': None,
-                            'correct_answer': None
+                            'correct_answer': None,
+                            'ai_comments': ai_comments
                         }
 
                     # Agregar opción
@@ -122,9 +126,11 @@ class TestDetailController:
                         title['questions'].append({
                             'question_id': question_id,
                             'question_text': question_data['question_text'],
+                            'testdetail_id': question_data['testdetail_id'],  # <-- Aquí lo agregamos
                             'options': question_data['options'],
                             'student_answer': question_data['student_answer'],
-                            'correct_answer': question_data['correct_answer']
+                            'correct_answer': question_data['correct_answer'],
+                            'ai_comments': question_data['ai_comments']
                         })
                     section['titles'].append(title)
                 response_data.append(section)

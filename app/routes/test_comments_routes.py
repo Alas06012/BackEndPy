@@ -13,3 +13,9 @@ test_comments_routes.route('/test-comments-per-id', methods=['POST'])(TestCommen
 
 # Ruta para editar comentarios a un test por id
 test_comments_routes.route('/test-comments', methods=['PUT'])(TestComments.edit_comment)
+
+# Ruta para consultar detalle de preguntas
+test_comments_routes.route('/generate-ai-comment', methods=['POST'])(TestComments.generate_ai_comment)
+
+# Ruta para consultar detalle de preguntas
+test_comments_routes.route('/check-ai-requests', methods=['GET'])(TestComments.check_ai_requests)
