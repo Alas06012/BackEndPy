@@ -16,7 +16,7 @@ steps:
       - '--port=5000'
       - '--min-instances=1'
       - '--max-instances=1'
-      - '--ingress=internal-and-cloud-load-balancing'
+      - '--ingress=all'
       - '--vpc-connector=serverless-connector'
       - '--vpc-egress=all-traffic'
       - '--cpu=1'
