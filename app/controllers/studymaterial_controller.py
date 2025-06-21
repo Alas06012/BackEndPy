@@ -171,7 +171,7 @@ class StudyMaterialController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] not in ['admin', 'teacher']:
+            if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({"error": "Insufficient permissions"}), 403
 
             data = request.get_json() or {}

@@ -11,7 +11,7 @@ from app.models.strengths_model import Strengths
 from app.models.weaknesses_model import Weaknesses
 from app.models.recommendations_model import Recommendations
 from app.models.userlevel_history_model import UserLevelhistory
-
+from datetime import date
 
 from flask import json, jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -32,44 +32,65 @@ class TestController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['user_role'] not in ['admin' ,'student']:
-            return jsonify({"message": "Permisos insuficientes"}), 403
-            
-        data = request.get_json()
+        if user['user_role'] not in ['admin', 'student']:
+            return jsonify({"message": "Unauthorized User"}), 403
+
         user_fk = user['pk_user']
         if not user_fk:
             return jsonify({"message": "ID de usuario requerido"}), 400
-            
-        try:
-            # Iniciar transacción
-            cur = mysql.connection.cursor()
+
+        today = date.today()
+        last_attempt = user['last_test_attempt_at']
+        if last_attempt:
+            last_attempt = last_attempt if isinstance(last_attempt, date) else last_attempt.date()
         
+        try:
+            cur = mysql.connection.cursor()
+
+            # Resetear contador si es un nuevo día
+            if last_attempt != today:
+                cur.execute("""
+                    UPDATE users
+                    SET test_attempts = 0, last_test_attempt_at = %s
+                    WHERE pk_user = %s
+                """, (today, user_fk))
+                mysql.connection.commit()
+                user['test_attempts'] = 0
+
+            # Verificar límite diario
+            if user['test_attempts'] >= 3:
+                return jsonify({"message": "You have reached the maximum number of test attempts for today."}), 403
+
             # Crear test
             test_id = Test.create_test(user_fk)
 
             # Obtener títulos aleatorios
             random_titles = Test.get_random_titles()
-            
-            # Asignar 4 preguntas por título
+
             test_details = []
             for title in random_titles:
-                title_id = title["pk_title"]  # pk_title es la primera columna
-            
+                title_id = title["pk_title"]
                 questions = Questions.get_random_questions_by_title(title_id)
-                
+
                 if len(questions) < 4:
                     raise Exception(f"Título {title_id} no tiene suficientes preguntas")
-                
+
                 for question in questions:
                     TestDetail.create_detail(test_id, title_id, question["pk_question"])
                     test_details.append({
                         "title_id": title_id,
                         "question_id": question["pk_question"]
                     })
-            
-            # Confirmar todos los cambios
+
+            # Incrementar intentos
+            cur.execute("""
+                UPDATE users
+                SET test_attempts = test_attempts + 1, last_test_attempt_at = %s
+                WHERE pk_user = %s
+            """, (today, user_fk))
+
             mysql.connection.commit()
-            
+
             return jsonify({
                 "message": "Test creado con preguntas",
                 "data": {
@@ -95,7 +116,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             data = request.get_json()
@@ -144,7 +165,7 @@ class TestController:
 
                 for attempt in range(max_retries):
                     apiresponse = ApiDeepSeekModel.test_api(system_prompt=system_prompt, user_prompt=user_prompt)
-                    print(apiresponse)
+                    
                     if TestController._is_valid_ia_response(apiresponse):
                         break
                     apiresponse = None  # asegurarse de que si no es válida, se descarte
@@ -281,7 +302,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
                 
             req = request.get_json()
@@ -310,7 +331,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
 
             data = request.get_json() or {}
@@ -325,6 +346,8 @@ class TestController:
             "user_lastname": data.get("user_lastname"),
             "test_passed": data.get("test_passed"),
             "level_name": data.get("level_name"),
+            "start_date": data.get("start_date"),  
+            "end_date": data.get("end_date"),
             "status": data.get("status"),
              "user_role": user['user_role'],
              "user_id": user['pk_user']
@@ -365,7 +388,7 @@ class TestController:
             if user['user_role'] not in ['admin', 'teacher','student']:
                 return jsonify({
                     "success": False,
-                    "message": "Permisos insuficientes"
+                    "message": "Unauthorized User"
                 }), 403
                 
             data = request.get_json()
@@ -425,7 +448,7 @@ class TestController:
             title_data = {
                 "title": title,
                 "title_type": group['title_type'].iloc[0],
-                "title_url": group['title_url'].iloc[0] if pd.notna(group['title_url'].iloc[0]) else None,
+                #"title_url": group['title_url'].iloc[0] if pd.notna(group['title_url'].iloc[0]) else None,
                 "questions": []
             }
             
@@ -433,7 +456,7 @@ class TestController:
                 question = {
                     "question_text": row['question_text'],
                     "section": row['section'] if pd.notna(row['section']) else None,
-                    "level": row['level'] if pd.notna(row['level']) else None,
+                    #"level": row['level'] if pd.notna(row['level']) else None,
                     "student_answer": row['student_answer'] if pd.notna(row['student_answer']) else "No respondida",
                     "is_correct": bool(row['is_correct']) if pd.notna(row['is_correct']) else False
                 }

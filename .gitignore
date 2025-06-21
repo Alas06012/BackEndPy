@@ -40,3 +40,5 @@ vendor/
 /app/models/__pycache__
 /app/routes/__pycache__
 storage-tesis.json
+/__pycache__
+/app/__pycache__
