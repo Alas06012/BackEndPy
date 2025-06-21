@@ -3297,155 +3297,336 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
+  DELIMITER //
+
+  CREATE PROCEDURE get_user_diagnostic_stats(IN p_user_id INT)
+  BEGIN
+      -- Descripción:
+      -- Este procedimiento almacenado se utiliza para obtener los datos estadísticos y de progreso de un estudiante
+      -- específico, destinados a ser mostrados en el dashboard de la aplicación. Recupera información como el nombre,
+      -- apellido, nivel de inglés actual, puntaje del último test, número de tests completados, posición en el ranking,
+      -- historial de los últimos 5 tests (con puntajes y fechas), así como recomendaciones, fortalezas y debilidades
+      -- basadas en el último test completado.
+      -- 
+      -- Parámetros:
+      -- @p_user_id (INT): El identificador único del usuario (estudiante) cuya información se desea consultar.
+      -- 
+      -- Columnas devueltas:
+      -- user_id (INT): Identificador único del estudiante.
+      -- user_name (VARCHAR): Nombre del estudiante.
+      -- user_lastname (VARCHAR): Apellido del estudiante.
+      -- english_level (VARCHAR): Nivel de inglés actual (ej. A1, B1).
+      -- last_test_id (INT): Identificador del último test completado.
+      -- last_test_score (INT): Puntaje obtenido en el último test.
+      -- last_test_date (DATETIME): Fecha y hora del último test.
+      -- tests_completed (INT): Número total de tests completados por el estudiante.
+      -- rank_position (INT): Posición del estudiante en el ranking basado en el puntaje del último test.
+      -- last_5_tests (TEXT): Cadena JSON con los puntajes y fechas de los últimos 5 tests (ordenados del más reciente al más antiguo).
+      -- recommendations (TEXT): Lista de recomendaciones basada en el último test, separada por comas.
+      -- strengths (TEXT): Lista de fortalezas identificadas en el último test, separada por comas.
+      -- weaknesses (TEXT): Lista de debilidades identificadas en el último test, separada por comas.
+      -- 
+      -- Notas:
+      -- - Requiere que las tablas 'users', 'level_history', 'mcer_level', 'tests', 'recommendations', 'strengths',
+      --   y 'weaknesses' existan con las columnas correspondientes.
+      -- - El ranking se calcula comparando el puntaje del último test con el de otros usuarios.
+      -- - Si no hay datos (por ejemplo, ningún test completado), algunas columnas pueden devolver NULL.
+
+      DECLARE v_user_name VARCHAR(100);
+      DECLARE v_user_lastname VARCHAR(100);
+      DECLARE v_english_level VARCHAR(50);
+      DECLARE v_last_test_id INT;
+      DECLARE v_last_test_score INT;
+      DECLARE v_last_test_date DATETIME;
+      DECLARE v_tests_completed INT;
+      DECLARE v_rank_position INT;
+      DECLARE v_last_5_tests TEXT;
+      DECLARE v_recommendations TEXT;
+      DECLARE v_strengths TEXT;
+      DECLARE v_weaknesses TEXT;
+
+      -- Obtener información básica del usuario y nivel
+      SELECT u.user_name, u.user_lastname, ml.level_name
+      INTO v_user_name, v_user_lastname, v_english_level
+      FROM users u
+      JOIN level_history lh ON lh.user_fk = u.pk_user
+      JOIN mcer_level ml ON ml.pk_level = lh.level_fk
+      WHERE u.pk_user = p_user_id
+      AND lh.created_at = (
+          SELECT MAX(created_at)
+          FROM level_history lh2
+          WHERE lh2.user_fk = u.pk_user
+      );
+
+      -- Obtener datos del último test
+      SELECT t.pk_test, t.test_points, t.created_at
+      INTO v_last_test_id, v_last_test_score, v_last_test_date
+      FROM tests t
+      WHERE t.user_fk = p_user_id
+      AND t.status = 'COMPLETED'
+      AND t.created_at = (
+          SELECT MAX(created_at)
+          FROM tests t2
+          WHERE t2.user_fk = t.user_fk AND t2.status = 'COMPLETED'
+      );
+
+      -- Obtener número de tests completados
+      SELECT COUNT(*)
+      INTO v_tests_completed
+      FROM tests
+      WHERE user_fk = p_user_id AND status = 'COMPLETED';
+
+      -- Obtener posición en el ranking
+      SELECT COUNT(*) + 1
+      INTO v_rank_position
+      FROM (
+          SELECT t2.user_fk, MAX(t2.created_at) AS max_date
+          FROM tests t2
+          WHERE t2.status = 'COMPLETED'
+          GROUP BY t2.user_fk
+      ) latest
+      JOIN tests t3 ON t3.user_fk = latest.user_fk AND t3.created_at = latest.max_date
+      WHERE t3.test_points > (
+          SELECT test_points
+          FROM tests t
+          WHERE t.user_fk = p_user_id
+          AND t.status = 'COMPLETED'
+          AND t.created_at = (
+              SELECT MAX(created_at)
+              FROM tests t2
+              WHERE t2.user_fk = t.user_fk AND t2.status = 'COMPLETED'
+          )
+      );
+
+      -- Obtener los últimos 5 tests
+      SELECT CONCAT('[', GROUP_CONCAT(
+          CONCAT('{',
+              '"score": ', test_points, ', ',
+              '"date": "', DATE_FORMAT(created_at, '%d %m %Y'), '"'
+          , '}')
+      ), ']')
+      INTO v_last_5_tests
+      FROM (
+          SELECT test_points, created_at
+          FROM tests
+          WHERE user_fk = p_user_id AND status = 'COMPLETED'
+          ORDER BY created_at DESC
+          LIMIT 5
+      ) t;
+
+      -- Obtener recomendaciones, fortalezas y debilidades (usando v_last_test_id)
+      SELECT GROUP_CONCAT(recommendation_text SEPARATOR ', ')
+      INTO v_recommendations
+      FROM recommendations
+      WHERE test_fk = v_last_test_id;
+
+      SELECT GROUP_CONCAT(strength_text SEPARATOR ', ')
+      INTO v_strengths
+      FROM strengths
+      WHERE test_fk = v_last_test_id;
+
+      SELECT GROUP_CONCAT(weakness_text SEPARATOR ', ')
+      INTO v_weaknesses
+      FROM weaknesses
+      WHERE test_fk = v_last_test_id;
+
+      -- Devolver los resultados
+      SELECT 
+          p_user_id AS user_id,
+          v_user_name AS user_name,
+          v_user_lastname AS user_lastname,
+          v_english_level AS english_level,
+          v_last_test_id AS last_test_id,
+          v_last_test_score AS last_test_score,
+          v_last_test_date AS last_test_date,
+          v_tests_completed AS tests_completed,
+          v_rank_position AS rank_position,
+          v_last_5_tests AS last_5_tests,
+          v_recommendations AS recommendations,
+          v_strengths AS strengths,
+          v_weaknesses AS weaknesses;
+
+  END //
+
+  DELIMITER ;
 DELIMITER //
 
-CREATE PROCEDURE get_user_diagnostic_stats(IN p_user_id INT)
+CREATE PROCEDURE get_admin_dashboard_stats()
 BEGIN
     -- Descripción:
-    -- Este procedimiento almacenado se utiliza para obtener los datos estadísticos y de progreso de un estudiante
-    -- específico, destinados a ser mostrados en el dashboard de la aplicación. Recupera información como el nombre,
-    -- apellido, nivel de inglés actual, puntaje del último test, número de tests completados, posición en el ranking,
-    -- historial de los últimos 5 tests (con puntajes y fechas), así como recomendaciones, fortalezas y debilidades
-    -- basadas en el último test completado.
+    -- Este procedimiento almacenado recopila estadísticas generales para el dashboard del administrador,
+    -- incluyendo el número de estudiantes evaluados, promedio de puntajes, distribución de niveles,
+    -- top 5 estudiantes con mejor y peor rendimiento, los últimos 5 estudiantes evaluados,
+    -- tests completados por día, y porcentaje de aprobación.
     -- 
     -- Parámetros:
-    -- @p_user_id (INT): El identificador único del usuario (estudiante) cuya información se desea consultar.
+    -- Ninguno (puede expandirse con filtros como fecha si se requiere).
     -- 
     -- Columnas devueltas:
-    -- user_id (INT): Identificador único del estudiante.
-    -- user_name (VARCHAR): Nombre del estudiante.
-    -- user_lastname (VARCHAR): Apellido del estudiante.
-    -- english_level (VARCHAR): Nivel de inglés actual (ej. A1, B1).
-    -- last_test_id (INT): Identificador del último test completado.
-    -- last_test_score (INT): Puntaje obtenido en el último test.
-    -- last_test_date (DATETIME): Fecha y hora del último test.
-    -- tests_completed (INT): Número total de tests completados por el estudiante.
-    -- rank_position (INT): Posición del estudiante en el ranking basado en el puntaje del último test.
-    -- last_5_tests (TEXT): Cadena JSON con los puntajes y fechas de los últimos 5 tests (ordenados del más reciente al más antiguo).
-    -- recommendations (TEXT): Lista de recomendaciones basada en el último test, separada por comas.
-    -- strengths (TEXT): Lista de fortalezas identificadas en el último test, separada por comas.
-    -- weaknesses (TEXT): Lista de debilidades identificadas en el último test, separada por comas.
+    -- evaluated_students (INT): Número de estudiantes con al menos un test completado.
+    -- average_score (INT): Promedio 
+-- consulta CALL get_user_diagnostic_stats(x); agregar el id del estudiante
+
+de puntajes de todos los tests completados, redondeado al entero más cercano.
+    -- level_distribution (TEXT): Cadena JSON con la distribución de estudiantes por nivel (únicos, último nivel).
+    -- top_performers (TEXT): Cadena JSON con los 5 estudiantes de mejor rendimiento (nombre, apellido, puntaje).
+    -- low_performers (TEXT): Cadena JSON con los 5 estudiantes de menor rendimiento (nombre, apellido, puntaje).
+    -- latest_evaluated (TEXT): Cadena JSON con los 5 estudiantes más recientemente evaluados (nombre, apellido, fecha, nivel, puntaje).
+    -- tests_by_day (TEXT): Cadena JSON con el número de tests completados por día (últimos 7 días).
+    -- approval_rate (INT): Porcentaje de tests aprobados (test_passed = 1), redondeado al entero más cercano.
     -- 
     -- Notas:
-    -- - Requiere que las tablas 'users', 'level_history', 'mcer_level', 'tests', 'recommendations', 'strengths',
-    --   y 'weaknesses' existan con las columnas correspondientes.
-    -- - El ranking se calcula comparando el puntaje del último test con el de otros usuarios.
-    -- - Si no hay datos (por ejemplo, ningún test completado), algunas columnas pueden devolver NULL.
+    -- Requiere las tablas 'users', 'tests', 'level_history', 'mcer_level', 'test_details', 'questions', y 'toeic_sections'.
+    -- El rendimiento se basa en el puntaje del último test completado.
+    -- Si no hay datos, algunas columnas devolverán NULL o un array JSON vacío.
+    -- average_score y approval_rate se redondean a enteros según solicitud.
 
-    DECLARE v_user_name VARCHAR(100);
-    DECLARE v_user_lastname VARCHAR(100);
-    DECLARE v_english_level VARCHAR(50);
-    DECLARE v_last_test_id INT;
-    DECLARE v_last_test_score INT;
-    DECLARE v_last_test_date DATETIME;
-    DECLARE v_tests_completed INT;
-    DECLARE v_rank_position INT;
-    DECLARE v_last_5_tests TEXT;
-    DECLARE v_recommendations TEXT;
-    DECLARE v_strengths TEXT;
-    DECLARE v_weaknesses TEXT;
+    DECLARE v_evaluated_students INT;
+    DECLARE v_average_score INT;
+    DECLARE v_level_distribution TEXT;
+    DECLARE v_top_performers TEXT;
+    DECLARE v_low_performers TEXT;
+    DECLARE v_latest_evaluated TEXT;
+    DECLARE v_tests_by_day TEXT;
+    DECLARE v_approval_rate INT;
 
-    -- Obtener información básica del usuario y nivel
-    SELECT u.user_name, u.user_lastname, ml.level_name
-    INTO v_user_name, v_user_lastname, v_english_level
-    FROM users u
-    JOIN level_history lh ON lh.user_fk = u.pk_user
-    JOIN mcer_level ml ON ml.pk_level = lh.level_fk
-    WHERE u.pk_user = p_user_id
-    AND lh.created_at = (
-        SELECT MAX(created_at)
-        FROM level_history lh2
-        WHERE lh2.user_fk = u.pk_user
-    );
-
-    -- Obtener datos del último test
-    SELECT t.pk_test, t.test_points, t.created_at
-    INTO v_last_test_id, v_last_test_score, v_last_test_date
+    -- Número de estudiantes evaluados (con al menos un test completado)
+    SELECT COUNT(DISTINCT t.user_fk)
+    INTO v_evaluated_students
     FROM tests t
-    WHERE t.user_fk = p_user_id
-    AND t.status = 'COMPLETED'
+    WHERE t.status = 'COMPLETED';
+
+    -- Promedio de puntajes (redondeado al entero más cercano)
+    SELECT ROUND(AVG(t.test_points), 0)
+    INTO v_average_score
+    FROM tests t
+    WHERE t.status = 'COMPLETED';
+
+    -- Distribución de niveles (cadena JSON con conteo por nivel, únicos con último nivel basado en tests)
+SELECT CONCAT('[', GROUP_CONCAT(
+    CONCAT('{',
+        '"level": "', COALESCE(ml.level_name, 'N/A'), '", ',
+        '"count": ', student_count
+    , '}')
+), ']')
+INTO v_level_distribution
+FROM (
+    SELECT COALESCE(t.level_fk, 0) AS level_fk, COUNT(DISTINCT t.user_fk) AS student_count
+    FROM tests t
+    WHERE t.status = 'COMPLETED'
     AND t.created_at = (
-        SELECT MAX(created_at)
+        SELECT MAX(t2.created_at)
         FROM tests t2
-        WHERE t2.user_fk = t.user_fk AND t2.status = 'COMPLETED'
-    );
+        WHERE t2.user_fk = t.user_fk
+        AND t2.status = 'COMPLETED'
+    )
+    GROUP BY COALESCE(t.level_fk, 0)
+) AS levels
+LEFT JOIN mcer_level ml ON ml.pk_level = levels.level_fk;
 
-    -- Obtener número de tests completados
-    SELECT COUNT(*)
-    INTO v_tests_completed
-    FROM tests
-    WHERE user_fk = p_user_id AND status = 'COMPLETED';
-
-    -- Obtener posición en el ranking
-    SELECT COUNT(*) + 1
-    INTO v_rank_position
-    FROM (
-        SELECT t2.user_fk, MAX(t2.created_at) AS max_date
+    -- Top 5 estudiantes con mejor rendimiento (cadena JSON)
+SELECT CONCAT('[', GROUP_CONCAT(
+    CONCAT('{',
+        '"user_name": "', u.user_name, '", ',
+        '"user_lastname": "', u.user_lastname, '", ',
+        '"score": ', COALESCE(top_tests.score, 0)
+    , '}')
+), ']')
+INTO v_top_performers
+FROM (
+    SELECT t.user_fk, t.test_points AS score
+    FROM tests t
+    WHERE t.status = 'COMPLETED'
+    AND t.created_at = (
+        SELECT MAX(t2.created_at)
         FROM tests t2
-        WHERE t2.status = 'COMPLETED'
-        GROUP BY t2.user_fk
-    ) latest
-    JOIN tests t3 ON t3.user_fk = latest.user_fk AND t3.created_at = latest.max_date
-    WHERE t3.test_points > (
-        SELECT test_points
-        FROM tests t
-        WHERE t.user_fk = p_user_id
-        AND t.status = 'COMPLETED'
-        AND t.created_at = (
-            SELECT MAX(created_at)
-            FROM tests t2
-            WHERE t2.user_fk = t.user_fk AND t2.status = 'COMPLETED'
-        )
-    );
+        WHERE t2.user_fk = t.user_fk
+        AND t2.status = 'COMPLETED'
+    )
+    ORDER BY t.test_points DESC
+    LIMIT 5
+) top_tests
+JOIN users u ON u.pk_user = top_tests.user_fk;
 
-    -- Obtener los últimos 5 tests
+    -- Top 5 estudiantes con bajo rendimiento (cadena JSON)
+SELECT CONCAT('[', GROUP_CONCAT(
+    CONCAT('{',
+        '"user_name": "', u.user_name, '", ',
+        '"user_lastname": "', u.user_lastname, '", ',
+        '"score": ', COALESCE(low_tests.score, 0)
+    , '}')
+), ']')
+INTO v_low_performers
+FROM (
+    SELECT t.user_fk, t.test_points AS score
+    FROM tests t
+    WHERE t.status = 'COMPLETED'
+    AND t.created_at = (
+        SELECT MAX(t2.created_at)
+        FROM tests t2
+        WHERE t2.user_fk = t.user_fk
+        AND t2.status = 'COMPLETED'
+    )
+    ORDER BY t.test_points ASC
+    LIMIT 5
+) low_tests
+JOIN users u ON u.pk_user = low_tests.user_fk;
+
+    -- Últimos 5 estudiantes evaluados (cadena JSON con fecha, nivel y puntaje)
+SELECT CONCAT('[', GROUP_CONCAT(
+    CONCAT('{',
+        '"user_name": "', u.user_name, '", ',
+        '"user_lastname": "', u.user_lastname, '", ',
+        '"date": "', DATE_FORMAT(latest_tests.eval_date, '%Y-%m-%d'), '", ',
+        '"level": "', COALESCE(ml.level_name, 'N/A'), '", ',
+        '"score": ', COALESCE(latest_tests.score, 0)
+    , '}')
+), ']')
+INTO v_latest_evaluated
+FROM (
+    SELECT t.user_fk, t.created_at AS eval_date, t.test_points AS score, t.level_fk
+    FROM tests t
+    WHERE t.status = 'COMPLETED'
+    ORDER BY t.created_at DESC
+    LIMIT 5
+) latest_tests
+JOIN users u ON u.pk_user = latest_tests.user_fk
+LEFT JOIN mcer_level ml ON ml.pk_level = latest_tests.level_fk;
+
+    -- Tests completados por día (últimos 7 días, cadena JSON)
     SELECT CONCAT('[', GROUP_CONCAT(
         CONCAT('{',
-            '"score": ', test_points, ', ',
-            '"date": "', DATE_FORMAT(created_at, '%d %m %Y'), '"'
+            '"date": "', DATE_FORMAT(test_date, '%d %m %Y'), '", ',
+            '"count": ', test_count
         , '}')
     ), ']')
-    INTO v_last_5_tests
+    INTO v_tests_by_day
     FROM (
-        SELECT test_points, created_at
-        FROM tests
-        WHERE user_fk = p_user_id AND status = 'COMPLETED'
-        ORDER BY created_at DESC
-        LIMIT 5
-    ) t;
+        SELECT DATE(t.created_at) AS test_date, COUNT(*) AS test_count
+        FROM tests t
+        WHERE t.status = 'COMPLETED'
+        AND t.created_at >= DATE_SUB(CURRENT_DATE, INTERVAL 7 DAY)
+        GROUP BY DATE(t.created_at)
+    ) dt;
 
-    -- Obtener recomendaciones, fortalezas y debilidades (usando v_last_test_id)
-    SELECT GROUP_CONCAT(recommendation_text SEPARATOR ', ')
-    INTO v_recommendations
-    FROM recommendations
-    WHERE test_fk = v_last_test_id;
-
-    SELECT GROUP_CONCAT(strength_text SEPARATOR ', ')
-    INTO v_strengths
-    FROM strengths
-    WHERE test_fk = v_last_test_id;
-
-    SELECT GROUP_CONCAT(weakness_text SEPARATOR ', ')
-    INTO v_weaknesses
-    FROM weaknesses
-    WHERE test_fk = v_last_test_id;
+    -- Porcentaje de aprobación (redondeado al entero más cercano)
+    SELECT ROUND(
+        (CAST(COUNT(CASE WHEN t.test_passed = 1 THEN 1 END) AS DECIMAL) / 
+        COUNT(*) * 100), 0)
+    INTO v_approval_rate
+    FROM tests t
+    WHERE t.status = 'COMPLETED';
 
     -- Devolver los resultados
     SELECT 
-        p_user_id AS user_id,
-        v_user_name AS user_name,
-        v_user_lastname AS user_lastname,
-        v_english_level AS english_level,
-        v_last_test_id AS last_test_id,
-        v_last_test_score AS last_test_score,
-        v_last_test_date AS last_test_date,
-        v_tests_completed AS tests_completed,
-        v_rank_position AS rank_position,
-        v_last_5_tests AS last_5_tests,
-        v_recommendations AS recommendations,
-        v_strengths AS strengths,
-        v_weaknesses AS weaknesses;
-
-END //
+        v_evaluated_students AS evaluated_students,
+        v_average_score AS average_score,
+        v_level_distribution AS level_distribution,
+        v_top_performers AS top_performers,
+        v_low_performers AS low_performers,
+        v_latest_evaluated AS latest_evaluated,
+        v_tests_by_day AS tests_by_day,
+        v_approval_rate AS approval_rate;
+END
 
 DELIMITER ;

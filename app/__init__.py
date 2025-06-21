@@ -43,6 +43,7 @@ def create_app():
     from app.routes.test_comments_routes import test_comments_routes
     from app.routes.test_detail_routes import test_detail_routes
     from app.routes.student_dashboard_routes import student_dashboard_routes
+    from app.routes.admin_dashboard_routes import admin_dashboard_routes
 
     #from app.routes.testapi_routes import testapi_route
     
@@ -63,6 +64,7 @@ def create_app():
         test_comments_routes,
         test_detail_routes,
         student_dashboard_routes,
+        admin_dashboard_routes,
     ]
     
     # Registrar los Blueprints
