@@ -19,7 +19,7 @@ class Usuario:
     def get_user_by_id(user_id):
         cur = mysql.connection.cursor()
         status = "ACTIVE"
-        cur.execute("""SELECT pk_user, user_name, user_lastname, user_email, user_role FROM users WHERE pk_user = %s AND STATUS = %s""", (user_id, status))
+        cur.execute("""SELECT pk_user, user_name, user_lastname, user_email, user_role, test_attempts, last_test_attempt_at FROM users WHERE pk_user = %s AND STATUS = %s""", (user_id, status))
         user = cur.fetchone()
         return user
     
