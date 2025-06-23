@@ -6,22 +6,18 @@ if os.environ.get("ENV") != "cloud":
     load_dotenv()
 
 class Config:
-    # Configuración común
     SECRET_KEY = os.getenv('SECRET_KEY', 'fallback_secret')
     MYSQL_HOST = os.getenv('MYSQL_HOST', 'localhost')
     MYSQL_USER = os.getenv('MYSQL_USER', 'root')
     MYSQL_PASSWORD = os.getenv('MYSQL_PASSWORD', '')
+    #MYSQL_PORT = os.getenv('MYSQL_PORT', '3306')
     MYSQL_DB = os.getenv('MYSQL_DB', 'default_db')
     MYSQL_CURSORCLASS = os.getenv('MYSQL_CURSORCLASS', 'DictCursor')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'fallback_jwt_secret')
-    
-    # Configuración específica de Cloud
     DEEPSEEK_APIKEY = os.getenv('DEEPSEEK_APIKEY', '')
     GCS_BUCKET_NAME = os.getenv('GCS_BUCKET_NAME', '')
-    #GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', '')
-    
-    # Tokens JWT (ajustables por entorno)
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3)
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv('GOOGLE_APPLICATION_CREDENTIALS', 'storage-tesis.json')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'fallback_jwt_secret')
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=3) #3 horas activo y luego expira
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
     
     # Configuración de Flask-Mail
