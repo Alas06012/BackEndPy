@@ -29,37 +29,70 @@ class Test:
     def get_random_titles():
         cur = mysql.connection.cursor()
         
-        # Obtener todos los títulos válidos con al menos 4 preguntas activas
+        # Obtener todos los títulos activos con su tipo y número de preguntas activas
         cur.execute("""
-            SELECT qt.pk_title, qt.title_type
+            SELECT 
+                qt.pk_title, 
+                qt.title_type,
+                (
+                    SELECT COUNT(*) 
+                    FROM questions q 
+                    WHERE q.title_fk = qt.pk_title AND q.status = 'ACTIVE'
+                ) AS question_count
             FROM questions_titles qt
             WHERE qt.status = 'ACTIVE'
-            AND (
-                SELECT COUNT(*) 
-                FROM questions q 
-                WHERE q.title_fk = qt.pk_title AND q.status = 'ACTIVE'
-            ) >= 4
         """)
         
-        results = cur.fetchall()  # [(pk_title, title_type), ...]
+        results = cur.fetchall()
+        df = pd.DataFrame(results, columns=["pk_title", "title_type", "question_count"])
         
-        df = pd.DataFrame(results, columns=["pk_title", "title_type"])
-        
-        # Separar por tipo
-        reading = df[df["title_type"] == "READING"]
-        listening = df[df["title_type"] == "LISTENING"]
-        
-        reading = reading.sample(frac=1).reset_index(drop=True)
-        listening = listening.sample(frac=1).reset_index(drop=True)
+        # Filtrar títulos con al menos 1 pregunta activa
+        df = df[df["question_count"] > 0]
 
-        # Tomar máximo 12 aleatorios o los que haya
-        selected_reading = reading.sample(n=min(12, len(reading)), random_state=None)
-        selected_listening = listening.sample(n=min(12, len(listening)), random_state=None)
-        
-        # Combinar y devolver como lista de tuplas [(pk_title,), ...]
-        final_titles = pd.concat([selected_reading, selected_listening])
-        
-        return [(int(row["pk_title"]),) for _, row in final_titles.iterrows()]
+        # Separar por tipo
+        reading_df = df[df["title_type"] == "READING"].sample(frac=1).reset_index(drop=True)
+        listening_df = df[df["title_type"] == "LISTENING"].sample(frac=1).reset_index(drop=True)
+
+        selected_titles = []
+        total_reading = 0
+        total_listening = 0
+        max_total = 100
+        max_per_type = max_total // 2  #+-50 para cada tipo
+
+        # Seleccionar títulos de READING
+        for _, row in reading_df.iterrows():
+            count = row["question_count"]
+            if total_reading + count <= max_per_type:
+                selected_titles.append((int(row["pk_title"]), "READING", count))
+                total_reading += count
+            if total_reading >= max_per_type - 2:  # Permitir llegar a 46, 47, 48
+                break
+
+        # Seleccionar títulos de LISTENING
+        for _, row in listening_df.iterrows():
+            count = row["question_count"]
+            if total_listening + count <= max_per_type:
+                selected_titles.append((int(row["pk_title"]), "LISTENING", count))
+                total_listening += count
+            if total_listening >= max_per_type - 2:
+                break
+
+        # Si sobra espacio, puedes rellenar con títulos adicionales de cualquiera
+        remaining = max_total - (total_reading + total_listening)
+        if remaining > 0:
+            remaining_df = df[~df["pk_title"].isin([pk for pk, _, _ in selected_titles])]
+            remaining_df = remaining_df.sample(frac=1).reset_index(drop=True)
+
+            for _, row in remaining_df.iterrows():
+                count = row["question_count"]
+                if count <= remaining:
+                    selected_titles.append((int(row["pk_title"]), row["title_type"], count))
+                    remaining -= count
+                if remaining <= 0:
+                    break
+
+        # Devolver formato original: lista de tuplas con pk_title
+        return [(pk,) for pk, _, _ in selected_titles]
     
     
     
