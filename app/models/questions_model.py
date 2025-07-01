@@ -1,7 +1,8 @@
 from app import mysql
 import MySQLdb
 from flask_mysqldb import MySQL
-
+import pandas as pd
+import random
 
 class Questions:
     @staticmethod
@@ -250,9 +251,20 @@ class Questions:
     @staticmethod
     def get_random_questions_by_title(title_id):
         cur = mysql.connection.cursor()
+        
+        # Obtener todas las preguntas activas del título
         cur.execute("""
             SELECT pk_question FROM questions
             WHERE title_fk = %s AND status = 'ACTIVE'
-            ORDER BY RAND() LIMIT 4
         """, (title_id,))
-        return cur.fetchall()
+        
+        questions = cur.fetchall()  # Lista de tuplas: [(id,), ...]
+        
+        # Convertir a DataFrame
+        df = pd.DataFrame(questions, columns=["pk_question"])
+        
+        # Seleccionar aleatoriamente hasta 4 preguntas
+        selected = df.sample(n=min(4, len(df)), random_state=None)
+        
+        # Retornar como lista de tuplas [(id,), (id,), ...]
+        return [(int(row["pk_question"]),) for _, row in selected.iterrows()]

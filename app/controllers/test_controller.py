@@ -61,32 +61,34 @@ class TestController:
                 """, (today, user_fk))
                 mysql.connection.commit()
                 user['test_attempts'] = 0
+                
 
             # Verificar límite diario
             if user['test_attempts'] >= 3:
                 return jsonify({"message": "You have reached the maximum number of test attempts for today."}), 403
 
+            
             # Crear test
             test_id = Test.create_test(user_fk)
 
             # Obtener títulos aleatorios
             random_titles = Test.get_random_titles()
-
+            
             test_details = []
             for title in random_titles:
-                title_id = title["pk_title"]
+                title_id = title[0]
                 questions = Questions.get_random_questions_by_title(title_id)
 
                 if len(questions) < 4:
                     raise Exception(f"Título {title_id} no tiene suficientes preguntas")
 
                 for question in questions:
-                    TestDetail.create_detail(test_id, title_id, question["pk_question"])
+                    TestDetail.create_detail(test_id, title_id, question[0])
                     test_details.append({
                         "title_id": title_id,
-                        "question_id": question["pk_question"]
+                        "question_id": question[0]
                     })
-
+                    
             # Incrementar intentos
             cur.execute("""
                 UPDATE users

@@ -1,4 +1,6 @@
 from app import mysql
+import random
+import pandas as pd
 
 class Test:
     @staticmethod
@@ -22,39 +24,39 @@ class Test:
         test_id = cur.lastrowid
         return test_id
 
+    
     @staticmethod
     def get_random_titles():
         cur = mysql.connection.cursor()
+        
+        # Obtener todos los títulos válidos con al menos 4 preguntas activas
         cur.execute("""
-            (
-                SELECT qt.pk_title
-                FROM questions_titles qt
-                WHERE qt.title_type = 'READING'
-                    AND qt.status = 'ACTIVE'
-                    AND (
-                        SELECT COUNT(*) 
-                        FROM questions q 
-                        WHERE q.title_fk = qt.pk_title AND q.status = 'ACTIVE'
-                    ) >= 4
-                ORDER BY RAND()
-                LIMIT 12
-            )
-            UNION ALL
-            (
-                SELECT qt.pk_title
-                FROM questions_titles qt
-                WHERE qt.title_type = 'LISTENING'
-                    AND qt.status = 'ACTIVE'
-                    AND (
-                        SELECT COUNT(*) 
-                        FROM questions q 
-                        WHERE q.title_fk = qt.pk_title AND q.status = 'ACTIVE'
-                    ) >= 4
-                ORDER BY RAND()
-                LIMIT 12
-            )
+            SELECT qt.pk_title, qt.title_type
+            FROM questions_titles qt
+            WHERE qt.status = 'ACTIVE'
+            AND (
+                SELECT COUNT(*) 
+                FROM questions q 
+                WHERE q.title_fk = qt.pk_title AND q.status = 'ACTIVE'
+            ) >= 4
         """)
-        return cur.fetchall()
+        
+        results = cur.fetchall()  # [(pk_title, title_type), ...]
+        
+        df = pd.DataFrame(results, columns=["pk_title", "title_type"])
+        
+        # Separar por tipo
+        reading = df[df["title_type"] == "READING"]
+        listening = df[df["title_type"] == "LISTENING"]
+
+        # Tomar máximo 12 aleatorios o los que haya
+        selected_reading = reading.sample(n=min(12, len(reading)), random_state=None)
+        selected_listening = listening.sample(n=min(12, len(listening)), random_state=None)
+        
+        # Combinar y devolver como lista de tuplas [(pk_title,), ...]
+        final_titles = pd.concat([selected_reading, selected_listening])
+        
+        return [(int(row["pk_title"]),) for _, row in final_titles.iterrows()]
     
     
     
