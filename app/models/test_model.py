@@ -48,6 +48,9 @@ class Test:
         # Separar por tipo
         reading = df[df["title_type"] == "READING"]
         listening = df[df["title_type"] == "LISTENING"]
+        
+        reading = reading.sample(frac=1).reset_index(drop=True)
+        listening = listening.sample(frac=1).reset_index(drop=True)
 
         # Tomar máximo 12 aleatorios o los que haya
         selected_reading = reading.sample(n=min(12, len(reading)), random_state=None)

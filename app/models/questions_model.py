@@ -263,6 +263,8 @@ class Questions:
         # Convertir a DataFrame
         df = pd.DataFrame(questions, columns=["pk_question"])
         
+        df = df.sample(frac=1).reset_index(drop=True)
+        
         # Seleccionar aleatoriamente hasta 4 preguntas
         selected = df.sample(n=min(4, len(df)), random_state=None)
         
