@@ -79,9 +79,6 @@ class TestController:
                 title_id = title[0]
                 questions = Questions.get_random_questions_by_title(title_id)
 
-                if len(questions) < 4:
-                    raise Exception(f"Título {title_id} no tiene suficientes preguntas")
-
                 for question in questions:
                     TestDetail.create_detail(test_id, title_id, question[0])
                     test_details.append({
