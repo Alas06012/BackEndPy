@@ -28,7 +28,7 @@ class Test:
     @staticmethod
     def get_random_titles():
         cur = mysql.connection.cursor()
-        
+    
         # Obtener todos los títulos activos con su tipo y número de preguntas activas
         cur.execute("""
             SELECT 
@@ -48,7 +48,6 @@ class Test:
         
         # Filtrar títulos con al menos 1 pregunta activa
         df = df[df["question_count"] > 0]
-
         # Separar por tipo
         reading_df = df[df["title_type"] == "READING"].sample(frac=1).reset_index(drop=True)
         listening_df = df[df["title_type"] == "LISTENING"].sample(frac=1).reset_index(drop=True)
@@ -90,9 +89,12 @@ class Test:
                     remaining -= count
                 if remaining <= 0:
                     break
-
         # Devolver formato original: lista de tuplas con pk_title
         return [(pk,) for pk, _, _ in selected_titles]
+        
+            
+            
+        
     
     
     
