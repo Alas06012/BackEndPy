@@ -59,20 +59,21 @@ class ApiDeepSeekModel:
 
             client = OpenAI(api_key=Config.DEEPSEEK_APIKEY, base_url="https://api.deepseek.com")
 
-            # Prompt system ultra compacto (87 tokens)
             system_content = (
-                "Analiza TOEIC. Español. Devuelve JSON: {"
-                '"evaluacion":"correcta/incorrecta",'
-                '"explicacion":["texto"],'
-                '"sugerencias":["texto"]'
-                "}. Contexto:" + title_test[:1000]  # 1000 chars máximo
-            )
+                    "Eres especialista en TOEIC:Si student_answer != correct_answer → 'incorrecta'.\n"
+                    "{"
+                    '   "evaluacion": "correcta/incorrecta",'
+                    '   "explicacion": ["texto"],'
+                    '   "sugerencias": ["texto"]'
+                    "}"
+                    "Contexto:" + title_test
+                )
 
-            # Prompt user minimalista (53 tokens)
+            # Prompt user minimalista 
             user_prompt = (
-                "Q:" + question_text[:150] + "|"
-                "A:" + student_answer[:100] + "|"
-                "C:" + correct_answer[:100]
+                "question:" + question_text[:150] + "|"
+                "student_answer:" + student_answer[:100] + "|"
+                "correct_answer:" + correct_answer[:100]
             )
 
             response = client.chat.completions.create(
