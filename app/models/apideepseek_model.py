@@ -60,7 +60,7 @@ class ApiDeepSeekModel:
             client = OpenAI(api_key=Config.DEEPSEEK_APIKEY, base_url="https://api.deepseek.com")
 
             system_content = (
-                    "Eres especialista en TOEIC:Si student_answer != correct_answer → 'incorrecta'.\n"
+                    "Eres especialista en TOEIC:Si student_answer != correct_answer → 'incorrecta. OUTPUT JSON'.\n"
                     "{"
                     '   "evaluacion": "correcta/incorrecta",'
                     '   "explicacion": ["texto"],'
