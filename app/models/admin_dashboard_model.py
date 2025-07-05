@@ -23,7 +23,7 @@ class AdminDashboardModel:
                     raw = raw.strip()
                     return json.loads(raw) if raw else []
                 except Exception as e:
-                    print(f"Error parseando JSON: {e} - Raw: {raw}")
+                    #print(f"Error parseando JSON: {e} - Raw: {raw}")
                     return []
 
             dashboard_data = {
@@ -41,7 +41,7 @@ class AdminDashboardModel:
             return dashboard_data
 
         except Exception as e:
-            print(f"Error al obtener dashboard del admin: {e}")
+            #print(f"Error al obtener dashboard del admin: {e}")
             return None
         finally:
             cur.close()

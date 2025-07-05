@@ -11,16 +11,14 @@ class StudentDashboardModel:
         """
         cur = mysql.connection.cursor()
         try:
-            print(f"Conexión a MySQL establecida: {mysql.connection.open}")
+            #print(f"Conexión a MySQL establecida: {mysql.connection.open}")
 
             # Llamar al procedimiento almacenado
             cur.callproc('get_user_diagnostic_stats', [user_id])
             result = cur.fetchone()
-            
-            print(result)
 
             if not result:
-                print("No se encontraron datos para el usuario")
+                #print("No se encontraron datos para el usuario")
                 return None
 
             # Extraer los datos del resultado
@@ -43,7 +41,7 @@ class StudentDashboardModel:
                 try:
                     dashboard_data["test_history"] = json.loads(result['last_5_tests'])
                 except json.JSONDecodeError as e:
-                    print(f"Error al parsear test_history: {e} - Raw data: {result['last_5_tests']}")
+                    #print(f"Error al parsear test_history: {e} - Raw data: {result['last_5_tests']}")
                     dashboard_data["test_history"] = []
 
             # Procesar recommendations, strengths, weaknesses como JSON
@@ -60,12 +58,12 @@ class StudentDashboardModel:
             dashboard_data["strengths"] = parse_json_field(result['strengths'])
             dashboard_data["weaknesses"] = parse_json_field(result['weaknesses'])
 
-            print(f"Dashboard data: {dashboard_data}")
+            #print(f"Dashboard data: {dashboard_data}")
             return dashboard_data
 
         except Exception as e:
-            print(f"Error al obtener datos del dashboard: {e} - Conexión abierta: {mysql.connection.open}")
+           # print(f"Error al obtener datos del dashboard: {e} - Conexión abierta: {mysql.connection.open}")
             return None
         finally:
             cur.close()
-            print(f"Cursor cerrado. Conexión abierta: {mysql.connection.open}")
+           # print(f"Cursor cerrado. Conexión abierta: {mysql.connection.open}")

@@ -22,8 +22,8 @@ class AdminDashboard:
                 }), 403
 
             dashboard_data = AdminDashboardModel.get_dashboard_data()
-            print("DATOS ABAJO")
-            print(dashboard_data)
+            #print("DATOS ABAJO")
+            #print(dashboard_data)
             if dashboard_data is None:
                 return jsonify({
                     "success": False,
