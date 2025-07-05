@@ -11,11 +11,13 @@ class StudentDashboardModel:
         """
         cur = mysql.connection.cursor()
         try:
-            print(f"Conexión a MySQL establecida: {mysql.connection.open}")  # Depuración de conexión
+            print(f"Conexión a MySQL establecida: {mysql.connection.open}")
 
             # Llamar al procedimiento almacenado
             cur.callproc('get_user_diagnostic_stats', [user_id])
             result = cur.fetchone()
+            
+            print(result)
 
             if not result:
                 print("No se encontraron datos para el usuario")
@@ -36,44 +38,29 @@ class StudentDashboardModel:
                 "rank": result['rank_position'] if result['rank_position'] else 1,
             }
 
-            # Procesar last_5_tests (cadena simulada como JSON)
+            # Procesar last_5_tests (JSON válido)
             if result['last_5_tests']:
                 try:
-                    test_history_raw = result['last_5_tests'].strip('[]')
-                    if test_history_raw:
-                        test_history_items = re.findall(r'\{[^}]*\}', test_history_raw)  # Extraer cada objeto {}
-                        test_history = []
-                        for item in test_history_items:
-                            item = item.strip('{}')
-                            pairs = [pair.strip() for pair in item.split(',') if ': ' in pair]
-                            score_date = {}
-                            for pair in pairs:
-                                key, value = pair.split(': ', 1)
-                                if key == '"score"':
-                                    score_date['score'] = int(value)
-                                elif key == '"date"':
-                                    score_date['date'] = value.strip('"')
-                            if 'score' in score_date and 'date' in score_date:
-                                test_history.append({
-                                    "score": score_date['score'],
-                                    "date": score_date['date']
-                                })
-                        dashboard_data["test_history"] = test_history[:5]
-                    else:
-                        dashboard_data["test_history"] = []
-                except Exception as e:
+                    dashboard_data["test_history"] = json.loads(result['last_5_tests'])
+                except json.JSONDecodeError as e:
                     print(f"Error al parsear test_history: {e} - Raw data: {result['last_5_tests']}")
                     dashboard_data["test_history"] = []
 
-            # Procesar recommendations, strengths, weaknesses
-            if result['recommendations']:
-                dashboard_data["recommendations"] = [item.strip() for item in result['recommendations'].split(', ') if item.strip()]
-            if result['strengths']:
-                dashboard_data["strengths"] = [item.strip() for item in result['strengths'].split(', ') if item.strip()]
-            if result['weaknesses']:
-                dashboard_data["weaknesses"] = [item.strip() for item in result['weaknesses'].split(', ') if item.strip()]
+            # Procesar recommendations, strengths, weaknesses como JSON
+            def parse_json_field(field):
+                if field and field != '[]':
+                    try:
+                        return json.loads(field)
+                    except json.JSONDecodeError:
+                        # Fallback para datos mal formados
+                        return [field.strip('"')] if field else []
+                return []
 
-            print(f"Dashboard data: {dashboard_data}")  # Depuración
+            dashboard_data["recommendations"] = parse_json_field(result['recommendations'])
+            dashboard_data["strengths"] = parse_json_field(result['strengths'])
+            dashboard_data["weaknesses"] = parse_json_field(result['weaknesses'])
+
+            print(f"Dashboard data: {dashboard_data}")
             return dashboard_data
 
         except Exception as e:
@@ -81,4 +68,4 @@ class StudentDashboardModel:
             return None
         finally:
             cur.close()
-            print(f"Cursor cerrado. Conexión abierta: {mysql.connection.open}")  # Depuración de cierre
+            print(f"Cursor cerrado. Conexión abierta: {mysql.connection.open}")
