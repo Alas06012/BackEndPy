@@ -262,7 +262,7 @@ class ApiDeepSeekModel:
                 listening_format_instructions = (
                     "Para el campo 'title_test', genera un script de conversación. "
                     "DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. "
-                    "Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4' y cada linea del script debe finalizar en /n",
+                    "Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4' y cada linea del script debe finalizar en un salto de linea",
                     "El actor 'default' siempre debe de iniciar con una breve introduccion de nomas de 6 palabras"
                 )
 
@@ -305,7 +305,7 @@ class ApiDeepSeekModel:
                 model="deepseek-chat",
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Genera el contenido para un examen nivel {context['level']} de tipo {title_type} sobre {context['section']}."}
+                    {"role": "user", "content": f"Genera el contenido para un examen nivel {context['level']} de tipo {title_type} sobre {context['section']} con contenido de {topic}."}
                 ],
                 response_format={"type": "json_object"},
                 temperature=0.7,
