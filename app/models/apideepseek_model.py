@@ -263,7 +263,7 @@ class ApiDeepSeekModel:
                     "Para el campo 'title_test', genera un script de conversación. "
                     "DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. "
                     "Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4' y cada linea del script debe finalizar en un salto de linea",
-                    "El actor 'default' siempre debe de iniciar con una breve introduccion de nomas de 6 palabras"
+                    "El actor 'default' siempre debe de iniciar con una breve introduccion de nomas de 6 palabras, y omite el uso de 'person 1', 'person 2'... como parte de las preguntas."
                 )
 
             # --- Construcción del Prompt del Sistema ---
@@ -416,7 +416,7 @@ class ApiDeepSeekModel:
                     text_to_speak = text.strip()
                 
                 voice_name = VOICE_MAPPING.get(speaker_key, VOICE_MAPPING['default'])
-                ssml_parts.append(f'<voice name="{voice_name}">{text_to_speak}<break time="200ms"/></voice>')
+                ssml_parts.append(f'<voice name="{voice_name}">{text_to_speak}<break time="350ms"/></voice>')
                 
                 if previous_speaker and previous_speaker != speaker_key:
                     ssml_parts.append('<break time="600ms"/>')
