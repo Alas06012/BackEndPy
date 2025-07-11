@@ -93,10 +93,10 @@ class LevelController:
     # MÉTODO PARA OBTENER TODOS LOS NIVELES (sin paginación)
     @staticmethod
     @jwt_required()
-    def get_all_levels():
+    def get_all_mcer_levels():
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
-
+        
         if user['user_role'] != 'admin':
             return jsonify({"message": "Insufficient permissions"}), 403
 

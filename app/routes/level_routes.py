@@ -13,7 +13,7 @@ level_routes.route('/level', methods=['PUT'])(LevelController.update_level)
 level_routes.route('/level', methods=['DELETE'])(LevelController.delete_level)
 
 # Obtener todos los niveles sin filtros (opcional)
-level_routes.route('/levels', methods=['POST'])(LevelController.get_all_levels)
+level_routes.route('/levels', methods=['POST'])(LevelController.get_all_mcer_levels)
 #level_routes.route('/levels', methods=['POST'])(LevelController.get_levels_paginated)
 
 # Obtener niveles con paginación y búsqueda

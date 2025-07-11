@@ -4,6 +4,11 @@ from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_tok
 import bcrypt
 from app import mysql
 import datetime
+import json
+import uuid
+from datetime import datetime
+from flask import current_app
+from google.cloud import texttospeech, storage
 
 # Please install OpenAI SDK first: `pip3 install openai`
 from openai import OpenAI
@@ -219,3 +224,225 @@ class ApiDeepSeekModel:
             return None
         finally:
             cur.close()
+            
+            
+            
+    @staticmethod
+    def get_context_from_db(level_fk, toeic_section_fk):
+        """Obtiene los nombres del nivel y la sección para el prompt."""
+        try:
+            cur = mysql.connection.cursor()
+            query = """
+                SELECT 
+                    (SELECT level_name FROM mcer_level WHERE pk_level = %s) as level,
+                    (SELECT section_desc FROM toeic_sections WHERE section_pk = %s) as section;
+            """
+            cur.execute(query, (level_fk, toeic_section_fk))
+            result = cur.fetchone()
+            cur.close()
+            return result if result else None
+        except Exception as e:
+            print(f"Error getting context from DB: {e}")
+            return None
+
+    @staticmethod
+    def generate_quiz_content(level_fk, toeic_section_fk, title_type):
+        """Llama a la API de DeepSeek para generar un título con 4 preguntas y 4 respuestas cada una."""
+        try:
+            if not Config.DEEPSEEK_APIKEY:
+                raise ValueError("API key para DeepSeek no configurada")
+
+            context = ApiDeepSeekModel.get_context_from_db(level_fk, toeic_section_fk)
+            if not context:
+                raise ValueError("No se pudo obtener el contexto desde la base de datos.")
+
+            # --- Instrucciones específicas para el formato de Listening ---
+            listening_format_instructions = ""
+            if title_type.upper() == 'LISTENING':
+                listening_format_instructions = (
+                    "Para el campo 'title_test', genera un script de conversación. "
+                    "DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. "
+                    "Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4'."
+                )
+
+            # --- Construcción del Prompt del Sistema ---
+            system_prompt = f"""
+                Eres un experto creando contenido para el examen TOEIC.
+                Tu tarea es generar un JSON que contenga un título ({title_type}), 4 preguntas relacionadas y 4 respuestas para cada pregunta.
+                El nivel de dificultad debe ser {context['level']}.
+                La sección de TOEIC es: {context['section']}.
+                {listening_format_instructions}
+
+                La estructura del JSON de salida DEBE ser la siguiente y no incluyas nada más fuera del JSON:
+                {{
+                  "title_name": "Un nombre creativo para el título",
+                  "title_test": "El texto completo si es Reading, o el script de la conversación si es Listening.",
+                  "title_type": "{title_type.upper()}",
+                  "questions": [
+                    {{
+                      "question_text": "Texto de la pregunta 1...",
+                      "answers": [
+                        {{"answer_text": "Respuesta A.", "is_correct": false}},
+                        {{"answer_text": "Respuesta B.", "is_correct": true}},
+                        {{"answer_text": "Respuesta C.", "is_correct": false}},
+                        {{"answer_text": "Respuesta D.", "is_correct": false}}
+                      ]
+                    }}
+                  ]
+                }}
+
+                Asegúrate de que:
+                1. Haya exactamente 4 objetos en la lista "questions".
+                2. Cada objeto de pregunta tenga exactamente 4 objetos de respuesta en su lista "answers".
+                3. En cada lista de respuestas, exactamente UNO de los objetos tenga "is_correct": true.
+            """
+
+            client = OpenAI(api_key=Config.DEEPSEEK_APIKEY, base_url="https://api.deepseek.com")
+            
+            response = client.chat.completions.create(
+                model="deepseek-chat",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": f"Genera el contenido para un examen nivel {context['level']} de tipo {title_type} sobre {context['section']}."}
+                ],
+                response_format={"type": "json_object"},
+                temperature=0.7,
+                max_tokens=2048
+            )
+            
+            return json.loads(response.choices[0].message.content)
+
+        except Exception as e:
+            print(f"Error en la API de IA: {str(e)}")
+            return None
+        
+        
+    # --- MÉTODO DE GUARDADO ---
+    @staticmethod
+    def save_quiz_to_db(quiz_data, level_fk, toeic_section_fk):
+        #Guarda el título, preguntas y respuestas en la BD usando una transacción.
+        conn = mysql.connection
+        cur = conn.cursor()
+        audio_url = None
+        blob = None # Referencia al archivo en GCS para posible eliminación
+
+        try:
+            # --- 1. Generar audio si el tipo es LISTENING (ANTES de tocar la BD) ---
+            if quiz_data.get('title_type') == 'LISTENING':
+                #print("Tipo LISTENING detectado. Iniciando generación de audio...")
+                audio_url, blob = ApiDeepSeekModel._generate_and_upload_audio(quiz_data['title_test'])
+                #print(f"Audio generado y subido a: {audio_url}")
+
+            # --- 2. Insertar el título en la BD ---
+            # Ahora usamos la variable 'audio_url' que contiene la URL de GCS o es None
+            title_query = """
+                INSERT INTO questions_titles (title_name, title_test, title_type, title_url, status)
+                VALUES (%s, %s, %s, %s, 'ACTIVE')
+            """
+            cur.execute(title_query, (
+                quiz_data['title_name'],
+                quiz_data['title_test'],
+                quiz_data['title_type'],
+                audio_url # Aquí se guarda la URL del audio o NULL
+            ))
+            new_title_id = cur.lastrowid
+
+            # --- 3. Iterar e insertar cada pregunta y respuesta (sin cambios) ---
+            for q in quiz_data['questions']:
+                question_query = """
+                    INSERT INTO questions (toeic_section_fk, question_text, title_fk, level_fk, status)
+                    VALUES (%s, %s, %s, %s, 'ACTIVE')
+                """
+                cur.execute(question_query, (toeic_section_fk, q['question_text'], new_title_id, level_fk))
+                new_question_id = cur.lastrowid
+
+                for ans in q['answers']:
+                    answer_query = """
+                        INSERT INTO answers (question_fk, answer_text, is_correct, status)
+                        VALUES (%s, %s, %s, 'ACTIVE')
+                    """
+                    cur.execute(answer_query, (new_question_id, ans['answer_text'], ans['is_correct']))
+            
+            # Si todo fue exitoso, confirmar la transacción
+            conn.commit()
+            return new_title_id
+
+        except Exception as e:
+            # Si algo falla, revertir todos los cambios de la BD
+            conn.rollback()
+            #print(f"Error en save_quiz_to_db, transacción revertida: {str(e)}")
+
+            # --- 4. Lógica de limpieza para GCS ---
+            # Si se creó un archivo en GCS pero la transacción falló, elimínalo.
+            if blob:
+                try:
+                    #print(f"La transacción de BD falló. Eliminando archivo huérfano de GCS: {blob.name}")
+                    blob.delete()
+                    #print("Archivo huérfano eliminado exitosamente.")
+                except Exception as gcs_error:
+                    print(f"¡CRÍTICO! No se pudo eliminar el archivo huérfano de GCS: {blob.name}. Error: {gcs_error}")
+            
+            return None
+        finally:
+            cur.close()
+            
+    # --- ✨ MÉTODO AUXILIAR PRIVADO PARA GENERAR AUDIO ---
+    @staticmethod
+    def _generate_and_upload_audio(script_content):
+        
+        #Genera SSML, crea el audio con Google TTS y lo sube a GCS.
+        #Devuelve la URL pública del audio y el objeto blob para posible eliminación.
+        
+        try:
+            # 1. Generar SSML a partir del script
+            VOICE_MAPPING = {
+                'person 1': 'en-US-Standard-I', 'person 2': 'en-US-Standard-H',
+                'person 3': 'en-US-Standard-C', 'person 4': 'en-US-Standard-D',
+                'default': 'en-US-Standard-B'
+            }
+            ssml_parts = ['<speak>']
+            previous_speaker = None
+            for line in script_content.split('\n'):
+                line = line.strip()
+                if not line: continue
+                
+                speaker_key = 'default'
+                text_to_speak = line
+                if ': ' in line:
+                    speaker, text = line.split(': ', 1)
+                    speaker_key = speaker.strip().lower()
+                    text_to_speak = text.strip()
+                
+                voice_name = VOICE_MAPPING.get(speaker_key, VOICE_MAPPING['default'])
+                ssml_parts.append(f'<voice name="{voice_name}">{text_to_speak}<break time="200ms"/></voice>')
+                
+                if previous_speaker and previous_speaker != speaker_key:
+                    ssml_parts.append('<break time="600ms"/>')
+                previous_speaker = speaker_key
+            
+            ssml_parts.append('</speak>')
+            ssml = ''.join(ssml_parts)
+
+            # 2. Generar audio con Google TTS
+            tts_client = texttospeech.TextToSpeechClient()
+            synthesis_input = texttospeech.SynthesisInput(ssml=ssml)
+            voice_params = texttospeech.VoiceSelectionParams(language_code="en-US")
+            audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
+            response = tts_client.synthesize_speech(input=synthesis_input, voice=voice_params, audio_config=audio_config)
+
+            # 3. Subir a Google Cloud Storage
+            storage_client = storage.Client()
+            bucket = storage_client.bucket(current_app.config['GCS_BUCKET_NAME'])
+            filename = f"audios/{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex}.mp3"
+            blob = bucket.blob(filename)
+            blob.upload_from_string(response.audio_content, content_type='audio/mpeg')
+            
+            audio_url = f"https://storage.googleapis.com/{current_app.config['GCS_BUCKET_NAME']}/{blob.name}"
+            
+            # Devuelve la URL y el blob para el manejo de la transacción
+            return audio_url, blob
+
+        except Exception as e:
+            print(f"Error durante la generación o subida del audio: {e}")
+            raise e # Lanza la excepción para que la transacción principal la capture y haga rollback
+

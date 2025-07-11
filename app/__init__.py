@@ -39,11 +39,9 @@ def create_app():
     from app.routes.test_detail_routes import test_detail_routes
     from app.routes.student_dashboard_routes import student_dashboard_routes
     from app.routes.admin_dashboard_routes import admin_dashboard_routes
-
-    #from app.routes.testapi_routes import testapi_route
-    
-    from app.routes.level_routes import level_routes  # Asegúrate de importar el blueprint
-    from app.routes.section_routes import section_routes  # Asegúrate de importar el blueprint
+    from app.routes.ai_routes import questions_ai_routes
+    from app.routes.level_routes import level_routes  
+    from app.routes.section_routes import section_routes 
     
     # Lista de Blueprints
     blueprints = [
@@ -60,6 +58,7 @@ def create_app():
         test_detail_routes,
         student_dashboard_routes,
         admin_dashboard_routes,
+        questions_ai_routes
     ]
     
     # Registrar los Blueprints

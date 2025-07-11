@@ -90,10 +90,9 @@ class SectionController:
   # MÉTODO PARA OBTENER TODAS LAS SECCTIONS (sin paginación)
     @staticmethod
     @jwt_required()
-    def get_all_sections():
+    def get_all_toeic_sections():
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
-
         if user['user_role'] not in ['admin', 'teacher']:
             return jsonify({"message": "Insufficient permissions"}), 403
 

@@ -1,5 +1,6 @@
 from app.models.questions_model import Questions
 from app.models.title_model import QuestionTitle
+from app.models.apideepseek_model import ApiDeepSeekModel
 from app.models.user_model import Usuario
 from flask import jsonify, request
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
@@ -9,6 +10,7 @@ from google.cloud import texttospeech, storage
 from flask import current_app
 import uuid
 from datetime import datetime
+
 
 class TitleController:
     
@@ -397,4 +399,81 @@ class TitleController:
         
 
     
+    
+    # ---------------------------------------------------
+    #
+    # COMIENZA:
+    # GENERAR CONTENIDO DE BANCO DE PREGUNTAS CON IA
+    # 
+    # ---------------------------------------------------
+    @staticmethod
+    @jwt_required()
+    def generate_quiz_from_ai():
+        try:
+            data = request.get_json()
+            if not data:
+                return jsonify({"message": "No se proporcionaron datos"}), 400
+
+            # --- Campos requeridos para generar el prompt ---
+            required_fields = ['level_fk', 'toeic_section_fk', 'title_type']
+            if not all(field in data for field in required_fields):
+                return jsonify({"message": "Faltan campos requeridos: level_fk, toeic_section_fk, title_type"}), 400
+
+            # --- Llamada al modelo para interactuar con la IA ---
+            generated_content = ApiDeepSeekModel.generate_quiz_content(
+                data['level_fk'],
+                data['toeic_section_fk'],
+                data['title_type']
+            )
+
+            if not generated_content:
+                return jsonify({"message": "Error al generar contenido con la IA"}), 500
+
+            # --- Devolver el contenido generado al frontend ---
+            return jsonify({
+                "message": "Contenido generado exitosamente. Por favor, revísalo antes de guardar.",
+                "data": generated_content
+            }), 200
+
+        except Exception as e:
+            print(f"Error en generate_quiz_from_ai: {str(e)}")
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
+
+    @staticmethod
+    @jwt_required()
+    def save_generated_quiz():
+        try:
+            data = request.get_json()
+            quiz_data = data.get('quiz_data')
+            # --- Parámetros adicionales necesarios para la tabla 'questions' ---
+            level_fk = data.get('level_fk')
+            toeic_section_fk = data.get('toeic_section_fk')
+
+            if not all([quiz_data, level_fk, toeic_section_fk]):
+                return jsonify({"message": "Faltan datos: quiz_data, level_fk o toeic_section_fk son requeridos"}), 400
+
+            # --- Validación básica del contenido ---
+            if 'title_name' not in quiz_data or 'questions' not in quiz_data or not quiz_data['questions']:
+                 return jsonify({"message": "El formato de quiz_data es incorrecto."}), 400
+
+            # --- Llamada al modelo para guardar en la BD ---
+            title_id = ApiDeepSeekModel.save_quiz_to_db(quiz_data, level_fk, toeic_section_fk)
+
+            if title_id:
+                return jsonify({
+                    "message": "Contenido guardado exitosamente en la base de datos.",
+                    "title_id": title_id
+                }), 201
+            else:
+                return jsonify({"message": "Error al guardar el contenido en la base de datos."}), 500
+        
+        except Exception as e:
+            print(f"Error en save_generated_quiz: {str(e)}")
+            return jsonify({"error": "Internal server error", "details": str(e)}), 500
+    # ---------------------------------------------------
+    # 
+    # TERMINA:
+    # GENERACION CONTENIDO DE BANCO DE PREGUNTAS CON IA
+    # 
+    # ---------------------------------------------------
     
