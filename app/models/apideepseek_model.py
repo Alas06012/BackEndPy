@@ -416,7 +416,7 @@ class ApiDeepSeekModel:
                     text_to_speak = text.strip()
                 
                 voice_name = VOICE_MAPPING.get(speaker_key, VOICE_MAPPING['default'])
-                ssml_parts.append(f'<voice name="{voice_name}">{text_to_speak}<break time="200ms"/></voice>')
+                ssml_parts.append(f'<voice name="{voice_name}">{text_to_speak}<break time="350ms"/></voice>')
                 
                 if previous_speaker and previous_speaker != speaker_key:
                     ssml_parts.append('<break time="600ms"/>')
