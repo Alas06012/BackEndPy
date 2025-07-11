@@ -415,7 +415,7 @@ class TitleController:
                 return jsonify({"message": "No se proporcionaron datos"}), 400
 
             # --- Campos requeridos para generar el prompt ---
-            required_fields = ['level_fk', 'toeic_section_fk', 'title_type']
+            required_fields = ['level_fk', 'toeic_section_fk', 'title_type', 'topic']
             if not all(field in data for field in required_fields):
                 return jsonify({"message": "Faltan campos requeridos: level_fk, toeic_section_fk, title_type"}), 400
 
@@ -423,7 +423,8 @@ class TitleController:
             generated_content = ApiDeepSeekModel.generate_quiz_content(
                 data['level_fk'],
                 data['toeic_section_fk'],
-                data['title_type']
+                data['title_type'],
+                data['topic']
             )
 
             if not generated_content:

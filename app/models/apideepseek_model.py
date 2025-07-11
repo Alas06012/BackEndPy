@@ -246,8 +246,8 @@ class ApiDeepSeekModel:
             return None
 
     @staticmethod
-    def generate_quiz_content(level_fk, toeic_section_fk, title_type):
-        """Llama a la API de DeepSeek para generar un título con 4 preguntas y 4 respuestas cada una."""
+    def generate_quiz_content(level_fk, toeic_section_fk, title_type, topic):
+        #Llama a la API de DeepSeek para generar un título con 4 preguntas y 4 respuestas cada una
         try:
             if not Config.DEEPSEEK_APIKEY:
                 raise ValueError("API key para DeepSeek no configurada")
@@ -262,7 +262,8 @@ class ApiDeepSeekModel:
                 listening_format_instructions = (
                     "Para el campo 'title_test', genera un script de conversación. "
                     "DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. "
-                    "Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4'."
+                    "Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4' y cada linea del script debe finalizar en /n",
+                    "El actor 'default' siempre debe de iniciar con una breve introduccion de nomas de 6 palabras"
                 )
 
             # --- Construcción del Prompt del Sistema ---
@@ -271,12 +272,13 @@ class ApiDeepSeekModel:
                 Tu tarea es generar un JSON que contenga un título ({title_type}), 4 preguntas relacionadas y 4 respuestas para cada pregunta.
                 El nivel de dificultad debe ser {context['level']}.
                 La sección de TOEIC es: {context['section']}.
+                El tema de conversacion es: {topic}.
                 {listening_format_instructions}
 
                 La estructura del JSON de salida DEBE ser la siguiente y no incluyas nada más fuera del JSON:
                 {{
                   "title_name": "Un nombre creativo para el título",
-                  "title_test": "El texto completo si es Reading, o el script de la conversación si es Listening.",
+                  "title_test": "El texto completo si es Reading, o el script de la conversación si es Listening",
                   "title_type": "{title_type.upper()}",
                   "questions": [
                     {{
