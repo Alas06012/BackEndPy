@@ -267,7 +267,7 @@ class Questions:
         
         # Seleccionar aleatoriamente hasta 4 preguntas
         selected = df.sample(n=min(4, len(df)), random_state=None)
-        print(selected)
+        #print(selected)
         
         # Retornar como lista de tuplas [(id,), (id,), ...]
         return [(int(row["pk_question"]),) for _, row in selected.iterrows()]
