@@ -14,7 +14,7 @@ import secrets
 from config import Config
 
 MAX_ATTEMPTS = 5
-BLOCK_MINUTES = 15
+BLOCK_MINUTES = 1
 
 class UserController:
 
@@ -162,8 +162,8 @@ class UserController:
         if last_sent:
             if isinstance(last_sent, str):
                 last_sent = datetime.strptime(last_sent, "%Y-%m-%d %H:%M:%S") 
-            if datetime.now() - last_sent < timedelta(minutes=3):
-                return jsonify({"message": "Please wait 3 minutes before requesting another code."}), 429
+            if datetime.now() - last_sent < timedelta(seconds=15):
+                return jsonify({"message": "Please wait 15 seconds before requesting another code."}), 429
 
         new_code = UserController.generate_code()
 
