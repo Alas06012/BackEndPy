@@ -275,8 +275,7 @@ class ApiDeepSeekModel:
             if title_type.upper() == 'LISTENING':
                 listening_format_instructions = """ Para el campo 'title_test', genera un script de conversación. 
                 DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. 
-                Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4' pero 
-                NO debes incluir 'person 1', 'person 2', 'person 3', 'person 4', dentro del texto de las preguntas o en los textos de las respuestas.
+                Los actores pueden ser 'person 1': Voz femenina, 'person 2': Voz masculina, 'person 3': Voz femenina, 'person 4': Voz masculina, 'default': Voz narrador, pero 
                 Cada línea del script debe finalizar en un salto de línea y sin punto. 
                 El actor 'default' siempre debe iniciar con una breve introducción de no más de 6 palabras."""
 
@@ -348,7 +347,7 @@ class ApiDeepSeekModel:
         cur = conn.cursor()
         audio_url = None
         blob = None # Referencia al archivo en GCS para posible eliminación
-
+        
         try:
             # --- 1. Generar audio si el tipo es LISTENING (ANTES de tocar la BD) ---
             if quiz_data.get('title_type') == 'LISTENING':
