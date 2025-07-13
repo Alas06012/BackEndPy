@@ -273,14 +273,11 @@ class ApiDeepSeekModel:
             # --- Instrucciones específicas para el formato de Listening ---
             listening_format_instructions = ""
             if title_type.upper() == 'LISTENING':
-                listening_format_instructions = """
-                        Para el campo 'title_test', genera un script de conversación. 
-                        DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. 
-                        Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4'. 
-                        Cada línea del script debe finalizar en un salto de línea y sin punto. 
-                        El actor 'default' siempre debe iniciar con una breve introducción de no más de 6 palabras. 
-                        NO debes incluir 'person 1', 'person 2', etc., en las preguntas o en los textos de las respuestas.
-                    """
+                listening_format_instructions = """ Para el campo 'title_test', genera un script de conversación. 
+                DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. 
+                Los actores pueden ser 'person 1': Voz femenina, 'person 2': Voz masculina, 'person 3': Voz femenina, 'person 4': Voz masculina, 'default': Voz narrador, pero 
+                Cada línea del script debe finalizar en un salto de línea y sin punto. 
+                El actor 'default' siempre debe iniciar con una breve introducción de no más de 6 palabras."""
 
             # --- Construcción del Prompt del Sistema ---
             system_prompt = f"""
@@ -313,10 +310,17 @@ class ApiDeepSeekModel:
                 1. Haya exactamente 4 objetos en la lista "questions".
                 2. Cada objeto de pregunta tenga exactamente 4 objetos de respuesta en su lista "answers".
                 3. En cada lista de respuestas, exactamente UNO de los objetos tenga "is_correct": true.
-            """
+                4. NUNCA uses "person 1/2/3/4" en preguntas.
+                    - Si un personaje necesita nombre:
+                        a) INTRODUCE un nombre en la historia (ej: "person 1: Hi Laura, How are you? person 2: Fine, Thank you Ana.").
+                        b) Usa ESE NOMBRE en la pregunta relacionada (ej: "Who is talking to Laura?").
+                5. Pueden ser preguntas sobre eventos/consecuencias o contextualiza usando elementos de la historia (lugares, acciones, objetos).
+                6. Calidad de distractores:
+                    - Respuestas incorrectas: verosímiles y relacionadas con la historia.
+                    - Evitar patrones predecibles (ej: la correcta siempre en misma posición y/o la respuesta correcta es muy obvia entre el resto de respuestas).
+                """
 
             client = OpenAI(api_key=Config.DEEPSEEK_APIKEY, base_url="https://api.deepseek.com")
-            
             response = client.chat.completions.create(
                 model="deepseek-chat",
                 messages=[
@@ -325,7 +329,7 @@ class ApiDeepSeekModel:
                 ],
                 response_format={"type": "json_object"},
                 temperature=0.7,
-                max_tokens=2048
+                #max_tokens=2048
             )
             
             return json.loads(response.choices[0].message.content)
@@ -343,7 +347,7 @@ class ApiDeepSeekModel:
         cur = conn.cursor()
         audio_url = None
         blob = None # Referencia al archivo en GCS para posible eliminación
-
+        
         try:
             # --- 1. Generar audio si el tipo es LISTENING (ANTES de tocar la BD) ---
             if quiz_data.get('title_type') == 'LISTENING':
