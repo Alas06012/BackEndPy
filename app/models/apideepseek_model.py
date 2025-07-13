@@ -312,8 +312,9 @@ class ApiDeepSeekModel:
                 3. En cada lista de respuestas, exactamente UNO de los objetos tenga "is_correct": true.
                 4. NUNCA uses "person 1/2/3/4" en preguntas.
                     - Si un personaje necesita nombre:
-                        a) INTRODUCE un nombre en la historia (ej: "person 1: Hi Laura, How are you? person 2: Fine, Thank you Ana.").
-                        b) Usa ESE NOMBRE en la pregunta relacionada (ej: "Who is talking to Laura?").
+                        a) El nombre debe ser acorde a su genero: 'person 1': masculino, 'person 2': femenino, 'person 3': femenino, 'person 4': masculino
+                        b) INTRODUCE un nombre en la historia (ej: "person 1: Hi Laura, How are you? person 2: Fine, Thank you Tom.").
+                        c) Usa ESE NOMBRE en la pregunta relacionada (ej: "Who is talking to Laura?"). El
                 5. Pueden ser preguntas sobre eventos/consecuencias o contextualiza usando elementos de la historia (lugares, acciones, objetos).
                 6. Calidad de distractores:
                     - Respuestas incorrectas: verosímiles y relacionadas con la historia.
