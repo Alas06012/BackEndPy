@@ -273,14 +273,14 @@ class ApiDeepSeekModel:
             # --- Instrucciones específicas para el formato de Listening ---
             listening_format_instructions = ""
             if title_type.upper() == 'LISTENING':
-                listening_format_instructions = (
-                        "Para el campo 'title_test', genera un script de conversación. "
-                        "DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. "
-                        "Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4'. "
-                        "Cada línea del script debe finalizar en un salto de línea y sin punto. "
-                        "El actor 'default' siempre debe iniciar con una breve introducción de no más de 6 palabras. "
-                        "**NO debes incluir 'person 1', 'person 2', etc., en las preguntas o en los textos de las respuestas**"
-                    )
+                listening_format_instructions = """
+                        Para el campo 'title_test', genera un script de conversación. 
+                        DEBE seguir estrictamente el formato: 'person 1: texto', 'person 2: texto', etc. 
+                        Los actores pueden ser 'default', 'person 1', 'person 2', 'person 3', 'person 4'. 
+                        Cada línea del script debe finalizar en un salto de línea y sin punto. 
+                        El actor 'default' siempre debe iniciar con una breve introducción de no más de 6 palabras. 
+                        NO debes incluir 'person 1', 'person 2', etc., en las preguntas o en los textos de las respuestas.
+                    """
 
             # --- Construcción del Prompt del Sistema ---
             system_prompt = f"""
