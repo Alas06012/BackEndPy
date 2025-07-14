@@ -15,7 +15,7 @@ steps:
       - '--allow-unauthenticated'
       - '--port=5000'
       - '--min-instances=0'
-      - '--max-instances=1'
+      - '--max-instances=10'
       - '--ingress=all'
       - '--vpc-connector=serverless-connector'
       - '--vpc-egress=all-traffic'
