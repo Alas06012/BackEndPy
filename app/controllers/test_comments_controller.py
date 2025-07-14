@@ -141,7 +141,7 @@ class TestComments:
                 if not can_proceed:
                     return jsonify({
                         "message": "Límite diario alcanzado",
-                        "error": "Has excedido el límite de 5 análisis por día"
+                        "error": "Has excedido el límite de 50 análisis por día"
                     }), 429
 
             data = request.get_json()
