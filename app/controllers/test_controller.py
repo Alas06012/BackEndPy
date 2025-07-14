@@ -37,7 +37,7 @@ class TestController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['user_role'] not in ['admin', 'student']:
+        if user['user_role'] not in ['admin', 'student', 'teacher']:
             return jsonify({"message": "Unauthorized User"}), 403
 
         user_fk = user['pk_user']
@@ -219,7 +219,7 @@ class TestController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] not in ['admin', 'teacher']:
+            if user['user_role'] not in ['admin', 'teacher', 'student']:
                 return jsonify({
                     "success": False,
                     "message": "Solo administradores o docentes pueden reintentar una evaluación"
