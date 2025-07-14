@@ -13,7 +13,7 @@ class LevelController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in['admin', 'teacher']  :
             return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
@@ -37,7 +37,7 @@ class LevelController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in['admin', 'teacher'] :
             return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
@@ -74,7 +74,7 @@ class LevelController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
 
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in['admin', 'teacher'] :
             return jsonify({"message": "Insufficient permissions."}), 403
 
         data = request.get_json()
@@ -97,7 +97,7 @@ class LevelController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in['admin', 'teacher'] :
             return jsonify({"message": "Insufficient permissions"}), 403
 
         try:
@@ -115,7 +115,7 @@ class LevelController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
+            if user['user_role'] not in['admin', 'teacher'] :
                 return jsonify({"message": "Insufficient permissions"}), 403
 
             # Parámetros del body con valores por defecto
@@ -164,7 +164,7 @@ class LevelController:
             current_user_id = get_jwt_identity()
             user = Usuario.get_user_by_id(current_user_id)
 
-            if user['user_role'] != 'admin':
+            if user['user_role'] not in['admin', 'teacher'] :
                 return jsonify({"message": "Insufficient permissions"}), 403
 
             data = request.get_json() or {}

@@ -24,7 +24,7 @@ class TitleController:
         current_user_id = get_jwt_identity()
         user = Usuario.get_user_by_id(current_user_id)
         
-        if user['user_role'] != 'admin':
+        if user['user_role'] not in['admin', 'teacher'] :
             return jsonify({"message": "Unauthorized User"}), 403
         
         data = request.get_json()
