@@ -44,7 +44,8 @@ class ApiDeepSeekModel:
             Este es el formato fijo y no modificable del OUTPUT, en el caso de strengths, weaknesses y recommendations necesito que seas detallado enfocandote en casos específicos de las respuestas del estudiante y el como el estudiante puede mejorar en los temas relacionados en ellos, si encontrases mas de una strengths, weaknesses o recommendations puedes agregarlas, el objetivo es que el estudiante vea todas esos detalles y le sean de utilidad para su estudio:
             En caso de no encontrar un strengths, weaknesses o recommendations, sin comentarios a destacar. Estos textos deben de ser en español. 
             EJEMPLO OUTPUT:
-            {"mcer_level":"B1","toeic_score":720,"passed":true,"strengths":["aquí irán x cantidad de fortalezas del estudiante"],"weaknesses":["aquí irán lx cantidad de debilidades del estudiante"],"recommendations":["aquí irán x cantidad de recomendaciones para el estudiante"]}
+            Los valores de las últimas tres claves deben ser arrays de strings, donde cada string es un punto detallado del análisis.
+            {"mcer_level":"B1","toeic_score":720,"passed":true,"strengths":["fortalezas del estudiante"],"weaknesses":["debilidades del estudiante"],"recommendations":["recomendaciones para el estudiante de acuerdo a debilidades encontradas"]}
             """
 
         print(json.dumps(user_prompt))
@@ -63,6 +64,9 @@ class ApiDeepSeekModel:
                 model="deepseek-chat",
                 messages=messages,
                 response_format={"type": "json_object"},
+                temperature=0.5,  # Ligeramente más creativo para una buena redacción
+                max_tokens=2048,  # Más espacio para un análisis completo
+                top_p=0.9
             )
             response_data = json.loads(response.choices[0].message.content)
             return response_data
@@ -78,21 +82,26 @@ class ApiDeepSeekModel:
 
             client = OpenAI(api_key=Config.DEEPSEEK_APIKEY, base_url="https://api.deepseek.com")
 
-            system_content = (
-                    "Eres especialista en TOEIC:Si student_answer != correct_answer → 'incorrecta. OUTPUT JSON'.\n"
-                    "{"
-                    '   "evaluacion": "correcta/incorrecta",'
-                    '   "explicacion": ["texto"],'
-                    '   "sugerencias": ["texto"]'
-                    "}"
-                    "Contexto:" + title_test
-                )
+            system_content = """Eres un tutor experto en el examen TOEIC, especializado en dar micro-feedback claro y constructivo. 
+                                Tu tarea es analizar la respuesta de un estudiante a una pregunta específica dentro de un contexto.  
+                                Si student_answer != correct_answer → 'incorrecta. OUTPUT JSON'.\n"
+                                {
+                                    "evaluacion": "correcta/incorrecta",
+                                    "explicacion": [
+                                        "Aquí va la explicación detallada. Si la respuesta fue incorrecta, explica por qué lo fue, haciendo referencia directa tanto al 'Contexto' como a la 'Respuesta correcta'. Señala la pista clave en el texto que llevaba a la solución. Si la respuesta fue correcta, refuerza positivamente por qué es la mejor opción y por qué otras posibles alternativas habrían sido incorrectas."
+                                    ],
+                                    "sugerencias": [
+                                        "Aquí va una o dos sugerencias prácticas. La sugerencia no debe ser sobre la pregunta en sí, sino sobre la habilidad que se está evaluando. Por ejemplo, si el error fue por no entender una palabra, la sugerencia puede ser 'Crea tarjetas de vocabulario (flashcards) con sinónimos y antónimos'. Si el error fue de comprensión, puede ser 'Practica la técnica de 'skimming' para identificar la idea principal de un texto rápidamente antes de leer las preguntas'."
+                                    ]
+                                }
+                                Contexto:""" + title_test
+                
 
             # Prompt user minimalista 
             user_prompt = (
-                "question:" + question_text[:150] + "|"
-                "student_answer:" + student_answer[:100] + "|"
-                "correct_answer:" + correct_answer[:100]
+                "question:" + question_text + "|"
+                "student_answer:" + student_answer + "|"
+                "correct_answer:" + correct_answer
             )
 
             response = client.chat.completions.create(
@@ -103,7 +112,7 @@ class ApiDeepSeekModel:
                 ],
                 response_format={"type": "json_object"},
                 temperature=0.4,  # Más determinista
-                max_tokens=500,   # Suficiente para respuesta estructurada
+                max_tokens=1000,   # Suficiente para respuesta estructurada
                 top_p=0.9
             )
 
