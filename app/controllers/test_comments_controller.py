@@ -141,7 +141,7 @@ class TestComments:
                 if not can_proceed:
                     return jsonify({
                         "message": "Límite diario alcanzado",
-                        "error": "Has excedido el límite de 50 análisis por día"
+                        "error": "Has excedido el límite de análisis por día"
                     }), 429
 
             data = request.get_json()
@@ -158,7 +158,7 @@ class TestComments:
             # Registrar la petición (solo para estudiantes)
             if user['user_role'] not in ['admin', 'teacher']:
                 request_count = ApiDeepSeekModel.log_request(current_user_id)
-                remaining_requests = 5 - request_count
+                remaining_requests = 300 - request_count
 
             # Resto de la lógica de procesamiento...
             compressed_title = ' '.join(data['title_test'].strip().split())

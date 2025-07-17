@@ -125,14 +125,14 @@ class ApiDeepSeekModel:
         
         
     @staticmethod
-    def check_usage_limit(user_id, endpoint='ai_comment', max_requests=5):
+    def check_usage_limit(user_id, endpoint='ai_comment', max_requests=300):
         """
         Verifica si el usuario ha excedido el límite de peticiones
         
         Args:
             user_id (int): ID del usuario
             endpoint (str): Nombre del endpoint (default 'ai_comment')
-            max_requests (int): Límite máximo de peticiones (default 5)
+            max_requests (int): Límite máximo de peticiones (default 300)
             
         Returns:
             tuple: (bool, int) - (True si puede continuar, requests_remaining)
